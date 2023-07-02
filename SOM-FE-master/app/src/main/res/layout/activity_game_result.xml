@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main2"
+    android:orientation="vertical"
+    tools:context=".GameResultActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="10"
+        android:orientation="vertical"
+        android:background="@drawable/game">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_height="80dp"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:text="GAME OVER"
+                android:textSize="45dp"
+                android:fontFamily="@font/fontbasic"
+                android:textColor="#ffffff"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.8"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/result_text"
+                android:text="Player 승리!"
+                android:gravity="center"
+                android:textSize="35dp"
+                android:fontFamily="@font/acube"
+                android:textColor="#ffffff"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_height="100dp"
+                android:layout_width="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:weightSum="3"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/game"
+                android:gravity="center"
+                android:text="다시하기"
+                android:textSize="25dp"
+                android:textColor="#ffffff"
+                android:fontFamily="@font/acube"
+                android:paddingBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="65dp"
+                android:layout_marginRight="65dp"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/red_button" />
+
+            <TextView
+                android:id="@+id/setting"
+                android:gravity="center"
+                android:text="관계 설정으로"
+                android:textSize="25dp"
+                android:textColor="#ffffff"
+                android:fontFamily="@font/acube"
+                android:paddingBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="65dp"
+                android:layout_marginRight="65dp"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/red_button" />
+
+            <TextView
+                android:id="@+id/home"
+                android:gravity="center"
+                android:text="홈으로"
+                android:textSize="25dp"
+                android:textColor="#ffffff"
+                android:fontFamily="@font/acube"
+                android:paddingBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="65dp"
+                android:layout_marginRight="65dp"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/red_button" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.7"
+            android:orientation="vertical">
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

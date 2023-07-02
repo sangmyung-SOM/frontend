@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background3"
+    android:orientation="vertical"
+    android:weightSum="12.3"
+    tools:context=".QuestionListActivity">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="9"
+      android:weightSum="9"
+      android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_weight="2">
+      <TextView
+          android:id="@+id/Title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="질문 기록"
+          android:fontFamily="@font/fontbasic"
+          android:textColor="#ffffff"
+          android:layout_marginTop="15dp"
+          android:textSize="30dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:weightSum="10"
+        android:orientation="vertical"
+        android:layout_weight="3.5">
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1.5"
+          android:text="답변한 질문"
+          android:textColor="#ffffff"
+          android:fontFamily="@font/fontbasic"
+          android:textSize="20dp" />
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="0.5" />
+    <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/used_recyclerview"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="8" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="20dp"
+        android:weightSum="10"
+        android:orientation="vertical"
+        android:layout_weight="3.5">
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1.5"
+          android:text="패스한 질문"
+          android:textColor="#ffffff"
+          android:fontFamily="@font/fontbasic"
+          android:textSize="20dp" />
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="0.5" />
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/pass_recyclerview"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="8" />
+    </LinearLayout>
+  </LinearLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:gravity="right"
+      android:orientation="horizontal"
+      android:weightSum="4"
+      android:layout_height="0dp"
+      android:layout_weight="1.8">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+    <TextView
+        android:id="@+id/home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:orientation="vertical"
+      android:layout_height="0dp"
+      android:layout_weight="1.5" />
+</LinearLayout>
