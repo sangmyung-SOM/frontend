@@ -912,12 +912,30 @@ class GameActivity : AppCompatActivity() {
         val alertDialog1 = AlertDialog.Builder(this)
             .setTitle("게임 방법")
             .setPositiveButton("다음") { dialog, which ->
-                val view2 = inflater.inflate(R.layout.activity_gamerule2, null)
-                val alertDialog2 = AlertDialog.Builder(this).setTitle("게임 방법")
-                    .setPositiveButton("확인", null)
-                    .setNegativeButton("취소", null)
-                alertDialog2.setView(view2)
-                alertDialog2.setCancelable(false).show()
+                showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
+            }
+            .setNegativeButton("취소", null)
+        alertDialog1.setView(view1)
+        alertDialog1.setCancelable(false).show()
+    }
+
+    fun showSecondPage(inflater: LayoutInflater) {
+        val view2 = inflater.inflate(R.layout.activity_gamerule2, null)
+        val alertDialog2 = AlertDialog.Builder(this).setTitle("게임 방법")
+            .setPositiveButton("확인", null)
+            .setNegativeButton("이전") { dialog, which ->
+                showFirstPage(inflater) // 이전 설명 페이지를 보여주는 함수 호출
+            }
+        alertDialog2.setView(view2)
+        alertDialog2.setCancelable(false).show()
+    }
+
+    fun showFirstPage(inflater: LayoutInflater) {
+        val view1 = inflater.inflate(R.layout.activity_gamerule1, null)
+        val alertDialog1 = AlertDialog.Builder(this)
+            .setTitle("게임 방법")
+            .setPositiveButton("다음") { dialog, which ->
+                showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
             }
             .setNegativeButton("취소", null)
         alertDialog1.setView(view1)
