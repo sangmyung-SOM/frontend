@@ -24,7 +24,7 @@ class MasterApplication : Application() {
         createRetrofit()
 
         // 카카오톡 로그인 sdk 설정
-        KakaoSdk.init(this, "f1885970ddc30ad8bb96fc134a60f3e4")
+        KakaoSdk.init(this, "8830a05931f367c390e6f8d27db7f0ab")
     }
 
 

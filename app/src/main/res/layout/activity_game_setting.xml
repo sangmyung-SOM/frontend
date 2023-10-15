@@ -43,23 +43,54 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:layout_weight="1">
+
                 <TextView
+                    android:layout_width="46dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:fontFamily="@font/acube"
                     android:gravity="center"
                     android:text="관계"
                     android:textColor="#ffffff"
-                    android:fontFamily="@font/acube"
-                    android:textSize="16dp"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                    android:textSize="16dp" />
 
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:background="@drawable/spinner_background"
-                    android:textAlignment="center"
-                    android:layout_weight="8"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="284dp"
+                    android:layout_height="30dp"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/radioButton"
+                        android:layout_width="29dp"
+                        android:layout_height="22dp"
+                        android:layout_weight="2"
+                        android:fontFamily="@font/acube"
+                        android:text="연인"
+                        android:textColor="#ffffff"
+                        android:textSize="13dp" />
+
+                    <RadioButton
+                        android:id="@+id/radioButton2"
+                        android:layout_width="29dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:fontFamily="@font/acube"
+                        android:text="부부"
+                        android:textColor="#ffffff"
+                        android:textSize="13dp" />
+
+                    <RadioButton
+                        android:id="@+id/radioButton3"
+                        android:layout_width="28dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:fontFamily="@font/acube"
+                        android:text="부모자녀"
+                        android:textColor="#ffffff"
+                        android:textSize="13dp" />
+
+                </RadioGroup>
+
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -69,37 +100,44 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:layout_weight="1">
+
                 <TextView
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="1P"
-                    android:textColor="#ffffff"
-                    android:fontFamily="@font/acube"
-                    android:textSize="16dp"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-                <EditText
-                    android:id="@+id/name1"
-                    android:text="1P"
-                    android:layout_weight="4"
-                    android:layout_width="0dp"
+                    android:id="@+id/textView"
+                    android:layout_width="81dp"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/acube"
                     android:gravity="center"
-                    android:hint="1P 이름"
-                    android:background="@drawable/edittext_rounded_corner_rectangle"
-                    android:textColorHint="#383A3C" />
-                <TextView
-                    android:layout_weight="0.5"
-                    android:gravity="center"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-                <Spinner
-                    android:id="@+id/spinner1"
-                    android:background="@drawable/spinner_background"
-                    android:textAlignment="center"
-                    android:layout_weight="3.5"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                    android:text="성인질문"
+                    android:textColor="#ffffff"
+                    android:textSize="16dp" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroup2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radioButton4"
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/acube"
+                        android:text="ON"
+                        android:textColor="#ffffff"
+                        android:textSize="13dp" />
+
+                    <RadioButton
+                        android:id="@+id/radioButton5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/acube"
+                        android:text="OFF"
+                        android:textColor="#ffffff"
+                        android:textSize="13dp" />
+                </RadioGroup>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -108,39 +146,7 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:weightSum="10"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="2P"
-                    android:textColor="#ffffff"
-                    android:fontFamily="@font/acube"
-                    android:textSize="16dp"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-                <EditText
-                    android:id="@+id/name2"
-                    android:text="2P"
-                    android:layout_weight="4"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:hint="2P 이름"
-                    android:background="@drawable/edittext_rounded_corner_rectangle"
-                    android:textColorHint="#383A3C" />
-                <TextView
-                    android:layout_weight="0.5"
-                    android:gravity="center"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-                <Spinner
-                    android:id="@+id/spinner2"
-                    android:background="@drawable/spinner_background"
-                    android:textAlignment="center"
-                    android:layout_weight="3.5"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+                android:layout_weight="1"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -148,13 +154,15 @@
             android:layout_weight="1.5"
             android:gravity="center"
             android:orientation="vertical">
-            <ImageView
+            <Button
                 android:id="@+id/start"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
-                android:layout_height="100dp"
-                android:layout_width="match_parent"
-                android:src="@drawable/startbutton" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="방 만들기"
+                android:textColor="#ffffff"
+                android:fontFamily="@font/acube"
+                android:textSize="25dp" />
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
