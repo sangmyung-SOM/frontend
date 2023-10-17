@@ -17,29 +17,52 @@
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <ImageView
+        android:id="@+id/findRoom"
+        android:layout_width="176dp"
+        android:layout_height="50dp"
+        android:src="@drawable/btn_room_find"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.844"></ImageView>
+
+    <ImageView
+        android:id="@+id/makeRoom"
+        android:layout_width="176dp"
+        android:layout_height="50dp"
+        android:src="@drawable/btn_room_create"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.913"></ImageView>
+
+    <ImageView
         android:id="@+id/onlineStart"
-        android:layout_width="200dp"
-        android:layout_height="73dp"
-        android:layout_marginTop="72dp"
+        android:layout_width="273dp"
+        android:layout_height="78dp"
         android:src="@drawable/btn_online"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.866"></ImageView>
+
+    <ImageView
+        android:id="@+id/explain_btn"
+        android:layout_width="176dp"
+        android:layout_height="50dp"
+        android:src="@drawable/btn_rule"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/explain"
-        app:layout_constraintVertical_bias="0.605"></ImageView>
-
-    <ImageView
-        android:id="@+id/explain"
-        android:layout_width="176dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="260dp"
-        android:src="@drawable/btn_rule"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.377"></ImageView>
+        app:layout_constraintVertical_bias="0.39"></ImageView>
 
     <ImageView
         android:id="@+id/offlineStart"
@@ -48,9 +71,10 @@
         android:src="@drawable/btn_offline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/explain"
-        app:layout_constraintVertical_bias="0.942"></ImageView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976"></ImageView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

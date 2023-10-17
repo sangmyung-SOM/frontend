@@ -16,6 +16,9 @@
         android:theme="@style/Theme.SOM"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".StartActivityClicked"
+            android:exported="false" />
+        <activity
             android:name=".GameDataActivity"
             android:exported="false">
             <meta-data
