@@ -28,6 +28,7 @@ class StartActivityClicked : AppCompatActivity() {
 //            startActivity(Intent(this, MainActivity::class.java))
 //            finish()
 //        }
+        clickMakeGameRoomBtn()
 
         explain_btn.setOnClickListener {
             showPopup()
@@ -77,5 +78,12 @@ class StartActivityClicked : AppCompatActivity() {
             .setNegativeButton("취소", null)
         alertDialog1.setView(view1)
         alertDialog1.setCancelable(false).show()
+    }
+
+    private fun clickMakeGameRoomBtn(){
+        makeRoom.setOnClickListener {
+            startActivity(Intent(this, OnlineGameSettingActivity::class.java))
+            finish()
+        }
     }
 }

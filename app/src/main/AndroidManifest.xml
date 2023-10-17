@@ -42,6 +42,9 @@
             android:name=".StartActivity"
             android:exported="false" />
         <activity
+            android:name=".OnlineGameSettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MypageActivity"
             android:exported="false" />
         <activity
