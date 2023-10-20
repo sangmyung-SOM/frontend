@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/default_space">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/nanumsquare_acl"
+        android:gravity="center"
+        android:text="이름을 입력해주세요!"
+        android:textColor="#000000"
+        android:textSize="@dimen/lg_fontsize"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/sm_space"
+        android:ems="5"
+        android:fontFamily="@font/nanumsquare_acl"
+        android:textColor="#000000"
+        android:textSize="@dimen/lg_fontsize"
+        android:textStyle="bold"/>
+
+</LinearLayout>
