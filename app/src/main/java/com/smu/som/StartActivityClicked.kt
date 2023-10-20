@@ -18,6 +18,7 @@ class StartActivityClicked : AppCompatActivity() {
         setContentView(R.layout.activity_start_clicked)
 
         clickEnterGameRoomBtn()
+        clickMakeGameRoomBtn()
 
         offlineStart.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
@@ -77,5 +78,12 @@ class StartActivityClicked : AppCompatActivity() {
             .setNegativeButton("취소", null)
         alertDialog1.setView(view1)
         alertDialog1.setCancelable(false).show()
+    }
+
+    private fun clickMakeGameRoomBtn(){
+        makeRoom.setOnClickListener {
+            startActivity(Intent(this, OnlineGameSettingActivity::class.java))
+            finish()
+        }
     }
 }
