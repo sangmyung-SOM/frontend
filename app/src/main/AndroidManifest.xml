@@ -42,6 +42,9 @@
             android:name=".StartActivity"
             android:exported="false" />
         <activity
+            android:name=".OnlineGameSettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MypageActivity"
             android:exported="false" />
         <activity
@@ -78,6 +81,10 @@
         <activity
             android:name=".GameActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.activity.ChatActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
