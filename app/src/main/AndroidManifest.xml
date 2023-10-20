@@ -81,6 +81,10 @@
         <activity
             android:name=".GameActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.activity.ChatActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/sm_space"
+    android:background="@color/enmsg"
+    android:orientation="vertical"
+    android:padding="@dimen/sm_space">
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/nanumsquare_acl"
+        android:text="입장 메세지"
+        android:textColor="#000000"
+        android:textSize="@dimen/sm_fontsize"
+        android:textStyle="bold"/>
+</LinearLayout>

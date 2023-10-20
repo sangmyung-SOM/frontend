@@ -39,16 +39,19 @@ class OnlineGameSettingActivity : AppCompatActivity() {
         val radioGroup2 = findViewById<RadioGroup>(R.id.radioGroup2) // 라디오버튼 그룹2 성인질문
         val makeRoomBtn = findViewById<Button>(R.id.makeRoomBtn_OnlineGame)
 
-        //라디오 버튼 누르지 않고 makeRoomBtn 누르면 토스트 메시지 띄우기
-
+        // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
             val selectedRadioButtonId1 = radioGroup1.checkedRadioButtonId
             val selectedRadioButtonId2 = radioGroup2.checkedRadioButtonId
 
+            //라디오 버튼 누르지 않고 makeRoomBtn 누르면 토스트 메시지 띄우기
             if (selectedRadioButtonId1 == -1 || selectedRadioButtonId2 == -1) {
                 Toast.makeText(this, "게임 설정을 선택해주세요.", Toast.LENGTH_SHORT).show()
             } else {
-                getShowGameRoomId()
+                // 라디오 버튼을 다 선택 후 방 만들기 버튼을 누름
+                getShowGameRoomId() // 서버로부터 게임 방의 roomID를 받아 팝업을 띄움 (팝업창{GetGameRoomIdDialog}에 입장하기 버튼 있음)
+
+                // 게임 설정 하는 부분 (관계, 성인질문 on/off 설정값)
                 val selectedRadioButton1 = findViewById<RadioButton>(selectedRadioButtonId1) // 관계
                 val selectedOption = selectedRadioButton1.text.toString()
 
@@ -96,7 +99,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
         // GameRoomApi 서비스를 생성합니다.
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
         // POST 요청을 보낼 데이터를 생성합니다.
-        val makeGameRoom = MakeGameRoom("방 이름")
+        val makeGameRoom = MakeGameRoom("name")
         var GameRoomId = ""
 
         // POST 요청을 보냅니다.
@@ -106,7 +109,6 @@ class OnlineGameSettingActivity : AppCompatActivity() {
                 call: Call<GameRoomResponse>,
                 response: Response<GameRoomResponse>
             ) {
-
                 if (response.isSuccessful) {
                     val gameRoomResponse = response.body()
                     val roomID = gameRoomResponse?.roomId
@@ -127,6 +129,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
             }
         })
 
+        //비동기 처리
         Handler(Looper.getMainLooper()).postDelayed({
             //Do something
             getGameRoomIdDialog.getRoomId(GameRoomId)

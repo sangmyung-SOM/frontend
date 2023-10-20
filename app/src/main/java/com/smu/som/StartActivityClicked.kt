@@ -18,6 +18,7 @@ class StartActivityClicked : AppCompatActivity() {
         setContentView(R.layout.activity_start_clicked)
 
         clickEnterGameRoomBtn()
+        clickMakeGameRoomBtn()
 
         offlineStart.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
