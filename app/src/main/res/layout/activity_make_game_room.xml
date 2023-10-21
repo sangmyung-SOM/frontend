@@ -1,51 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="350dp"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:minWidth="300dp"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:layout_gravity="center"
+    android:background="@drawable/find_gameroom_dialog">
+
+    <TextView
+        android:id="@+id/tv_make_game_room_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방 ID"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/confirmTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minHeight="50dp"
-        android:textSize="14sp"
-        tools:text="방 코드가 뜰 텍스트란 입니다"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:textIsSelectable="true"
-        />
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:text=""
+        android:textIsSelectable="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_make_game_room_title"
+        tools:text="방 코드가 뜰 텍스트란 입니다" />
 
-        <Button
-            android:id="@+id/noButton"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="7dp"
-            android:layout_weight="1"
-            android:text="취소"
-            android:textSize="14sp" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:text="입장하기"
-            android:textSize="14sp"
-            android:id="@+id/enterButton"
-            />
+    <Button
+        android:id="@+id/noButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="7dp"
+        android:background="@drawable/find_gameroom_btn"
+        android:text="취소"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/enterButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/confirmTextView" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/enterButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/find_gameroom_btn"
+        android:text="입장하기"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/noButton"
+        app:layout_constraintTop_toBottomOf="@+id/confirmTextView" />
 
-</LinearLayout>
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/confirmTextView"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:gravity="center"-->
+    <!--        android:minHeight="50dp"-->
+    <!--        android:textSize="14sp"-->
+    <!--        tools:text="방 코드가 뜰 텍스트란 입니다"-->
+    <!--        android:textColor="#000000"-->
+    <!--        android:textStyle="bold"-->
+    <!--        android:textIsSelectable="true"-->
+    <!--        />-->
+
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="20dp"-->
+    <!--        android:orientation="horizontal">-->
+
+    <!--        <Button-->
+    <!--            android:id="@+id/noButton"-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="40dp"-->
+    <!--            android:layout_marginEnd="7dp"-->
+    <!--            android:layout_weight="1"-->
+    <!--            android:text="취소"-->
+    <!--            android:textSize="14sp" />-->
+
+    <!--        <Button-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="40dp"-->
+    <!--            android:layout_weight="1"-->
+    <!--            android:text="입장하기"-->
+    <!--            android:textSize="14sp"-->
+    <!--            android:id="@+id/enterButton"-->
+    <!--            />-->
+
+    <!--    </LinearLayout>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

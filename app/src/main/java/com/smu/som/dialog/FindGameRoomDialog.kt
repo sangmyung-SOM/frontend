@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -12,10 +12,8 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.content.ContextCompat
-import com.google.gson.GsonBuilder
+import com.smu.som.R
 import com.smu.som.chat.activity.ChatActivity
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class FindGameRoomDialog(context: Context) : Dialog(context) {
 
@@ -23,7 +21,7 @@ class FindGameRoomDialog(context: Context) : Dialog(context) {
     override fun onCreate(savedInstanceState: Bundle?) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.find_gameroom_dialog)
+        setContentView(R.layout.dialog_find_gameroom)
 
         setEnterGameroom()
     }

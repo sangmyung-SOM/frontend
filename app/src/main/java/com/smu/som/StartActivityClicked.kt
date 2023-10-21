@@ -6,9 +6,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.Button
 import androidx.appcompat.app.AlertDialog
-import kotlinx.android.synthetic.main.activity_start.*
+import com.smu.som.dialog.FindGameRoomDialog
 import kotlinx.android.synthetic.main.activity_start.offlineStart
 import kotlinx.android.synthetic.main.activity_start_clicked.*
 

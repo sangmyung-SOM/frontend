@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
+import com.smu.som.dialog.GetGameRoomIdDialog
 import kotlinx.android.synthetic.main.activity_game_setting.*
 import retrofit2.Callback
 import retrofit2.Call
@@ -92,7 +94,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
         // Retrofit을 초기화합니다.
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")
+            .baseUrl("http://3.34.55.111:8080")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
