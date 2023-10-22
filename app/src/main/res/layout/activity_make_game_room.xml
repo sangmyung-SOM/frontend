@@ -73,6 +73,8 @@
         app:layout_constraintTop_toBottomOf="@+id/confirmTextView" />
 
 
+<!--    필요 없으면 지워도 됩니다 - 가나 -->
+
     <!--    <TextView-->
     <!--        android:id="@+id/confirmTextView"-->
     <!--        android:layout_width="match_parent"-->

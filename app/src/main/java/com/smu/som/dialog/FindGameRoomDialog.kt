@@ -35,30 +35,36 @@ class FindGameRoomDialog(context: Context) : Dialog(context) {
             val roomId : String = et_gamroom_id.text.toString()
             Log.i("som-gana", roomId)
 
-            val builder = AlertDialog.Builder(context)
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog, null, false)
-            builder.setView(dialogView)
-                .setPositiveButton("확인") { dialogInterface, i ->
-                    val name = dialogView.findViewById<EditText>(R.id.name)
-                    if(name != null){
-                        bundle.putString("sender", name.text.toString())
-                        bundle.putString("chatRoomId", roomId)
-
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtra("myBundle", bundle)
-
-                        ContextCompat.startActivity(context, intent, bundle)
-
-                    }
-                }
-                .setNegativeButton("취소") { dialogInterface, i ->
-                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
-                }
-                .show()
-
-
-
             dismiss()
+
+            val setNameDialog : SetNameDialog = SetNameDialog(context, roomId)
+            setNameDialog.show()
+
+            // 필요없으면 삭제해도 괜찮습니다 - 가나
+//            val builder = AlertDialog.Builder(context)
+//            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog, null, false)
+//            builder.setView(dialogView)
+//                .setPositiveButton("확인") { dialogInterface, i ->
+//                    val name = dialogView.findViewById<EditText>(R.id.name)
+//                    if(name != null){
+//                        bundle.putString("sender", name.text.toString())
+//                        bundle.putString("chatRoomId", roomId)
+//
+//                        val intent = Intent(context, ChatActivity::class.java)
+//                        intent.putExtra("myBundle", bundle)
+//
+//                        ContextCompat.startActivity(context, intent, bundle)
+//
+//                    }
+//                }
+//                .setNegativeButton("취소") { dialogInterface, i ->
+//                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
+//                }
+//                .show()
+//
+//
+//
+//            dismiss()
         }
     }
 }

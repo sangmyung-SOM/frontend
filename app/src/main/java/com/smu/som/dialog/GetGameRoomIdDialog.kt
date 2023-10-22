@@ -81,26 +81,29 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
 
             // 가나-팝업창 수정해야될 부분! - 이름 입력하는 팝업창임
             // 이름 입력하는 창이 뜨고, 확인을 누르면 채팅방으로 이동
-            val builder = AlertDialog.Builder(context)
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog, null, false)
-            builder.setView(dialogView)
-                .setPositiveButton("확인") { dialogInterface, i ->
-                    val name = dialogView.findViewById<EditText>(R.id.name)
-                    if(name != null){
-                        bundle.putString("sender", name.text.toString())
-                        bundle.putString("chatRoomId", gameRoomId)
+            val setNameDialog : SetNameDialog = SetNameDialog(context, gameRoomId)
+            setNameDialog.show()
 
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtra("myBundle", bundle)
-
-                        ContextCompat.startActivity(context, intent, bundle)
-
-                    }
-                }
-                .setNegativeButton("취소") { dialogInterface, i ->
-                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
-                }
-                .show()
+//            val builder = AlertDialog.Builder(context)
+//            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog, null, false)
+//            builder.setView(dialogView)
+//                .setPositiveButton("확인") { dialogInterface, i ->
+//                    val name = dialogView.findViewById<EditText>(R.id.name)
+//                    if(name != null){
+//                        bundle.putString("sender", name.text.toString())
+//                        bundle.putString("chatRoomId", gameRoomId)
+//
+//                        val intent = Intent(context, ChatActivity::class.java)
+//                        intent.putExtra("myBundle", bundle)
+//
+//                        ContextCompat.startActivity(context, intent, bundle)
+//
+//                    }
+//                }
+//                .setNegativeButton("취소") { dialogInterface, i ->
+//                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
+//                }
+//                .show()
 
         }
 
