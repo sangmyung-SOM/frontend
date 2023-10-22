@@ -2,23 +2,28 @@ package com.smu.som.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import com.smu.som.R
 import com.smu.som.chat.activity.ChatActivity
-import kotlinx.android.synthetic.main.activity_game_result.game
-import kotlinx.android.synthetic.main.activity_make_game_room.view.confirmTextView
-import org.w3c.dom.Text
+
 
 class GetGameRoomIdDialog(context: Context) : Dialog(context) {
 
@@ -38,6 +43,7 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
     }
 
     fun showPopup() {
+        // 필요 없으면 삭제 가능 - 가나
 //        val dialogView = LayoutInflater.from(context).inflate(R.layout.activity_make_game_room, null)
 //        val closeButton = dialogView.findViewById<View>(R.id.noButton)
 //        val enterButton = dialogView.findViewById<View>(R.id.enterButton)
@@ -48,11 +54,15 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         val closeButton : Button = findViewById(R.id.noButton)
         val enterButton : Button = findViewById(R.id.enterButton)
         val textView : TextView = findViewById(R.id.confirmTextView)
+
+        // 방코드
         textView.setText(gameRoomId)
 
+        setClickEventToRoomCodeCopyIcon(gameRoomId)
 
         val bundle: Bundle = Bundle()
 
+        // 필요 없으면 삭제 가능 - 가나
 //        val alertDialog = AlertDialog.Builder(context).setView(dialogView).create()
 //        alertDialog.show()
 
@@ -97,6 +107,17 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         closeButton.setOnClickListener {
 //            alertDialog.dismiss()
             dismiss()
+        }
+    }
+
+    // 복사하기 아이콘 이벤트 리스너 추가 - 클릭시 게임방 코드 복사됨.
+    private fun setClickEventToRoomCodeCopyIcon(gameRoomId: String){
+        val roomCodeCopyIcon : ImageView = findViewById(R.id.img_room_code_copy_icon)
+
+        roomCodeCopyIcon.setOnClickListener{
+            val clipboard: ClipboardManager = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("game_room_id", gameRoomId)
+            clipboard.setPrimaryClip(clip)
         }
     }
 

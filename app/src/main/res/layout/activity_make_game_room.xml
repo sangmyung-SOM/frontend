@@ -19,18 +19,29 @@
 
     <TextView
         android:id="@+id/confirmTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
         android:text=""
         android:textIsSelectable="true"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/img_room_code_copy_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_make_game_room_title"
         tools:text="방 코드가 뜰 텍스트란 입니다" />
 
+    <ImageView
+        android:id="@+id/img_room_code_copy_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/file_copy_icon"
+        app:layout_constraintTop_toBottomOf="@id/tv_make_game_room_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/confirmTextView"
+        android:layout_marginTop="20dp"
+        />
 
     <Button
         android:id="@+id/noButton"
