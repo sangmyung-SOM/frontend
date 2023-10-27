@@ -10,8 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.core.content.ContextCompat
 import com.smu.som.R
-import com.smu.som.chat.activity.ChatActivity
-import kotlin.contracts.contract
+import com.smu.som.game.OnlineGameActivity
 
 class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
 
@@ -37,8 +36,16 @@ class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
                 bundle.putString("sender", name.text.toString())
                 bundle.putString("chatRoomId", roomId)
 
-                val intent = Intent(context, ChatActivity::class.java)
+                // 가나-게임방으로 이동하게 수정함
+                val intent = Intent(context, OnlineGameActivity::class.java)
                 intent.putExtra("myBundle", bundle)
+
+                // 임시로 저장해둠 - start
+                intent.putExtra("category", "COUPLE")
+                intent.putExtra("kcategory", "연인")
+                intent.putExtra("name1", "이솜")
+                intent.putExtra("name2", "박슴우")
+                // 임시로 저장해둠 - end
 
                 ContextCompat.startActivity(context, intent, bundle)
             }

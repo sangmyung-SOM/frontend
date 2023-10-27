@@ -37,6 +37,7 @@ class FindGameRoomDialog(context: Context) : Dialog(context) {
 
             dismiss()
 
+            // 이름 설정 팝업창
             val setNameDialog : SetNameDialog = SetNameDialog(context, roomId)
             setNameDialog.show()
 
