@@ -5,14 +5,18 @@
     android:layout_width="350dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@drawable/find_gameroom_dialog">
+    android:background="@drawable/dialog_container">
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/dialog_title"
         android:text="이름을 입력해주세요!"
+        android:gravity="center"
         android:textSize="22sp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/nanum_gothic_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +26,7 @@
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:background="@drawable/find_gameroom_edittext"
+        android:background="@drawable/dialog_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -32,8 +36,11 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:background="@drawable/find_gameroom_btn"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/dialog_btn_cancel"
         android:text="취소"
+        android:fontFamily="@font/nanum_gothic_bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_enter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_name" />
@@ -43,8 +50,11 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:background="@drawable/find_gameroom_btn"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/dialog_btn_enter"
         android:text="입장하기"
+        android:fontFamily="@font/nanum_gothic_bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_cancel"
         app:layout_constraintTop_toBottomOf="@+id/et_name" />

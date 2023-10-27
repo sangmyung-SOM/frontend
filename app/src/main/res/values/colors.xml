@@ -15,4 +15,10 @@
     <color name="remsg">#FFFFFF</color>
     <color name="enmsg">#7797AB</color>
     <color name="colorChatMessageBackground">#99BBD0</color>
+
+    <color name="dialog_title">#877568</color>
+    <color name="dialog_stroke">#534A45</color>
+    <color name="dialog_edittext">#D9D0BF</color>
+    <color name="dialog_btn_enter">#FBD86B</color>
+    <color name="dialog_btn_cancel">#C7B7AB</color>
 </resources>
