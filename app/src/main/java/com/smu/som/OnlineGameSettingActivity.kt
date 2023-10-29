@@ -2,11 +2,16 @@ package com.smu.som
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -14,6 +19,8 @@ import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.smu.som.dialog.GetGameRoomIdDialog
 import kotlinx.android.synthetic.main.activity_game_setting.*
+import kotlinx.android.synthetic.main.activity_online_game_setting.characterSpinner
+import kotlinx.android.synthetic.main.activity_online_game_setting.noButton
 import retrofit2.Callback
 import retrofit2.Call
 import retrofit2.Response
@@ -27,19 +34,39 @@ import retrofit2.converter.gson.GsonConverterFactory
 class OnlineGameSettingActivity : AppCompatActivity() {
     private lateinit var getGameRoomIdDialog: GetGameRoomIdDialog
     override fun onCreate(savedInstanceState: Bundle?) {
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
+
+        // 배경 투명하게 만들기
+
         setContentView(R.layout.activity_online_game_setting)
 
         getGameRoomIdDialog = GetGameRoomIdDialog(this)
 
         // 기존의 게임 설정 값을 받아와서 기본값으로 설정 (game_sp)
         val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
+        var character1 = sp.getInt("character1", 0)
+
         val categoryMap = hashMapOf("연인" to "COUPLE", "부부" to "MARRIED", "부모자녀" to "PARENT")
+        val characterArray = arrayOf("토끼", "병아리", "고양이", "곰")   // 캐릭터 리스트
+
+        var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, characterArray)
+        characterSpinner.adapter = adapter
+
+        characterSpinner.setSelection(character1)
+        // 캐릭터 선택 (1P)
+        characterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) { }
+        }
+
 
         //라디오 버튼
         val radioGroup1 = findViewById<RadioGroup>(R.id.radioGroup) // 라디오버튼 그룹1 관계
         val radioGroup2 = findViewById<RadioGroup>(R.id.radioGroup2) // 라디오버튼 그룹2 성인질문
-        val makeRoomBtn = findViewById<Button>(R.id.makeRoomBtn_OnlineGame)
+        val makeRoomBtn = findViewById<Button>(R.id.makeRoomButton)
 
         // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
@@ -72,18 +99,12 @@ class OnlineGameSettingActivity : AppCompatActivity() {
             }
         }
 
-
-        // home 버튼 클릭 리스너 (홈 화면으로)
-        home.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+        // 취소 버튼 클릭
+        noButton.setOnClickListener {
+            startActivity(Intent(this, StartActivityClicked::class.java))
             finish()
         }
 
-        // back 버튼 클릭 리스너 (뒤로가기)
-        back.setOnClickListener{
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
     }
 
     private fun getShowGameRoomId() {
