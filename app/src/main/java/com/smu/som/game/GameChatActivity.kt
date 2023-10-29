@@ -31,7 +31,6 @@ class GameChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_chat)
 
-        val intent = getIntent()
         val bundle = intent.getBundleExtra("myBundle")
         val constant: Constant = Constant
         if(bundle != null) {
