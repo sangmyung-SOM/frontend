@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/dialog_container">
+
+
+    <TextView
+        android:id="@+id/tv_make_game_room_title"
+        android:layout_width="416dp"
+        android:layout_height="60dp"
+        android:background="@drawable/dialog_title"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:gravity="center"
+        android:text="방 만들기"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.038"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Player1_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="72dp"
+        android:text="1P"
+        android:textColor="#000000"
+        android:textIsSelectable="true"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/characterSpinner"
+        android:layout_width="106dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="90dp"
+        android:layout_marginBottom="36dp"
+        android:background="@drawable/spinner_background"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_make_game_room_title"
+        app:layout_constraintVertical_bias="0.666" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="313dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="57dp"
+        android:layout_marginBottom="56dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/radioGroup2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textView2">
+
+        <RadioButton
+            android:id="@+id/radioButton"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="연인"
+            tools:layout_editor_absoluteX="139dp"
+            tools:layout_editor_absoluteY="294dp" />
+
+        <LinearLayout
+            android:layout_width="23dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/radioButton2"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="부부"
+            tools:layout_editor_absoluteX="245dp"
+            tools:layout_editor_absoluteY="291dp" />
+
+        <LinearLayout
+            android:layout_width="18dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/radioButton3"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="176dp"
+            android:layout_marginRight="176dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="부모자녀"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteY="252dp" />
+        <!--끝 쪽으로 배치-->
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/relationTextView2"
+        android:layout_width="71dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="16dp"
+        android:text="성인질문"
+        android:textColor="#000000"
+        android:textIsSelectable="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.664" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup2"
+        android:layout_width="278dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="61dp"
+        android:layout_marginTop="272dp"
+        android:layout_marginBottom="76dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/makeRoomButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/relationTextView2"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/onRadioButton"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="OFF"
+            tools:layout_editor_absoluteX="139dp"
+            tools:layout_editor_absoluteY="294dp" />
+
+        <LinearLayout
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/offRadioButton"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="176dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="ON"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteX="245dp"
+            tools:layout_editor_absoluteY="252dp"
+
+            />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/noButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="68dp"
+        android:background="@drawable/dialog_btn_cancel"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:text="취소"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_gameroom_id"
+        android:layout_width="205dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="109dp"
+        android:layout_marginBottom="36dp"
+        android:background="@drawable/dialog_edittext"
+        android:fontFamily="@font/nanum_gothic"
+        android:hint="1p 이름 입력해주세요"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+        app:layout_constraintStart_toEndOf="@+id/Player1_TextView"
+        app:layout_constraintTop_toTopOf="@+id/tv_make_game_room_title"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/makeRoomButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginBottom="68dp"
+        android:background="@drawable/dialog_btn_enter"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:text="방 만들기"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toEndOf="@+id/noButton" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="76dp"
+        android:text="관계"
+        android:textColor="#000000"
+        android:textIsSelectable="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/relationTextView2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
