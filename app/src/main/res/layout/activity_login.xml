@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main3"
+    android:background="@drawable/title_proto"
     android:orientation="vertical"
     android:layout_weight="10"
     tools:context=".LoginActivity">
@@ -19,12 +19,6 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
-            <TextView
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_gravity="center"
-                android:background="@drawable/main"
-                android:textSize="80dp" />
         </LinearLayout>
     </LinearLayout>
 
