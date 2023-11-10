@@ -19,7 +19,7 @@ class ChatAdapter(val context: Context)
     val RECEIVE_VIEW = 2
     val ENTER_VIEW = 3
 
-val constant = Constant
+    val constant = Constant
 
     var chatDatas = ArrayList<Chat>()
 

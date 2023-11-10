@@ -1,5 +1,6 @@
 package com.smu.som.chat.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ class ChatActivity : AppCompatActivity() {
     lateinit var stompConnection: Disposable
     lateinit var topic: Disposable
 
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
@@ -57,6 +59,7 @@ class ChatActivity : AppCompatActivity() {
 
         // 2. connect
         stompConnection = stomp.connect().subscribe {
+            // 게임 서버 구독
             when (it.type) {
                 Event.Type.OPENED -> {
                     // subscribe 채널구독

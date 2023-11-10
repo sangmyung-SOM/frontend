@@ -11,6 +11,7 @@ import android.widget.EditText
 import androidx.core.content.ContextCompat
 import com.smu.som.R
 import com.smu.som.game.OnlineGameActivity
+import com.smu.som.game.activity.GameTestActivity
 
 class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
 
@@ -37,7 +38,7 @@ class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
                 bundle.putString("chatRoomId", roomId)
 
                 // 가나-게임방으로 이동하게 수정함
-                val intent = Intent(context, OnlineGameActivity::class.java)
+                val intent = Intent(context, GameTestActivity::class.java)
                 intent.putExtra("myBundle", bundle)
 
                 // 임시로 저장해둠 - start
