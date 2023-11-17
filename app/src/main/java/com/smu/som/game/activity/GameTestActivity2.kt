@@ -127,7 +127,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START){
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
-                                        val name = result.message // message에 [1P,2P] 이름이 들어있음
+                                        val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
 
                                         if (name.split(",")[0] == Constant.SENDER) {
                                             player1_name.text = Constant.SENDER
@@ -147,29 +147,30 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     }
 
                                     if (result?.messageType == GameConstant.FIRST_THROW) {
-                                        yuts[0] = result?.message!!.toInt()
+                                        yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
 //                                        moveCharacter(yuts[0])
                                     }
 
                                     if (result?.messageType == GameConstant.GAME_STATE_THROW) {
-                                        yuts[0] = result?.message!!.toInt()
+                                        yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
 
                                     }
 
-                                    if(result?.gameState == GameConstant.TURN_CHANGE) {
+                                    if(result?.turnChange == GameConstant.TURN_CHANGE) {
                                         btnState = !btnState
                                         binding.btnThrowYut2.isEnabled = btnState
+                                        // 말버튼
                                     }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
                                         val builder = AlertDialog.Builder(this)
-                                        builder.setTitle("질문").setMessage(result?.message.toString())
+                                        builder.setTitle("질문").setMessage(result?.questionMessage.toString())
                                             .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
                                             })
                                             .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                                                builder.setMessage(result?.message.toString())
+                                                builder.setMessage(result?.questionMessage.toString())
                                                     .setPositiveButton(
                                                         "답변",
                                                         DialogInterface.OnClickListener { dialog, id ->
@@ -214,11 +215,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         val questionId = question?.get(0)!!.id
 
                                         try {
-
                                             jsonObject.put("messageType", "QUESTION")
                                             jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                             jsonObject.put("sender", constant.SENDER)
-                                            jsonObject.put("message", question?.get(0)?.question.toString())
+                                            jsonObject.put("questionMessage", question?.get(0)?.question.toString())
                                         } catch (e: JSONException) {
                                             e.printStackTrace()
                                         }
@@ -237,14 +237,13 @@ class GameTestActivity2 : AppCompatActivity()  {
 
 
 
-
                             throwCount++
                             if(throwCount == 1) {
                                 try {
                                     jsonObject.put("messageType", "FIRST_THROW")
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("message", "$num")
+                                    jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "2P")
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -255,7 +254,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     jsonObject.put("messageType", "THROW")
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("message", "$num")
+                                    jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "2P")
 
                                 } catch (e: JSONException) {
@@ -266,6 +265,9 @@ class GameTestActivity2 : AppCompatActivity()  {
                             stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
 
                         }
+
+                        // 말버튼 클릭 리스터
+
 
 
                     }

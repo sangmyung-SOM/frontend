@@ -131,7 +131,7 @@ class GameTestActivity : AppCompatActivity() {
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
-                                        val name = result.message // message에 [1P,2P] 이름이 들어있음
+                                        val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         if (name.split(",")[0] == Constant.SENDER) {
                                             player1_name.text = Constant.SENDER
                                             player2_name.text = name.split(",")[1]
@@ -143,31 +143,31 @@ class GameTestActivity : AppCompatActivity() {
 
                                     }
                                     if (result?.messageType == GameConstant.FIRST_THROW) {
-                                        yuts[0] = result?.message!!.toInt()
+                                        yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
 //                                        moveCharacter(yuts[0])
 //                                        showQuestion(result?.question)
                                     }
 
                                     if (result?.messageType == GameConstant.GAME_STATE_THROW) {
-                                        yuts[0] = result?.message!!.toInt()
+                                        yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
 //                                        showQuestion(result?.question)
 
                                     }
 
-                                    if (result?.gameState == GameConstant.TURN_CHANGE) {
+                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
                                         binding.btnThrowYut.isEnabled =
                                             !binding.btnThrowYut.isEnabled
                                     }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
                                         val builder = AlertDialog.Builder(this)
-                                        builder.setTitle("질문").setMessage(result?.message.toString())
+                                        builder.setTitle("질문").setMessage(result?.questionMessage.toString())
                                             .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
                                             })
                                             .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                                                builder.setMessage(result?.message.toString())
+                                                builder.setMessage(result?.questionMessage.toString())
                                                     .setPositiveButton(
                                                         "답변",
                                                         DialogInterface.OnClickListener { dialog, id ->
@@ -216,7 +216,7 @@ class GameTestActivity : AppCompatActivity() {
                                             jsonObject.put("messageType", "QUESTION")
                                             jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                             jsonObject.put("sender", constant.SENDER)
-                                            jsonObject.put("message", question?.get(0)?.question.toString())
+                                            jsonObject.put("questionMessage", question?.get(0)?.question.toString())
                                         } catch (e: JSONException) {
                                             e.printStackTrace()
                                         }
@@ -240,7 +240,7 @@ class GameTestActivity : AppCompatActivity() {
                                     jsonObject.put("messageType", "FIRST_THROW")
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("message", "$num")
+                                    jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "1P")
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -251,7 +251,7 @@ class GameTestActivity : AppCompatActivity() {
                                     jsonObject.put("messageType", "THROW")
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("message", "$num")
+                                    jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "1P")
 
                                 } catch (e: JSONException) {
