@@ -8,10 +8,11 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.smu.som.R
 import com.smu.som.game.OnlineGameActivity
-import com.smu.som.game.activity.GameTestActivity
+import com.smu.som.game.activity.GameTestActivity2
 
 class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
 
@@ -34,18 +35,23 @@ class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
             val name : EditText = findViewById(R.id.et_name)
 
             if(name != null) {
+                // 이름을 입력하지 않고 입장하기 버튼을 눌렀을 때
+                if(name.text.toString() == ""){
+                    Toast.makeText(context, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 bundle.putString("sender", name.text.toString())
                 bundle.putString("chatRoomId", roomId)
 
                 // 가나-게임방으로 이동하게 수정함
-                val intent = Intent(context, GameTestActivity::class.java)
+                val intent = Intent(context, GameTestActivity2::class.java)
                 intent.putExtra("myBundle", bundle)
 
                 // 임시로 저장해둠 - start
-                intent.putExtra("category", "COUPLE")
-                intent.putExtra("kcategory", "연인")
-                intent.putExtra("name1", "이솜")
-                intent.putExtra("name2", "박슴우")
+//                intent.putExtra("category", "COUPLE")
+//                intent.putExtra("kcategory", "연인")
+//                intent.putExtra("name1", "이솜")
+//                intent.putExtra("name2", "박슴우")
                 // 임시로 저장해둠 - end
 
                 ContextCompat.startActivity(context, intent, bundle)

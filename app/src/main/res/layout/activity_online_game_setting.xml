@@ -193,7 +193,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/et_gameroom_id"
+        android:id="@+id/name_1P_OG"
         android:layout_width="205dp"
         android:layout_height="51dp"
         android:layout_marginStart="12dp"

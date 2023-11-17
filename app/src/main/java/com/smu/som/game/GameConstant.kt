@@ -1,9 +1,14 @@
 package com.smu.som.game
 
 object GameConstant {
+    val TURN_CHANGE: String = "TURN_CHANGE"
+
     var GAME_TURN: String = ""
+
+    val QUESTION : String = "QUESTION"
+
     lateinit var GAME_STATE: String
-    var URL: String = "ws://3.34.55.111:8080/ws"
+    var URL: String = "ws://10.0.2.2:8080/ws"
 
     var CHATROOM_ID: String = "0"
     var SENDER: String = "DEFAULT"
@@ -11,11 +16,8 @@ object GameConstant {
     val GAME_STATE_START: String = "START"
     val GAME_STATE_END: String = "END"
 
-    val GAME_STATE_TURN: String = "TURN"
     val GAME_STATE_WAIT: String = "WAIT"
 
-    val GAME_1P: String = "1P"
-    val GAME_2P: String = "2P"
 
     val GAME_STATE_THROW = "THROW"
 
@@ -24,6 +26,8 @@ object GameConstant {
 
     val GAME_STATE_WIN: String = "WIN"
     val GAME_STATE_LOSE: String = "LOSE"
+
+    val FIRST_THROW: String = "FIRST_THROW"
 
     fun set(sender: String, gameTurn: String){
         SENDER = sender

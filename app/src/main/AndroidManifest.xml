@@ -95,6 +95,10 @@
             android:name=".game.activity.GameTestActivity"
             android:exported="true"
             android:theme="@style/Transparent"/>
+        <activity
+            android:name=".game.activity.GameTestActivity2"
+            android:exported="true"
+            android:theme="@style/Transparent"/>
 
     </application>
 

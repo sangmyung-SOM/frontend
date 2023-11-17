@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.smu.som.R
 import com.smu.som.chat.activity.ChatActivity
 import com.smu.som.game.activity.GameTestActivity
+import com.smu.som.game.activity.GameTestActivity2
 
 class FindGameRoomDialog(context: Context) : Dialog(context) {
 
@@ -34,37 +35,40 @@ class FindGameRoomDialog(context: Context) : Dialog(context) {
 
         btn_enter.setOnClickListener{
             val roomId : String = et_gamroom_id.text.toString()
-            Log.i("som-gana", roomId)
+            if (roomId == ""){
+                return@setOnClickListener
+            }
+
+            // roomId not exist
+
 
             dismiss()
 
             // 이름 설정 팝업창
             val setNameDialog : SetNameDialog = SetNameDialog(context, roomId)
-//            setNameDialog.show()
+            setNameDialog.show()
 
-            // 필요없으면 삭제해도 괜찮습니다 - 가나
-            val builder = AlertDialog.Builder(context)
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_set_name, null, false)
-            builder.setView(dialogView)
-                .setPositiveButton("확인") { dialogInterface, i ->
-                    val name = dialogView.findViewById<EditText>(R.id.et_name)
-                    if(name != null){
-                        bundle.putString("sender", name.text.toString())
-                        bundle.putString("chatRoomId", roomId)
-
-                        val intent = Intent(context, GameTestActivity::class.java)
-                        intent.putExtra("myBundle", bundle)
-
-                        ContextCompat.startActivity(context, intent, bundle)
-
-                    }
-                }
-                .setNegativeButton("취소") { dialogInterface, i ->
-                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
-                }
-                .show()
-
-
+//            // 필요없으면 삭제해도 괜찮습니다 - 가나
+//            val builder = AlertDialog.Builder(context)
+//            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_set_name, null, false)
+//            builder.setView(dialogView)
+//                .setPositiveButton("확인") { dialogInterface, i ->
+//                    val name = dialogView.findViewById<EditText>(R.id.et_name)
+//                    if(name != null){
+//                        bundle.putString("sender", name.text.toString())
+//                        bundle.putString("chatRoomId", roomId)
+//
+//                        val intent = Intent(context, GameTestActivity2::class.java)
+//                        intent.putExtra("myBundle", bundle)
+//
+//                        ContextCompat.startActivity(context, intent, bundle)
+//
+//                    }
+//                }
+//                .setNegativeButton("취소") { dialogInterface, i ->
+//                    /* 취소일 때 아무 액션이 없으므로 빈칸 */
+//                }
+//                .show()
 
             dismiss()
         }

@@ -6,35 +6,38 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.SoundPool
 import android.os.Bundle
-
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.google.gson.GsonBuilder
-
+import com.smu.som.MasterApplication
+import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.chat.Constant
-
+import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.databinding.ActivityOnlineGameBinding
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
 import com.smu.som.game.service.GameApi
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.player1_name
 import kotlinx.android.synthetic.main.activity_online_game.player2_name
+import kotlinx.android.synthetic.main.question_item_view.category
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -44,58 +47,53 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.bumptech.glide.request.target.Target
-import com.smu.som.MasterApplication
-import com.smu.som.Question
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_chat.message
-import kotlinx.android.synthetic.main.activity_game.start
-import kotlinx.android.synthetic.main.activity_game.yut
-import kotlin.properties.Delegates
 
-class GameTestActivity : AppCompatActivity() {
+class GameTestActivity2 : AppCompatActivity()  {
 
-    private lateinit var binding: ActivityOnlineGameBinding
+    private lateinit var binding: ActivityOnlineGame2Binding
 
     var jsonObject = JSONObject()
 
     lateinit var stompConnection: Disposable
     lateinit var topic: Disposable
     private lateinit var gametopic: Disposable
-    private var btnState : Boolean = true
-
-
-    val constant: Constant = Constant
+    private var btnState : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityOnlineGameBinding.inflate(layoutInflater)
+        binding = ActivityOnlineGame2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
         }
+
+
+
+        val intent = getIntent()
         val bundle = intent.getBundleExtra("myBundle")
 
         // 게임 설정 불러오기 (bundle)
-        val category = bundle?.getString("category")    // API 요청 시 필요한 카테고리 (영어)
-        var kcategory = bundle?.getString("kcategory")   // 사용자에게 보여질 카테고리 (한글)
-        val adult = bundle?.getString("adult")          // 성인 여부
+        var category : String? = ""
+        var adult : String? = ""
+        var kcategory : String? = ""
 
+
+        val constant: Constant = Constant
         if (bundle != null) {
             constant.set(bundle.getString("sender")!!, bundle.getString("chatRoomId")!!)
         }
 
-        // 1P 이름 설정
-        player1_name.text = Constant.SENDER
+        player2_name.text = constant.SENDER
 
-        var yuts = IntArray(6, { 0 })                        // 윷 결과 저장 리스트
-        val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
-        val gamesound = IntArray(8, { 0 })
 
         val gameConstant: GameConstant = GameConstant
+
+
+        var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
+        val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
+        val gamesound = IntArray(8, { 0 } )
 
         //1. STOMP init
         // url: ws://[도메인]/[엔드포인트]/ws
@@ -124,14 +122,13 @@ class GameTestActivity : AppCompatActivity() {
                                 val result = Klaxon()
                                     .parse<Game>(stompMessage)
                                 runOnUiThread {
-
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut.isEnabled =
-                                            true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnThrowYut2.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
                                     }
-                                    if (result?.messageType == GameConstant.GAME_STATE_START) {
-                                        binding.btnThrowYut.isEnabled = true
+                                    if (result?.messageType == GameConstant.GAME_STATE_START){
+                                        binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
                                         val name = result.message // message에 [1P,2P] 이름이 들어있음
+
                                         if (name.split(",")[0] == Constant.SENDER) {
                                             player1_name.text = Constant.SENDER
                                             player2_name.text = name.split(",")[1]
@@ -140,25 +137,30 @@ class GameTestActivity : AppCompatActivity() {
                                             player2_name.text = Constant.SENDER
                                         }
 
+                                        // category adult 설정
+                                        category = result.gameCategory.split(",")[0]
+                                        kcategory = result.gameCategory.split(",")[1]
+                                        adult = result.gameCategory.split(",")[2]
+                                        Log.d("category", category.toString())
+
 
                                     }
+
                                     if (result?.messageType == GameConstant.FIRST_THROW) {
                                         yuts[0] = result?.message!!.toInt()
                                         showYutResult(yuts[0])
 //                                        moveCharacter(yuts[0])
-//                                        showQuestion(result?.question)
                                     }
 
                                     if (result?.messageType == GameConstant.GAME_STATE_THROW) {
                                         yuts[0] = result?.message!!.toInt()
                                         showYutResult(yuts[0])
-//                                        showQuestion(result?.question)
 
                                     }
 
-                                    if (result?.gameState == GameConstant.TURN_CHANGE) {
-                                        binding.btnThrowYut.isEnabled =
-                                            !binding.btnThrowYut.isEnabled
+                                    if(result?.gameState == GameConstant.TURN_CHANGE) {
+                                        btnState = !btnState
+                                        binding.btnThrowYut2.isEnabled = btnState
                                     }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
@@ -179,6 +181,7 @@ class GameTestActivity : AppCompatActivity() {
                                         builder.setCancelable(false).show()
                                     }
 
+
                                 }
 
                             }
@@ -188,19 +191,18 @@ class GameTestActivity : AppCompatActivity() {
                             jsonObject.put("messageType", "WAIT")
                             jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                             jsonObject.put("sender", constant.SENDER)
-                            jsonObject.put("turn", "1P")
-                            jsonObject.put("gameCategory", "$category,$kcategory,$adult")
+                            jsonObject.put("turn", "2P")
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
                         stomp.send("/app/game/message", jsonObject.toString()).subscribe()
 
 
-                        // 윷 던지기 버튼 클릭 이벤트
+                        // 윷 던지기 버튼 클릭 이벤트 리스너
                         var throwCount = 0
-                        btn_throw_yut.setOnClickListener() {
-//                            getQuestion(category, adult)
-                            var builder = AlertDialog.Builder(this)
+                        binding.btnThrowYut2.setOnClickListener() {
+                            var num = playGame(soundPool, gamesound, yuts.sum())
+
                             // API 로 질문을 받는 함수
                             (application as MasterApplication).service.getQuestion(
                                 category!!, adult!!
@@ -233,7 +235,9 @@ class GameTestActivity : AppCompatActivity() {
                                 }
                             })
 
-                            var num = playGame(soundPool, gamesound, yuts.sum())
+
+
+
                             throwCount++
                             if(throwCount == 1) {
                                 try {
@@ -241,7 +245,7 @@ class GameTestActivity : AppCompatActivity() {
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("message", "$num")
-                                    jsonObject.put("turn", "1P")
+                                    jsonObject.put("turn", "2P")
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                 }
@@ -252,7 +256,7 @@ class GameTestActivity : AppCompatActivity() {
                                     jsonObject.put("chatRoomId", constant.CHATROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("message", "$num")
-                                    jsonObject.put("turn", "1P")
+                                    jsonObject.put("turn", "2P")
 
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -262,9 +266,6 @@ class GameTestActivity : AppCompatActivity() {
                             stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
 
                         }
-
-                        // 말 추가 버튼 클릭 이벤트
-
 
 
                     }
@@ -281,8 +282,23 @@ class GameTestActivity : AppCompatActivity() {
             }
     }
 
-    private fun moveCharacter(yutResult: Int) {
-        // 캐릭터 말 이동 로직
+    private fun showQuestionDialog(question:String) {
+        val builder = AlertDialog.Builder(this)
+        // 팝업으로 질문 보여주기
+        builder.setTitle("질문").setMessage(question)
+            .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
+            })
+            .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
+                builder.setMessage(question)
+                    .setPositiveButton(
+                        "답변",
+                        DialogInterface.OnClickListener { dialog, id ->
+
+                        })
+                    .setNegativeButton("", null).show()
+            })
+
+        builder.setCancelable(false).show()
 
     }
 
@@ -400,10 +416,10 @@ class GameTestActivity : AppCompatActivity() {
                 response: Response<Boolean>
             ) {
                 if (response.isSuccessful) {
-                   val yutBtnState = response.body() ?:false
+                    val yutBtnState = response.body() ?:false
                     println("서버로부터 받아온 버튼 상태: $yutBtnState")
 
-                    binding.btnThrowYut.isEnabled = yutBtnState
+                    binding.btnThrowYut2.isEnabled = yutBtnState
 
                 } else {
                     println("GET 요청은 성공했지만 응답은 실패함")
@@ -455,45 +471,7 @@ class GameTestActivity : AppCompatActivity() {
         return -1
     }
 
-    fun getQuestion(category: String?, isAdult: String?){
-
-        // isAdult = ON / OFF
-        var builder = AlertDialog.Builder(this)
-        // API 로 질문을 받는 함수
-        (application as MasterApplication).service.getQuestion(
-            category!!, isAdult!!
-        ).enqueue(object : Callback<ArrayList<Question>> {
-            // 성공
-            override fun onResponse(call: Call<ArrayList<Question>>, response: Response<ArrayList<Question>>) {
-                if (response.isSuccessful) {
-                    val question = response.body()
-                    val questionId = question?.get(0)!!.id
-
-                    // 팝업으로 질문 보여주기
-                    builder.setTitle("질문").setMessage(question?.get(0)?.question.toString())
-                        .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
-                        })
-                        .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                            builder.setMessage(question?.get(1)?.question.toString())
-                                .setPositiveButton(
-                                    "답변",
-                                    DialogInterface.OnClickListener { dialog, id ->
-
-                                    })
-                                .setNegativeButton("", null).show()
-                        })
-
-                    builder.setCancelable(false).show()
 
 
-                }
-            }
-
-            // 실패
-            override fun onFailure(call: Call<ArrayList<Question>>, t: Throwable) {
-                Log.e(ContentValues.TAG, "서버 오류")
-            }
-        })
-    }
 
 }

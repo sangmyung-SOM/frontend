@@ -8,18 +8,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.smu.som.dialog.GetGameRoomIdDialog
-import kotlinx.android.synthetic.main.activity_game_setting.*
 import kotlinx.android.synthetic.main.activity_online_game_setting.characterSpinner
+import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
 import kotlinx.android.synthetic.main.activity_online_game_setting.noButton
 import retrofit2.Callback
 import retrofit2.Call
@@ -33,14 +33,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 // 게임 설정 Activity
 class OnlineGameSettingActivity : AppCompatActivity() {
     private lateinit var getGameRoomIdDialog: GetGameRoomIdDialog
+    private lateinit var name: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
 
         // 배경 투명하게 만들기
-
         setContentView(R.layout.activity_online_game_setting)
-
         getGameRoomIdDialog = GetGameRoomIdDialog(this)
 
         // 기존의 게임 설정 값을 받아와서 기본값으로 설정 (game_sp)
@@ -54,6 +53,9 @@ class OnlineGameSettingActivity : AppCompatActivity() {
         characterSpinner.adapter = adapter
 
         characterSpinner.setSelection(character1)
+
+        val bundle: Bundle = Bundle()
+
         // 캐릭터 선택 (1P)
         characterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -62,7 +64,6 @@ class OnlineGameSettingActivity : AppCompatActivity() {
             override fun onNothingSelected(p0: AdapterView<*>?) { }
         }
 
-
         //라디오 버튼
         val radioGroup1 = findViewById<RadioGroup>(R.id.radioGroup) // 라디오버튼 그룹1 관계
         val radioGroup2 = findViewById<RadioGroup>(R.id.radioGroup2) // 라디오버튼 그룹2 성인질문
@@ -70,6 +71,14 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
         // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
+
+            // 이름 설정
+            name = findViewById(R.id.name_1P_OG)
+            if (name.text.toString() == "") {
+                Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val selectedRadioButtonId1 = radioGroup1.checkedRadioButtonId
             val selectedRadioButtonId2 = radioGroup2.checkedRadioButtonId
 
@@ -82,6 +91,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
                 // 게임 설정 하는 부분 (관계, 성인질문 on/off 설정값)
                 val selectedRadioButton1 = findViewById<RadioButton>(selectedRadioButtonId1) // 관계
+                val selectedRadioButton2 = findViewById<RadioButton>(selectedRadioButtonId2) // 성인질문
                 val selectedOption = selectedRadioButton1.text.toString()
 
                 val kcategory = selectedOption
@@ -91,11 +101,13 @@ class OnlineGameSettingActivity : AppCompatActivity() {
                 // 게임 설정값 저장
                 editor.putString("kcategory", kcategory)
                 editor.putString("category", category)
+                editor.putString("adult", selectedRadioButton2.text.toString())
                 editor.commit()
 
                 // 게임 설정값 intent 전송
                 intent.putExtra("category", category)
                 intent.putExtra("kcategory", kcategory)
+                intent.putExtra("adult", selectedRadioButton2.text.toString())
             }
         }
 
@@ -115,7 +127,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
         // Retrofit을 초기화합니다.
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.34.55.111:8080")
+            .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
@@ -155,7 +167,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
         //비동기 처리
         Handler(Looper.getMainLooper()).postDelayed({
             //Do something
-            getGameRoomIdDialog.getRoomId(GameRoomId)
+            getGameRoomIdDialog.getRoomId(GameRoomId, name_1P_OG.text.toString(), intent)
         }, 500)
     }
 }
