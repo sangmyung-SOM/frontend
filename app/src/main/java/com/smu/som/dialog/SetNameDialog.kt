@@ -41,7 +41,7 @@ class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
                     return@setOnClickListener
                 }
                 bundle.putString("sender", name.text.toString())
-                bundle.putString("chatRoomId", roomId)
+                bundle.putString("gameRoomId", roomId)
 
                 // 가나-게임방으로 이동하게 수정함
                 val intent = Intent(context, GameTestActivity2::class.java)

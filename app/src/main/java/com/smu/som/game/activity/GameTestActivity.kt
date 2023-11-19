@@ -1,15 +1,21 @@
 package com.smu.som.game.activity
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.SoundPool
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,11 +53,17 @@ import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
+import com.smu.som.dialog.AnswerDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_chat.message
 import kotlinx.android.synthetic.main.activity_game.start
 import kotlinx.android.synthetic.main.activity_game.yut
+import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
+import kotlinx.android.synthetic.main.dialog_set_name.tv_title
+import kotlinx.android.synthetic.main.dialog_set_name.view.btn_enter
+import kotlinx.android.synthetic.main.dialog_set_name.view.et_name
+import kotlinx.android.synthetic.main.dialog_set_name.view.tv_title
 import kotlin.properties.Delegates
 
 class GameTestActivity : AppCompatActivity() {
@@ -63,10 +75,11 @@ class GameTestActivity : AppCompatActivity() {
     lateinit var stompConnection: Disposable
     lateinit var topic: Disposable
     private lateinit var gametopic: Disposable
+
     private var btnState : Boolean = true
 
+    val constant: GameConstant = GameConstant
 
-    val constant: Constant = Constant
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,17 +98,16 @@ class GameTestActivity : AppCompatActivity() {
         val adult = bundle?.getString("adult")          // 성인 여부
 
         if (bundle != null) {
-            constant.set(bundle.getString("sender")!!, bundle.getString("chatRoomId")!!)
+            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
         }
 
         // 1P 이름 설정
-        player1_name.text = Constant.SENDER
+        player1_name.text = constant.SENDER
 
         var yuts = IntArray(6, { 0 })                        // 윷 결과 저장 리스트
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
         val gamesound = IntArray(8, { 0 })
 
-        val gameConstant: GameConstant = GameConstant
 
         //1. STOMP init
         // url: ws://[도메인]/[엔드포인트]/ws
@@ -119,25 +131,25 @@ class GameTestActivity : AppCompatActivity() {
                     Event.Type.OPENED -> {
 
                         // subscribe 채널구독
-                        gametopic = stomp.join("/topic/game/room/" + constant.CHATROOM_ID)
+                        gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
                             .subscribe { stompMessage ->
                                 val result = Klaxon()
                                     .parse<Game>(stompMessage)
                                 runOnUiThread {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut.isEnabled =
-                                            true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
-                                        if (name.split(",")[0] == Constant.SENDER) {
-                                            player1_name.text = Constant.SENDER
+
+                                        if (name.split(",")[0] == constant.SENDER) {
+                                            player1_name.text = constant.SENDER
                                             player2_name.text = name.split(",")[1]
                                         } else {
                                             player1_name.text = name.split(",")[1]
-                                            player2_name.text = Constant.SENDER
+                                            player2_name.text = constant.SENDER
                                         }
 
 
@@ -154,39 +166,62 @@ class GameTestActivity : AppCompatActivity() {
                                         showYutResult(yuts[0])
 //                                        showQuestion(result?.question)
 
+
+
                                     }
 
-                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
-                                        binding.btnThrowYut.isEnabled =
-                                            !binding.btnThrowYut.isEnabled
-                                    }
+//                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
+//                                        binding.btnThrowYut.isEnabled =
+//                                            !binding.btnThrowYut.isEnabled
+//                                    }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
-                                        val builder = AlertDialog.Builder(this)
-                                        builder.setTitle("질문").setMessage(result?.questionMessage.toString())
-                                            .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
-                                            })
-                                            .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                                                builder.setMessage(result?.questionMessage.toString())
-                                                    .setPositiveButton(
-                                                        "답변",
-                                                        DialogInterface.OnClickListener { dialog, id ->
+                                        if(!btnState)
+                                            showQuestion(result.questionMessage)
 
-                                                        })
-                                                    .setNegativeButton("", null).show()
-                                            })
 
-                                        builder.setCancelable(false).show()
                                     }
+                                    if(result?.messageType == GameConstant.ANSWER) {
+                                        // 답변하는 UI
+
+                                    }
+
+//                                    if(result?.messageType == GameConstant.ANSWER_RESULT) {
+//                                        // 답변 결과
+//                                        val builder = AlertDialog.Builder(this)
+//                                        builder.setTitle("답변").setMessage(result?.answerMessage.toString())
+//                                            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+//                                            })
+//
+//                                        builder.setCancelable(false).show()
+//                                    }
+
 
                                 }
 
                             }
 
+                        topic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game>(stompMessage)
+                            runOnUiThread {
+                                if(result?.messageType == GameConstant.ANSWER_RESULT) {
+                                    // 답변 결과
+                                    val builder = AlertDialog.Builder(this)
+                                    builder.setTitle("답변").setMessage(result?.answerMessage.toString())
+                                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+                                        })
+
+                                    builder.setCancelable(false).show()
+                                }
+                            }
+
+                        }
+
                         // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
-                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                             jsonObject.put("sender", constant.SENDER)
                             jsonObject.put("turn", "1P")
                             jsonObject.put("gameCategory", "$category,$kcategory,$adult")
@@ -199,57 +234,22 @@ class GameTestActivity : AppCompatActivity() {
                         // 윷 던지기 버튼 클릭 이벤트
                         var throwCount = 0
                         btn_throw_yut.setOnClickListener() {
-//                            getQuestion(category, adult)
-                            var builder = AlertDialog.Builder(this)
-                            // API 로 질문을 받는 함수
-                            (application as MasterApplication).service.getQuestion(
-                                category!!, adult!!
-                            ).enqueue(object : Callback<ArrayList<Question>> {
-                                // 성공
-                                override fun onResponse(call: Call<ArrayList<Question>>, response: Response<ArrayList<Question>>) {
-                                    if (response.isSuccessful) {
-                                        val question = response.body()
-                                        val questionId = question?.get(0)!!.id
-
-                                        try {
-
-                                            jsonObject.put("messageType", "QUESTION")
-                                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
-                                            jsonObject.put("sender", constant.SENDER)
-                                            jsonObject.put("questionMessage", question?.get(0)?.question.toString())
-                                        } catch (e: JSONException) {
-                                            e.printStackTrace()
-                                        }
-
-                                        stomp.send("/app/game/question", jsonObject.toString()).subscribe()
-
-
-                                    }
-                                }
-
-                                // 실패
-                                override fun onFailure(call: Call<ArrayList<Question>>, t: Throwable) {
-                                    Log.e(ContentValues.TAG, "서버 오류")
-                                }
-                            })
-
                             var num = playGame(soundPool, gamesound, yuts.sum())
                             throwCount++
-                            if(throwCount == 1) {
+                            if (throwCount == 1) {
                                 try {
                                     jsonObject.put("messageType", "FIRST_THROW")
-                                    jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "1P")
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                 }
-                            }
-                            else {
+                            } else {
                                 try {
                                     jsonObject.put("messageType", "THROW")
-                                    jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "1P")
@@ -260,6 +260,83 @@ class GameTestActivity : AppCompatActivity() {
                             }
 
                             stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
+
+                            if (num != 4 && num != 5) {
+
+                                // API 로 질문을 받는 함수
+                                (application as MasterApplication).service.getQuestion(
+                                    category!!, adult!!
+                                ).enqueue(object : Callback<ArrayList<Question>> {
+                                    // 성공
+                                    override fun onResponse(
+                                        call: Call<ArrayList<Question>>,
+                                        response: Response<ArrayList<Question>>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            val question = response.body()
+                                            val questionId = question?.get(0)!!.id
+
+                                            Handler(Looper.getMainLooper()).postDelayed({
+
+                                                jsonObject.put("messageType", "QUESTION")
+                                                jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                                                jsonObject.put("sender", constant.SENDER)
+                                                jsonObject.put(
+                                                    "questionMessage",
+                                                    question[0].question.toString()
+                                                )
+
+                                                stomp.send("/app/game/question", jsonObject.toString())
+                                                    .subscribe()
+
+                                                val answerDialog = AnswerDialog(
+                                                    this@GameTestActivity,
+                                                    question[0].question.toString()
+                                                )
+                                                answerDialog.show()
+                                                answerDialog.tv_title.text =
+                                                    question[0].question.toString()
+                                                var answer =
+                                                    answerDialog.findViewById<EditText>(R.id.et_name)
+                                                answerDialog.btn_enter.setOnClickListener {
+                                                    if (answer != null) {
+                                                        // 답변을 입력하지 않고 입장하기 버튼을 눌렀을 때
+                                                        if (answer.text.toString() == "") {
+                                                            Toast.makeText(this@GameTestActivity, "답변을 입력해 주세요.", Toast.LENGTH_SHORT).show()
+                                                            return@setOnClickListener
+                                                        }
+                                                        try {
+                                                            jsonObject.put("messageType", "ANSWER")
+                                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID
+                                                            )
+                                                            jsonObject.put("sender", constant.SENDER)
+                                                            jsonObject.put("questionMessage", question[0].question.toString())
+                                                            jsonObject.put("answerMessage", answer.text.toString())
+                                                        } catch (e: JSONException) {
+                                                            e.printStackTrace()
+                                                        }
+
+                                                        stomp.send("/app/game/answer", jsonObject.toString()).subscribe()
+                                                        answerDialog.dismiss()
+                                                    }
+                                                }
+
+                                            }, 1000)
+
+
+
+                                        }
+                                    }
+
+                                    // 실패
+                                    override fun onFailure(
+                                        call: Call<ArrayList<Question>>,
+                                        t: Throwable
+                                    ) {
+                                        Log.e(ContentValues.TAG, "서버 오류")
+                                    }
+                                })
+                        } // if (num != 4 || num != 5) 끝
 
                         }
 
@@ -279,6 +356,18 @@ class GameTestActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    private fun showQuestion(question : String) {
+
+        // 질문창
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("질문").setMessage(question)
+            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+            })
+
+
+        builder.setCancelable(false).show()
     }
 
     private fun moveCharacter(yutResult: Int) {
@@ -375,49 +464,6 @@ class GameTestActivity : AppCompatActivity() {
 
     }
 
-
-    // get 요청으로 turn 여부를 받아옴 true/false
-    private fun getBtnState() {
-
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
-
-        // Retrofit을 초기화합니다.
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-
-        // GameApi 서비스를 생성합니다.
-        val gameApi = retrofit.create(GameApi::class.java)
-
-        // GET 요청을 보냅니다.
-        val call = gameApi.getTurn()
-        call.enqueue(object : Callback<Boolean> {
-            override fun onResponse(
-                call: Call<Boolean>,
-                response: Response<Boolean>
-            ) {
-                if (response.isSuccessful) {
-                   val yutBtnState = response.body() ?:false
-                    println("서버로부터 받아온 버튼 상태: $yutBtnState")
-
-                    binding.btnThrowYut.isEnabled = yutBtnState
-
-                } else {
-                    println("GET 요청은 성공했지만 응답은 실패함")
-                }
-            }
-
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                println("GET 요청이 실패함: ${t.localizedMessage}")
-            }
-        })
-
-    }
-
-
     // 채팅방 입장 버튼 클릭 이벤트
     private fun moveChatDialog(bundle: Bundle?) {
         val intent = Intent(this, GameChatActivity::class.java)
@@ -428,14 +474,7 @@ class GameTestActivity : AppCompatActivity() {
     private fun playGame(soundPool: SoundPool, gamesound: IntArray, sum: Int): Int {
         val yuts = arrayOf("빽도", "도", "개", "걸", "윷", "모")
         var num = percentage(sum)       // 윷 결과
-//        result.setBackgroundResource(resources.getIdentifier("result_$num", "drawable", packageName))
-//
-//        // 윷 결과 애니메이션
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            soundPool.play(gamesound[num], 1.0f, 1.0f, 0, 0, 1.0f)
-//            result_text.setText(yuts[num])
-//            result.setBackgroundResource(resources.getIdentifier("yut_$num", "drawable", packageName))
-//        }, 1000)
+
         return num
     }
 
@@ -453,47 +492,6 @@ class GameTestActivity : AppCompatActivity() {
             num -= item
         }
         return -1
-    }
-
-    fun getQuestion(category: String?, isAdult: String?){
-
-        // isAdult = ON / OFF
-        var builder = AlertDialog.Builder(this)
-        // API 로 질문을 받는 함수
-        (application as MasterApplication).service.getQuestion(
-            category!!, isAdult!!
-        ).enqueue(object : Callback<ArrayList<Question>> {
-            // 성공
-            override fun onResponse(call: Call<ArrayList<Question>>, response: Response<ArrayList<Question>>) {
-                if (response.isSuccessful) {
-                    val question = response.body()
-                    val questionId = question?.get(0)!!.id
-
-                    // 팝업으로 질문 보여주기
-                    builder.setTitle("질문").setMessage(question?.get(0)?.question.toString())
-                        .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
-                        })
-                        .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                            builder.setMessage(question?.get(1)?.question.toString())
-                                .setPositiveButton(
-                                    "답변",
-                                    DialogInterface.OnClickListener { dialog, id ->
-
-                                    })
-                                .setNegativeButton("", null).show()
-                        })
-
-                    builder.setCancelable(false).show()
-
-
-                }
-            }
-
-            // 실패
-            override fun onFailure(call: Call<ArrayList<Question>>, t: Throwable) {
-                Log.e(ContentValues.TAG, "서버 오류")
-            }
-        })
     }
 
 }

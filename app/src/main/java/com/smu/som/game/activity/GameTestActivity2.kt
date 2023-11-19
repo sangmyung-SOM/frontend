@@ -58,6 +58,8 @@ class GameTestActivity2 : AppCompatActivity()  {
     lateinit var topic: Disposable
     private lateinit var gametopic: Disposable
     private var btnState : Boolean = false
+    val constant: GameConstant = GameConstant
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +71,6 @@ class GameTestActivity2 : AppCompatActivity()  {
             moveChatDialog(intent.getBundleExtra("myBundle"))
         }
 
-
-
         val intent = getIntent()
         val bundle = intent.getBundleExtra("myBundle")
 
@@ -79,16 +79,11 @@ class GameTestActivity2 : AppCompatActivity()  {
         var adult : String? = ""
         var kcategory : String? = ""
 
-
-        val constant: Constant = Constant
         if (bundle != null) {
-            constant.set(bundle.getString("sender")!!, bundle.getString("chatRoomId")!!)
+            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
         }
 
         player2_name.text = constant.SENDER
-
-
-        val gameConstant: GameConstant = GameConstant
 
 
         var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
@@ -108,7 +103,6 @@ class GameTestActivity2 : AppCompatActivity()  {
         val stomp = StompClient(client, intervalMillis).apply { this@apply.url = url }
 
         // 2. connect
-
         stompConnection = stomp.connect()
             .subscribeOn(Schedulers.io()) // 네트워크 작업을 백그라운드 스레드에서 수행
             .observeOn(AndroidSchedulers.mainThread()) // UI 업데이트를 메인 스레드에서 수행
@@ -117,7 +111,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                     Event.Type.OPENED -> {
 
                         // subscribe 채널구독
-                        gametopic = stomp.join("/topic/game/room/" + constant.CHATROOM_ID)
+                        gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
                             .subscribe { stompMessage ->
                                 val result = Klaxon()
                                     .parse<Game>(stompMessage)
@@ -130,11 +124,11 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
 
                                         if (name.split(",")[0] == Constant.SENDER) {
-                                            player1_name.text = Constant.SENDER
+                                            player1_name.text = constant.SENDER
                                             player2_name.text = name.split(",")[1]
                                         } else {
                                             player1_name.text = name.split(",")[1]
-                                            player2_name.text = Constant.SENDER
+                                            player2_name.text = constant.SENDER
                                         }
 
                                         // category adult 설정
@@ -165,18 +159,15 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
-                                        val builder = AlertDialog.Builder(this)
-                                        builder.setTitle("질문").setMessage(result?.questionMessage.toString())
-                                            .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
-                                            })
-                                            .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                                                builder.setMessage(result?.questionMessage.toString())
-                                                    .setPositiveButton(
-                                                        "답변",
-                                                        DialogInterface.OnClickListener { dialog, id ->
+                                        if(btnState)
+                                            showQuestion(result.questionMessage)
+                                    }
 
-                                                        })
-                                                    .setNegativeButton("", null).show()
+                                    if(result?.messageType == GameConstant.ANSWER_RESULT) {
+                                        // 답변 결과
+                                        val builder = AlertDialog.Builder(this)
+                                        builder.setTitle("답변").setMessage(result?.answerMessage.toString())
+                                            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
                                             })
 
                                         builder.setCancelable(false).show()
@@ -190,7 +181,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                         // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
-                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                             jsonObject.put("sender", constant.SENDER)
                             jsonObject.put("turn", "2P")
                         } catch (e: JSONException) {
@@ -216,7 +207,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                         try {
                                             jsonObject.put("messageType", "QUESTION")
-                                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                             jsonObject.put("sender", constant.SENDER)
                                             jsonObject.put("questionMessage", question?.get(0)?.question.toString())
                                         } catch (e: JSONException) {
@@ -241,7 +232,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             if(throwCount == 1) {
                                 try {
                                     jsonObject.put("messageType", "FIRST_THROW")
-                                    jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "2P")
@@ -252,7 +243,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             else {
                                 try {
                                     jsonObject.put("messageType", "THROW")
-                                    jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                     jsonObject.put("sender", constant.SENDER)
                                     jsonObject.put("yut", "$num")
                                     jsonObject.put("turn", "2P")
@@ -284,24 +275,16 @@ class GameTestActivity2 : AppCompatActivity()  {
             }
     }
 
-    private fun showQuestionDialog(question:String) {
-        val builder = AlertDialog.Builder(this)
-        // 팝업으로 질문 보여주기
-        builder.setTitle("질문").setMessage(question)
-            .setPositiveButton("답변", DialogInterface.OnClickListener { dialog, id ->
-            })
-            .setNegativeButton("질문변경", DialogInterface.OnClickListener { dialog, id ->
-                builder.setMessage(question)
-                    .setPositiveButton(
-                        "답변",
-                        DialogInterface.OnClickListener { dialog, id ->
+    private fun showQuestion(question : String) {
 
-                        })
-                    .setNegativeButton("", null).show()
+        // 질문창
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("질문").setMessage(question)
+            .setPositiveButton("상대 플레이어 답변 중 . . .", DialogInterface.OnClickListener { dialog, id ->
             })
+
 
         builder.setCancelable(false).show()
-
     }
 
     private fun showYutResult(num: Int) {
