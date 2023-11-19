@@ -2,19 +2,16 @@ package com.smu.som.dialog
 
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import com.smu.som.Question
 import com.smu.som.R
-import com.smu.som.game.OnlineGameActivity
-import com.smu.som.game.activity.GameTestActivity2
 
-class AnswerDialog(context: Context, val question : String) : Dialog(context) {
+class AnswerDialog(context: Context, val question: ArrayList<Question>?) : Dialog(context) {
 
     val bundle: Bundle = Bundle()
 
