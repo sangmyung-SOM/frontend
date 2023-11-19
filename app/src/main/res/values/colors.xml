@@ -21,4 +21,9 @@
     <color name="dialog_edittext">#D9D0BF</color>
     <color name="dialog_btn_enter">#FBD86B</color>
     <color name="dialog_btn_cancel">#C7B7AB</color>
+
+    <color name="game_dark_brown">#37312E</color>
+    <color name="game_main_brown">#49413D</color>
+    <color name="game_light_brown">#70645F</color>
+    <color name="game_stroke">#877568</color>
 </resources>
