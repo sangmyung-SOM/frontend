@@ -28,9 +28,7 @@ import com.google.gson.GsonBuilder
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.R
-import com.smu.som.chat.Constant
 import com.smu.som.databinding.ActivityOnlineGame2Binding
-import com.smu.som.databinding.ActivityOnlineGameBinding
 import com.smu.som.dialog.AnswerDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
@@ -39,13 +37,11 @@ import com.smu.som.game.service.GameApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
-import kotlinx.android.synthetic.main.activity_online_game.player1_name
-import kotlinx.android.synthetic.main.activity_online_game.player2_name
+import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
+import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
 import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
 import kotlinx.android.synthetic.main.dialog_set_name.tv_title
-import kotlinx.android.synthetic.main.question_item_view.category
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -95,7 +91,7 @@ class GameTestActivity2 : AppCompatActivity()  {
             constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
         }
 
-        player2_name.text = constant.SENDER
+        tv_nickname_p2.text = constant.SENDER
 
 
         var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
@@ -135,12 +131,12 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
 
-                                        if (name.split(",")[1] == constant.SENDER) {
-                                            player1_name.text = name.split(",")[0]
-                                            player2_name.text = constant.SENDER
+                                        if (name.split(",")[0] == constant.SENDER) {
+                                            tv_nickname_p1.text = constant.SENDER
+                                            tv_nickname_p2.text = name.split(",")[1]
                                         } else {
-                                            player1_name.text = name.split(",")[1]
-                                            player2_name.text = constant.SENDER
+                                            tv_nickname_p1.text = name.split(",")[1]
+                                            tv_nickname_p2.text = constant.SENDER
                                         }
 
                                         // category adult 설정

@@ -33,8 +33,7 @@ import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
-import kotlinx.android.synthetic.main.activity_online_game.player1_name
-import kotlinx.android.synthetic.main.activity_online_game.player2_name
+
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -48,6 +47,8 @@ import com.smu.som.Question
 import com.smu.som.dialog.AnswerDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
+import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
 import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
 import kotlinx.android.synthetic.main.dialog_set_name.tv_title
@@ -91,7 +92,7 @@ class GameTestActivity : AppCompatActivity() {
         }
 
         // 1P 이름 설정
-        player1_name.text = constant.SENDER
+        tv_nickname_p1.text = constant.SENDER
 
         var yuts = IntArray(6, { 0 })                        // 윷 결과 저장 리스트
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
@@ -134,11 +135,11 @@ class GameTestActivity : AppCompatActivity() {
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
 
                                         if (name.split(",")[0] == constant.SENDER) {
-                                            player1_name.text = constant.SENDER
-                                            player2_name.text = name.split(",")[1]
+                                            tv_nickname_p1.text = constant.SENDER
+                                            tv_nickname_p2.text = name.split(",")[1]
                                         } else {
-                                            player1_name.text = name.split(",")[1]
-                                            player2_name.text = constant.SENDER
+                                            tv_nickname_p1.text = name.split(",")[1]
+                                            tv_nickname_p2.text = constant.SENDER
                                         }
 
 
