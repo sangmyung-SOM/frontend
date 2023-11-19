@@ -1,6 +1,5 @@
 package com.smu.som.game.activity
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,14 +10,12 @@ import android.os.Handler
 import android.os.Looper
 
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
@@ -27,16 +24,13 @@ import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
-import com.google.gson.GsonBuilder
 
 import com.smu.som.R
-import com.smu.som.chat.Constant
 
 import com.smu.som.databinding.ActivityOnlineGameBinding
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
-import com.smu.som.game.service.GameApi
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.player1_name
@@ -47,8 +41,6 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
@@ -56,15 +48,9 @@ import com.smu.som.Question
 import com.smu.som.dialog.AnswerDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_chat.message
-import kotlinx.android.synthetic.main.activity_game.start
-import kotlinx.android.synthetic.main.activity_game.yut
+import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
 import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
 import kotlinx.android.synthetic.main.dialog_set_name.tv_title
-import kotlinx.android.synthetic.main.dialog_set_name.view.btn_enter
-import kotlinx.android.synthetic.main.dialog_set_name.view.et_name
-import kotlinx.android.synthetic.main.dialog_set_name.view.tv_title
-import kotlin.properties.Delegates
 
 class GameTestActivity : AppCompatActivity() {
 
@@ -72,9 +58,12 @@ class GameTestActivity : AppCompatActivity() {
 
     var jsonObject = JSONObject()
 
-    lateinit var stompConnection: Disposable
-    lateinit var topic: Disposable
+    private lateinit var stompConnection: Disposable
+    private lateinit var topic: Disposable
     private lateinit var gametopic: Disposable
+    private lateinit var answerTopic: Disposable
+    private lateinit var questionTopic: Disposable
+    private lateinit var throwTopic: Disposable
 
     private var btnState : Boolean = true
 
@@ -157,55 +146,57 @@ class GameTestActivity : AppCompatActivity() {
                                     if (result?.messageType == GameConstant.FIRST_THROW) {
                                         yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
-//                                        moveCharacter(yuts[0])
-//                                        showQuestion(result?.question)
+
                                     }
 
                                     if (result?.messageType == GameConstant.GAME_STATE_THROW) {
                                         yuts[0] = result?.yut!!.toInt()
                                         showYutResult(yuts[0])
-//                                        showQuestion(result?.question)
 
 
 
                                     }
 
-//                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
-//                                        binding.btnThrowYut.isEnabled =
-//                                            !binding.btnThrowYut.isEnabled
-//                                    }
-
-                                    if (result?.messageType == GameConstant.QUESTION) {
-                                        if(!btnState)
-                                            showQuestion(result.questionMessage)
-
-
+                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
+                                        binding.btnThrowYut.isEnabled =
+                                            !binding.btnThrowYut.isEnabled
                                     }
+
+
                                     if(result?.messageType == GameConstant.ANSWER) {
                                         // 답변하는 UI
 
                                     }
 
-//                                    if(result?.messageType == GameConstant.ANSWER_RESULT) {
-//                                        // 답변 결과
-//                                        val builder = AlertDialog.Builder(this)
-//                                        builder.setTitle("답변").setMessage(result?.answerMessage.toString())
-//                                            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-//                                            })
-//
-//                                        builder.setCancelable(false).show()
-//                                    }
 
 
                                 }
 
                             }
-
-                        topic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                        throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                if(result?.messageType == GameConstant.ANSWER_RESULT) {
+                                    yuts[0] = result?.yut!!.toInt()
+                                    showYutResult(yuts[0])
+                            }
+
+                        }
+
+                        questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game>(stompMessage)
+                            runOnUiThread {
+                                    if(!btnState)
+                                        result?.questionMessage?.let { it1 -> showQuestion(it1) }
+                            }
+
+                        }
+
+                        answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game>(stompMessage)
+                            runOnUiThread {
                                     // 답변 결과
                                     val builder = AlertDialog.Builder(this)
                                     builder.setTitle("답변").setMessage(result?.answerMessage.toString())
@@ -213,10 +204,11 @@ class GameTestActivity : AppCompatActivity() {
                                         })
 
                                     builder.setCancelable(false).show()
-                                }
                             }
 
                         }
+
+
 
                         // 처음 입장
                         try {
@@ -276,8 +268,6 @@ class GameTestActivity : AppCompatActivity() {
                                             val question = response.body()
                                             val questionId = question?.get(0)!!.id
 
-                                            Handler(Looper.getMainLooper()).postDelayed({
-
                                                 jsonObject.put("messageType", "QUESTION")
                                                 jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
                                                 jsonObject.put("sender", constant.SENDER)
@@ -289,15 +279,28 @@ class GameTestActivity : AppCompatActivity() {
                                                 stomp.send("/app/game/question", jsonObject.toString())
                                                     .subscribe()
 
-                                                val answerDialog = AnswerDialog(
-                                                    this@GameTestActivity,
-                                                    question[0].question.toString()
-                                                )
+                                            // git 모션 끝나면 질문 다이얼로그 띄우기
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                val answerDialog = AnswerDialog(this@GameTestActivity, question)
                                                 answerDialog.show()
-                                                answerDialog.tv_title.text =
-                                                    question[0].question.toString()
-                                                var answer =
-                                                    answerDialog.findViewById<EditText>(R.id.et_name)
+                                                answerDialog.tv_title.text = question[0].question.toString()
+                                                var answer = answerDialog.findViewById<EditText>(R.id.et_name)
+
+                                                answerDialog.btn_cancel.setOnClickListener {
+                                                    answerDialog.tv_title.text = question[1].question.toString()
+
+                                                    jsonObject.put("messageType", "QUESTION")
+                                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                                                    jsonObject.put("sender", constant.SENDER)
+                                                    jsonObject.put(
+                                                        "questionMessage",
+                                                        question[1].question.toString()
+                                                    )
+
+                                                    stomp.send("/app/game/question", jsonObject.toString())
+                                                        .subscribe()
+                                                }
+
                                                 answerDialog.btn_enter.setOnClickListener {
                                                     if (answer != null) {
                                                         // 답변을 입력하지 않고 입장하기 버튼을 눌렀을 때
@@ -321,7 +324,7 @@ class GameTestActivity : AppCompatActivity() {
                                                     }
                                                 }
 
-                                            }, 1000)
+                                            }, 4000)
 
 
 
@@ -382,46 +385,34 @@ class GameTestActivity : AppCompatActivity() {
         when(num) {
             1 -> {
                 // Drawable 리소스에 있는 GIF 파일을 로딩하여 표시
-                var gifResourceId = R.drawable.yut_1
+                var gifResourceId = R.drawable.yut_do
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_do
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
             2 -> {
-                var gifResourceId = R.drawable.yut_2
+                var gifResourceId = R.drawable.yut_gae
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_gae
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
             3 -> {
-                var gifResourceId = R.drawable.yut_3
+                var gifResourceId = R.drawable.yut_gul
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_gul
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
             4 -> {
-                var gifResourceId = R.drawable.yut_4
+                var gifResourceId = R.drawable.yut_yut
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_yut
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
             5 -> {
-                var gifResourceId = R.drawable.yut_5
+                var gifResourceId = R.drawable.yut_mo
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_mo
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
             0 -> {
-                var gifResourceId = R.drawable.yut_0
+                var gifResourceId = R.drawable.yut_backdo
                 gifImageView(gifResourceId)
-                var yutImage = R.drawable.yut0_backdo
-                // 뒤에 배경 이미지 설정
-                binding.gifImageView.setBackgroundResource(yutImage)
+
             }
 
         }
