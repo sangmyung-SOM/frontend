@@ -49,7 +49,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 import java.util.Stack
-import com.smu.som.dialog.AnswerDialog
+import com.smu.som.game.dialog.AnsweringDialog
 
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
@@ -289,49 +289,8 @@ class GameTestActivity : AppCompatActivity() {
 
                                             // git 모션 끝나면 질문 다이얼로그 띄우기
                                             Handler(Looper.getMainLooper()).postDelayed({
-                                                val answerDialog = AnswerDialog(this@GameTestActivity, question)
-                                                answerDialog.show()
-                                                answerDialog.tv_title.text = question[0].question.toString()
-                                                var answer = answerDialog.findViewById<EditText>(R.id.et_name)
-
-                                                answerDialog.btn_cancel.setOnClickListener {
-                                                    answerDialog.tv_title.text = question[1].question.toString()
-
-                                                    jsonObject.put("messageType", "QUESTION")
-                                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                                    jsonObject.put("sender", constant.SENDER)
-                                                    jsonObject.put(
-                                                        "questionMessage",
-                                                        question[1].question.toString()
-                                                    )
-
-                                                    stomp.send("/app/game/question", jsonObject.toString())
-                                                        .subscribe()
-                                                }
-
-                                                answerDialog.btn_enter.setOnClickListener {
-                                                    if (answer != null) {
-                                                        // 답변을 입력하지 않고 입장하기 버튼을 눌렀을 때
-                                                        if (answer.text.toString() == "") {
-                                                            Toast.makeText(this@GameTestActivity, "답변을 입력해 주세요.", Toast.LENGTH_SHORT).show()
-                                                            return@setOnClickListener
-                                                        }
-                                                        try {
-                                                            jsonObject.put("messageType", "ANSWER")
-                                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID
-                                                            )
-                                                            jsonObject.put("sender", constant.SENDER)
-                                                            jsonObject.put("questionMessage", question[0].question.toString())
-                                                            jsonObject.put("answerMessage", answer.text.toString())
-                                                        } catch (e: JSONException) {
-                                                            e.printStackTrace()
-                                                        }
-
-                                                        stomp.send("/app/game/answer", jsonObject.toString()).subscribe()
-                                                        answerDialog.dismiss()
-                                                    }
-                                                }
-
+                                                val answeringDialog = AnsweringDialog(this@GameTestActivity, question, stomp)
+                                                answeringDialog.showPopup()
                                             }, 4000)
 
                                         }
@@ -401,9 +360,12 @@ class GameTestActivity : AppCompatActivity() {
 
         // 질문창
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("질문").setMessage(question)
-            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-            })
+//        builder.setTitle("질문").setMessage(question)
+//            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
+//            })
+
+
+
 
 
         builder.setCancelable(false).show()
