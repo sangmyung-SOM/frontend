@@ -44,15 +44,8 @@ import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
-import com.smu.som.game.service.GameMalService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_chat.message
-import kotlinx.android.synthetic.main.activity_game.start
-import kotlinx.android.synthetic.main.activity_game.yut
-import java.util.LinkedList
+import com.smu.som.game.service.GameMalStompService
 import java.util.Stack
-import kotlin.properties.Delegates
 import com.smu.som.dialog.AnswerDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -76,8 +69,6 @@ class GameTestActivity : AppCompatActivity() {
     private lateinit var throwTopic: Disposable
 
     private var btnState : Boolean = true
-    val constant: Constant = Constant
-
     val constant: GameConstant = GameConstant
 
 
@@ -86,7 +77,6 @@ class GameTestActivity : AppCompatActivity() {
 
     //1. STOMP init
     // url: ws://[도메인]/[엔드포인트]/ws
-    private val url = Constant.URL
     private val intervalMillis = 5000L
     private val client = OkHttpClient.Builder()
         .readTimeout(10, TimeUnit.SECONDS)
@@ -97,10 +87,10 @@ class GameTestActivity : AppCompatActivity() {
     private val stomp = StompClient(client, intervalMillis)
 
     private val playerId : String = "1P" // 고정값
-    private var gameMalService: GameMalService = GameMalService(stomp)
+    private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
 
     init {
-        stomp.url = Constant.URL
+        stomp.url = GameConstant.URL
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +100,7 @@ class GameTestActivity : AppCompatActivity() {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken.setOnClickListener{
-            gameMalService.sendMal(playerId, yutResultStack.pop())
+            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.pop())
         }
 
         // 채팅방 입장 클릭 이벤트 리스너
@@ -145,6 +135,13 @@ class GameTestActivity : AppCompatActivity() {
             .subscribe {
                 when (it.type) {
                     Event.Type.OPENED -> {
+
+                        // 말 이동 위치 조회 구독
+                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
+                            .subscribe(
+                                { success -> Log.i("som-gana", success) },
+                                { throwable -> Log.i("som-gana", "왜 실패야ㅠㅠ") }
+                            )
 
                         // subscribe 채널구독
                         gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
