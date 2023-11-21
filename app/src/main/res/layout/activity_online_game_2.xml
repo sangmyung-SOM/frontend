@@ -5,15 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DDDFD3">
-<!--    android:background="@drawable/in_game_bg"-->
+    <!--    android:background="@drawable/in_game_bg"-->
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_game_info"
@@ -22,12 +15,13 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.16" />
 
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.22" />
+        app:layout_constraintGuide_percent="0.21" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_chat"
@@ -35,6 +29,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.29" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
 
     <!--    게임 정보 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,52 +47,141 @@
         app:layout_constraintBottom_toTopOf="@id/guideline_game_info"
         app:layout_constraintStart_toStartOf="parent">
 
-        <!--    플레이어 1의 정보 -->
+        <!--        플레이어 정보-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_player1"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@+id/layout_vs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="18dp"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="50dp"
+            android:background="@drawable/online_game_player_info"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            >
 
             <TextView
-                android:id="@+id/player1_name"
-                android:layout_width="match_parent"
+                android:id="@+id/tv_p1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:text="1P"
-                app:layout_constraintStart_toStartOf="@+id/layout_player1"
-                app:layout_constraintTop_toTopOf="@+id/layout_player1" />
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p1"/>
+
+            <TextView
+                android:id="@+id/view_profile_p1"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@color/game_dark_brown"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_nickname_p1"
+                app:layout_constraintStart_toEndOf="@+id/tv_p1"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_nickname_p1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="p1의 이름"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/view_profile_p1"
+                app:layout_constraintEnd_toStartOf="@+id/tv_nickname_p2"/>
+
+            <TextView
+                android:id="@+id/tv_nickname_p2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="p2의 이름"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_nickname_p1"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"/>
+
+            <TextView
+                android:id="@+id/view_profile_p2"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@color/game_dark_brown"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_p2"
+                app:layout_constraintStart_toEndOf="@+id/tv_nickname_p2"/>
+
+            <TextView
+                android:id="@+id/tv_p2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2P"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/profileImg_cat_p1"
+                android:layout_width="31dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"
+                app:layout_constraintHorizontal_bias="0.096"
+                app:layout_constraintStart_toEndOf="@+id/view_profile_p1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selector_profile_cat" />
+
+            <ImageView
+                android:id="@+id/profileImg_cat_p2"
+                android:layout_width="31dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/profileImg_cat_p1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selector_profile_w_cat" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--    점수판 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_vs"
-            android:layout_width="wrap_content"
+            android:id="@+id/layout_score_board"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_player1"
-            app:layout_constraintEnd_toStartOf="@+id/layout_player2"
+            android:layout_marginTop="-3dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:background="@drawable/online_game_score_board">
 
             <TextView
                 android:id="@+id/tv_player1_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
                 android:text="0"
-                android:textSize="30sp"
+                android:textSize="23sp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_score_vs"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_colon"
+                android:id="@+id/tv_score_vs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="30sp"
+                android:textSize="23sp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_player2_score"
                 app:layout_constraintStart_toEndOf="@+id/tv_player1_score"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -98,31 +189,99 @@
                 android:id="@+id/tv_player2_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
                 android:text="0"
-                android:textSize="30sp"
-                app:layout_constraintStart_toEndOf="@+id/tv_colon"
+                android:textSize="23sp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_score_vs"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--    플레이어 2-->
+        <!--      게임 설정값 정보  -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_player2"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/layout_vs"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:background="@drawable/online_game_side_info_section_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/player2_name"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/img_game_setting_category"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:text="2P"
-                android:gravity="center"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/img_game_setting_adult"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/img_game_setting_adult"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/selector_category"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/img_game_setting_category"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--      게임 버튼  -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:background="@drawable/online_game_side_info_section_right"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btn_setting"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="0dp"
+                android:scaleType="centerCrop"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/btn_setting_v2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_rule"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btn_rule"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="0dp"
+                android:scaleType="centerCrop"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/btn_rule_v2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_setting"
+                app:layout_constraintEnd_toStartOf="@+id/btn_pause"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btn_pause"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_pause_v2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_rule"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -155,6 +314,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="15dp"
+            android:background="@drawable/online_game_chat_window"
             android:text="채팅창"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -163,7 +323,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--    윷판 -->
+    <!--    윷판 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -173,8 +333,8 @@
 
 
         <ImageView
-            android:layout_width="369dp"
-            android:layout_height="372dp"
+            android:layout_width="375dp"
+            android:layout_height="374dp"
             android:layout_margin="20dp"
             android:scaleType="fitCenter"
             android:src="@drawable/game_board_ver2"
@@ -1034,7 +1194,6 @@
         </LinearLayout>
 
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--    플레이 버튼-->
@@ -1051,7 +1210,7 @@
         app:layout_constraintTop_toBottomOf="@id/guideline_footer">
 
         <ImageButton
-            android:id="@+id/btn_add_token"
+            android:id="@+id/btn_add_token_2"
             android:layout_width="150dp"
             android:layout_height="70dp"
             android:adjustViewBounds="true"
@@ -1074,10 +1233,10 @@
             android:src="@drawable/selector_yut_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_add_token"
+            app:layout_constraintStart_toEndOf="@+id/btn_add_token_2"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="SpeakableTextPresentCheck"
-            />
+            tools:ignore="SpeakableTextPresentCheck"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

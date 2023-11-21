@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--성인 ON-->
+    <item
+        android:state_enabled="true"
+        android:drawable="@drawable/adult_on"
+    />
+
+    <!--성인 OFF-->
+    <item
+        android:state_enabled="false"
+        android:drawable="@drawable/adult_off"
+    />
+
+
+</selector>

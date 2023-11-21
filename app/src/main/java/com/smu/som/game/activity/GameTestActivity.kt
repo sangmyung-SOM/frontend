@@ -118,6 +118,8 @@ class GameTestActivity : AppCompatActivity() {
         var kcategory = bundle?.getString("kcategory")   // 사용자에게 보여질 카테고리 (한글)
         val adult = bundle?.getString("adult")          // 성인 여부
 
+        settingCategory(kcategory, adult)
+
         if (bundle != null) {
             constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
         }
@@ -149,6 +151,10 @@ class GameTestActivity : AppCompatActivity() {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                                        binding.profileImgCatP1.isEnabled = true
+                                        binding.profileImgCatP2.isEnabled = false
+
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
@@ -162,34 +168,9 @@ class GameTestActivity : AppCompatActivity() {
                                             tv_nickname_p2.text = constant.SENDER
                                         }
 
+                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
 
                                     }
-                                    if (result?.messageType == GameConstant.FIRST_THROW) {
-                                        yuts[0] = result?.yut!!.toInt()
-                                        showYutResult(yuts[0])
-
-                                    }
-
-                                    if (result?.messageType == GameConstant.GAME_STATE_THROW) {
-                                        yuts[0] = result?.yut!!.toInt()
-                                        showYutResult(yuts[0])
-
-
-
-                                    }
-
-                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
-                                        binding.btnThrowYut.isEnabled =
-                                            !binding.btnThrowYut.isEnabled
-                                    }
-
-
-                                    if(result?.messageType == GameConstant.ANSWER) {
-                                        // 답변하는 UI
-
-                                    }
-
-
 
                                 }
 
@@ -200,6 +181,12 @@ class GameTestActivity : AppCompatActivity() {
                             runOnUiThread {
                                     yuts[0] = result?.yut!!.toInt()
                                     showYutResult(yuts[0])
+
+                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
+                                        btnState = !btnState
+                                        binding.btnThrowYut.isEnabled = btnState
+                                        setTurnChangeUI()
+                                    }
                             }
 
                         }
@@ -208,12 +195,13 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                    if(!btnState)
+                                    if(result?.gameTurn == "2P")
                                         result?.questionMessage?.let { it1 -> showQuestion(it1) }
                             }
 
                         }
 
+                        // 답변 결과를 받는 채널
                         answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
@@ -275,8 +263,8 @@ class GameTestActivity : AppCompatActivity() {
 
                             stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
 
+                            // 윷이나 모가 아닌 경우
                             if (num != 4 && num != 5) {
-
                                 // API 로 질문을 받는 함수
                                 (application as MasterApplication).service.getQuestion(
                                     category!!, adult!!
@@ -285,21 +273,19 @@ class GameTestActivity : AppCompatActivity() {
                                     override fun onResponse(
                                         call: Call<ArrayList<Question>>,
                                         response: Response<ArrayList<Question>>
-                                    ) {
+                                    )
+                                    {
                                         if (response.isSuccessful) {
                                             val question = response.body()
                                             val questionId = question?.get(0)!!.id
 
-                                                jsonObject.put("messageType", "QUESTION")
-                                                jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                                jsonObject.put("sender", constant.SENDER)
-                                                jsonObject.put(
-                                                    "questionMessage",
-                                                    question[0].question.toString()
-                                                )
+                                            jsonObject.put("messageType", "QUESTION")
+                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                                            jsonObject.put("sender", constant.SENDER)
+                                            jsonObject.put("questionMessage", question[0].question.toString())
 
-                                                stomp.send("/app/game/question", jsonObject.toString())
-                                                    .subscribe()
+                                            stomp.send("/app/game/question", jsonObject.toString())
+                                                .subscribe()
 
                                             // git 모션 끝나면 질문 다이얼로그 띄우기
                                             Handler(Looper.getMainLooper()).postDelayed({
@@ -348,8 +334,6 @@ class GameTestActivity : AppCompatActivity() {
 
                                             }, 4000)
 
-
-
                                         }
                                     }
 
@@ -361,8 +345,7 @@ class GameTestActivity : AppCompatActivity() {
                                         Log.e(ContentValues.TAG, "서버 오류")
                                     }
                                 })
-                        } // if (num != 4 || num != 5) 끝
-
+                            } // if (num != 4 || num != 5) 끝
                         }
 
                         // 말 추가 버튼 클릭 이벤트
@@ -383,6 +366,37 @@ class GameTestActivity : AppCompatActivity() {
             }
     }
 
+    private fun setTurnChangeUI() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (btnState) // true : 1P 차례
+             {
+                binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                binding.viewProfileP2.setBackgroundResource(R.color.game_dark_brown)
+            }
+            else {
+                binding.viewProfileP2.setBackgroundResource(R.drawable.pick)
+                binding.viewProfileP1.setBackgroundResource(R.color.game_dark_brown)
+            }
+            binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
+            binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
+        }, 4000)
+    }
+
+    // 카테고리 설정에 따른 UI 변경
+    private fun settingCategory(kcategory: String?, adult: String?) {
+
+        when(kcategory) {
+            "연인" -> setImage(R.drawable.couple)
+            "부부" -> setImage(R.drawable.married)
+            "부모자녀" -> setImage(R.drawable.parent)
+        }
+        binding.imgGameSettingAdult.isEnabled = adult == "ON"
+    }
+    private fun setImage(image: Int) {
+        binding.imgGameSettingCategory.setImageResource(image)
+    }
+
+    // 질문 다이얼로그
     private fun showQuestion(question : String) {
 
         // 질문창
