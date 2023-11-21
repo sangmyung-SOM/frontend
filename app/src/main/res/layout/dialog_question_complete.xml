@@ -15,7 +15,7 @@
         android:background="@drawable/dialog_title"
         android:fontFamily="@font/nanum_gothic_bold"
         android:gravity="center"
-        android:text="질문"
+        android:text="답변"
         android:textColor="@color/white"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,56 +31,27 @@
         android:layout_marginTop="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="질문이 들어갈 텍스트 뷰입니다."
+        android:text="질문에 대한 답변이 들어가는 텍스트 뷰입니다."
         android:textSize = "18sp"
-        android:fontFamily="@font/nanum_gothic_bold"
-        />
-
-    <TextView
-        android:id="@+id/user_wait"
-        android:layout_width="188dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="109dp"
-        android:layout_marginBottom="20dp"
-        android:fontFamily="@font/nanum_gothic"
-        android:hint="상대 플레이어 답변 입력 중..."
-        android:textColor="#DF7F3E"
         android:textStyle="bold"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/question"
-        app:layout_constraintBottom_toTopOf="@+id/changeButton"
-        app:layout_constraintStart_toEndOf="@+id/changeButton"
-        app:layout_constraintEnd_toStartOf="@+id/completeButton" />
+        android:fontFamily="@font/nanum_gothic_bold"
+        />
 
 
     <Button
-        android:id="@+id/changeButton"
-        android:layout_width="118.11dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/question_change_btn"
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/question_close_btn"
         android:fontFamily="@font/nanum_gothic_bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_chainStyle="spread"
+        android:layout_marginBottom="30dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="SpeakableTextPresentCheck"
         />
 
-    <Button
-        android:id="@+id/completeButton"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="7dp"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/answer_complete_btn"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.518"
-        app:layout_constraintStart_toEndOf="@+id/changeButton"
-        tools:ignore="SpeakableTextPresentCheck"
-        />
+
 
 
 

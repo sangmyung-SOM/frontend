@@ -10,8 +10,8 @@
 
     <TextView
         android:id="@+id/question_title"
-        android:layout_width="416dp"
-        android:layout_height="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
         android:background="@drawable/dialog_title"
         android:fontFamily="@font/nanum_gothic_bold"
         android:gravity="center"
@@ -59,7 +59,7 @@
         android:layout_width="118.11dp"
         android:layout_height="42dp"
         android:layout_marginStart="48dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/question_change_btn"
         android:fontFamily="@font/nanum_gothic_bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,7 +73,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="7dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/answer_complete_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
