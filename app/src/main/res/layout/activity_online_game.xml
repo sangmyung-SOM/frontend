@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.16" />
+        app:layout_constraintGuide_begin="124dp" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -78,7 +78,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_nickname_p1"
                 app:layout_constraintStart_toEndOf="@+id/tv_p1"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_nickname_p1"
@@ -107,10 +107,10 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@color/game_dark_brown"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_p2"
-                app:layout_constraintStart_toEndOf="@+id/tv_nickname_p2"/>
+                app:layout_constraintStart_toEndOf="@+id/tv_nickname_p2"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_p2"
@@ -121,6 +121,29 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/profileImg_cat_p1"
+                android:layout_width="31dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"
+                app:layout_constraintHorizontal_bias="0.096"
+                app:layout_constraintStart_toEndOf="@+id/view_profile_p1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selector_profile_cat" />
+
+            <ImageView
+                android:id="@+id/profileImg_cat_p2"
+                android:layout_width="31dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="15dp"
+                app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/profileImg_cat_p1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selector_profile_w_cat" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -200,7 +223,7 @@
                 android:id="@+id/img_game_setting_adult"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/adult_off"
+                android:src="@drawable/selector_category"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/img_game_setting_category"

@@ -37,6 +37,7 @@ import com.smu.som.game.service.GameApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_online_game.img_game_setting_adult
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
@@ -126,14 +127,17 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 runOnUiThread {
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut2.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                                        binding.profileImgCatP1.isEnabled = true
+                                        binding.profileImgCatP2.isEnabled = false
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START){
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
 
-                                        if (name.split(",")[0] == constant.SENDER) {
-                                            tv_nickname_p1.text = constant.SENDER
-                                            tv_nickname_p2.text = name.split(",")[1]
+                                        if (name.split(",")[1] == constant.SENDER) {
+                                            tv_nickname_p1.text = name.split(",")[0]
+                                            tv_nickname_p2.text = constant.SENDER
                                         } else {
                                             tv_nickname_p1.text = name.split(",")[1]
                                             tv_nickname_p2.text = constant.SENDER
@@ -143,17 +147,13 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         category = result.gameCategory.split(",")[0]
                                         kcategory = result.gameCategory.split(",")[1]
                                         adult = result.gameCategory.split(",")[2]
-                                        Log.d("category", category.toString())
+
+                                        settingCategory(kcategory, adult)
+
 
 
                                     }
 
-
-                                    if(result?.turnChange == GameConstant.TURN_CHANGE) {
-                                        btnState = !btnState
-                                        binding.btnThrowYut2.isEnabled = btnState
-                                        // 말버튼
-                                    }
 
                                     if (result?.messageType == GameConstant.QUESTION) {
                                         if(!btnState)
@@ -170,6 +170,13 @@ class GameTestActivity2 : AppCompatActivity()  {
                             runOnUiThread {
                                 yuts[0] = result?.yut!!.toInt()
                                 showYutResult(yuts[0])
+
+                                if(result?.turnChange == GameConstant.TURN_CHANGE) {
+                                    btnState = !btnState
+                                    binding.btnThrowYut2.isEnabled = btnState
+                                    setTurnChangeUI()
+                                    // 말버튼
+                                }
                             }
 
                         }
@@ -178,7 +185,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                if(!btnState)
+                                if(result?.gameTurn == "1P")
                                     result?.questionMessage?.let { it1 -> showQuestion(it1) }
                             }
 
@@ -353,16 +360,45 @@ class GameTestActivity2 : AppCompatActivity()  {
             }
     }
 
+    private fun setTurnChangeUI() {
+        if (!btnState) // true : 1P 차례
+        {
+            binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+            binding.viewProfileP2.setBackgroundResource(R.color.game_dark_brown)
+        }
+        else {
+            binding.viewProfileP2.setBackgroundResource(R.drawable.pick)
+            binding.viewProfileP1.setBackgroundResource(R.color.game_dark_brown)
+        }
+        binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
+        binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
+    }
+
+    private fun settingCategory(kcategory: String?, adult: String?) {
+
+        when(kcategory) {
+            "연인" -> setImage(R.drawable.couple)
+            "부부" -> setImage(R.drawable.married)
+            "부모자녀" -> setImage(R.drawable.parent)
+        }
+        binding.imgGameSettingAdult.isEnabled = adult == "ON"
+    }
+    private fun setImage(image: Int) {
+        binding.imgGameSettingCategory.setImageResource(image)
+    }
+
     private fun showQuestion(question : String) {
 
-        // 질문창
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("질문").setMessage(question)
-            .setPositiveButton("상대 플레이어 답변 중 . . .", DialogInterface.OnClickListener { dialog, id ->
-            })
+        Handler(Looper.getMainLooper()).postDelayed({
+            // 질문창
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("질문").setMessage(question)
+                .setPositiveButton("상대 플레이어 답변 중 . . .", DialogInterface.OnClickListener { dialog, id ->
+                })
 
 
-        builder.setCancelable(false).show()
+            builder.setCancelable(false).show()
+        }, 4000)
     }
 
     private fun showYutResult(num: Int) {
