@@ -47,15 +47,10 @@ import com.smu.som.Question
 import com.smu.som.game.service.GameMalService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_chat.message
-import kotlinx.android.synthetic.main.activity_game.start
-import kotlinx.android.synthetic.main.activity_game.yut
-import java.util.LinkedList
+
 import java.util.Stack
-import kotlin.properties.Delegates
 import com.smu.som.dialog.AnswerDialog
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
@@ -76,7 +71,6 @@ class GameTestActivity : AppCompatActivity() {
     private lateinit var throwTopic: Disposable
 
     private var btnState : Boolean = true
-    val constant: Constant = Constant
 
     val constant: GameConstant = GameConstant
 
@@ -86,7 +80,7 @@ class GameTestActivity : AppCompatActivity() {
 
     //1. STOMP init
     // url: ws://[도메인]/[엔드포인트]/ws
-    private val url = Constant.URL
+    private val url = constant.URL
     private val intervalMillis = 5000L
     private val client = OkHttpClient.Builder()
         .readTimeout(10, TimeUnit.SECONDS)
@@ -100,7 +94,7 @@ class GameTestActivity : AppCompatActivity() {
     private var gameMalService: GameMalService = GameMalService(stomp)
 
     init {
-        stomp.url = Constant.URL
+        stomp.url = constant.URL
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
