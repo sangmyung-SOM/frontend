@@ -59,10 +59,8 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
             intent?.getStringExtra("kcategory")?.let { it1 -> bundle.putString("kcategory", it1) }
             intent?.getStringExtra("adult")?.let { it1 -> bundle.putString("adult", it1) }
 
-
-
             bundle.putString("sender", name_1P)
-            bundle.putString("chatRoomId", gameRoomId)
+            bundle.putString("gameRoomId", gameRoomId)
             // 가나-게임방으로 이동하게 수정함
             val intent = Intent(context, GameTestActivity::class.java)
             intent.putExtra("myBundle", bundle)

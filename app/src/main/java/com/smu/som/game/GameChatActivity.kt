@@ -34,7 +34,7 @@ class GameChatActivity : AppCompatActivity() {
         val bundle = intent.getBundleExtra("myBundle")
         val constant: Constant = Constant
         if(bundle != null) {
-            constant.set(bundle.getString("sender")!!, bundle.getString("chatRoomId")!!)
+            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
         }
 
         cAdapter = ChatAdapter(this)
