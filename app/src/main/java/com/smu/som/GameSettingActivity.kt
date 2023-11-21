@@ -19,7 +19,7 @@ class GameSettingActivity : AppCompatActivity() {
         val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
         var player1 = sp.getString("name1", "1P")
         var player2 = sp.getString("name2", "2P")
-        var category = sp.getInt("category", 0)
+        var category = 0
         var character1 = sp.getInt("character1", 0)
         var character2 = sp.getInt("character2", 1)
 

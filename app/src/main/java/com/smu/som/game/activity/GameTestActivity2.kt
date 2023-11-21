@@ -59,6 +59,8 @@ class GameTestActivity2 : AppCompatActivity()  {
     private lateinit var gametopic: Disposable
     private var btnState : Boolean = false
 
+    private val playerId : String = "2P" // 고정값
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnlineGame2Binding.inflate(layoutInflater)

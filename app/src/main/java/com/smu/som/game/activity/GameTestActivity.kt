@@ -47,11 +47,14 @@ import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
+import com.smu.som.game.service.GameMalService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_chat.message
 import kotlinx.android.synthetic.main.activity_game.start
 import kotlinx.android.synthetic.main.activity_game.yut
+import java.util.LinkedList
+import java.util.Stack
 import kotlin.properties.Delegates
 
 class GameTestActivity : AppCompatActivity() {
@@ -64,14 +67,39 @@ class GameTestActivity : AppCompatActivity() {
     lateinit var topic: Disposable
     private lateinit var gametopic: Disposable
     private var btnState : Boolean = true
-
-
     val constant: Constant = Constant
+
+    private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
+
+
+    //1. STOMP init
+    // url: ws://[도메인]/[엔드포인트]/ws
+    private val url = Constant.URL
+    private val intervalMillis = 5000L
+    private val client = OkHttpClient.Builder()
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .build()
+
+    private val stomp = StompClient(client, intervalMillis)
+
+    private val playerId : String = "1P" // 고정값
+    private var gameMalService: GameMalService = GameMalService(stomp)
+
+    init {
+        stomp.url = Constant.URL
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnlineGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
+        binding.btnAddToken.setOnClickListener{
+            gameMalService.sendMal(playerId, yutResultStack.pop())
+        }
 
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
@@ -97,17 +125,6 @@ class GameTestActivity : AppCompatActivity() {
 
         val gameConstant: GameConstant = GameConstant
 
-        //1. STOMP init
-        // url: ws://[도메인]/[엔드포인트]/ws
-        val url = constant.URL
-        val intervalMillis = 5000L
-        val client = OkHttpClient.Builder()
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .build()
-
-        val stomp = StompClient(client, intervalMillis).apply { this@apply.url = url }
 
         // 2. connect
 
@@ -234,6 +251,7 @@ class GameTestActivity : AppCompatActivity() {
                             })
 
                             var num = playGame(soundPool, gamesound, yuts.sum())
+                            yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
                             throwCount++
                             if(throwCount == 1) {
                                 try {
