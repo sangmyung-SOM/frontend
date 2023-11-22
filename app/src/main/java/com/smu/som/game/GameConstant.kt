@@ -30,9 +30,10 @@ object GameConstant {
 
     val FIRST_THROW: String = "FIRST_THROW"
 
-    fun set(sender: String, gameRoomId : String){
+    fun set(sender: String, gameRoomId : String, turn : String){
         SENDER = sender
         GAMEROOM_ID = gameRoomId
+        GAME_TURN = turn
 
     }
 

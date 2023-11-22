@@ -1,7 +1,7 @@
 package com.smu.som.game.activity
 
+import android.app.AlertDialog
 import android.content.ContentValues
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.SoundPool
@@ -11,10 +11,9 @@ import android.os.Looper
 
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
@@ -46,15 +45,16 @@ import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.game.service.GameMalStompService
 import java.util.Stack
-import com.smu.som.dialog.AnswerDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
+import com.smu.som.game.dialog.AnsweringDialog
+import com.smu.som.game.dialog.GetAnswerResultDialog
+import com.smu.som.game.dialog.GetQuestionDialog
+import com.smu.som.game.response.Mal
+
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
-import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
-import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
-import kotlinx.android.synthetic.main.dialog_set_name.tv_title
 
 class GameTestActivity : AppCompatActivity() {
 
@@ -97,6 +97,11 @@ class GameTestActivity : AppCompatActivity() {
         stomp.url = constant.URL
     }
 
+    val SIZE = 30                                              // 윷판 크기
+    var arr = IntArray(SIZE, { 0 } )                           // 윷판 리스트 (각 자리의 말 수 저장)
+    var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
+    var players: ArrayList<TextView> = ArrayList()             // 윷판의 TextView 리스트 (화면)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnlineGameBinding.inflate(layoutInflater)
@@ -121,7 +126,7 @@ class GameTestActivity : AppCompatActivity() {
         settingCategory(kcategory, adult)
 
         if (bundle != null) {
-            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
+            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!, "1P")
         }
 
         // 1P 이름 설정
@@ -189,11 +194,12 @@ class GameTestActivity : AppCompatActivity() {
                                     yuts[0] = result?.yut!!.toInt()
                                     showYutResult(yuts[0])
 
-                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
-                                        btnState = !btnState
-                                        binding.btnThrowYut.isEnabled = btnState
-                                        setTurnChangeUI()
-                                    }
+                                // 로직 완성되면 주석 풀기
+//                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
+//                                        btnState = !btnState
+//                                        binding.btnThrowYut.isEnabled = btnState
+//                                        setTurnChangeUI()
+//                                    }
                             }
 
                         }
@@ -202,8 +208,15 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                    if(result?.gameTurn == "2P")
-                                        result?.questionMessage?.let { it1 -> showQuestion(it1) }
+                                    if(result?.gameTurn == "2P") {
+                                        val questionMessage = result?.questionMessage
+                                        val questionView = GetQuestionDialog(this, questionMessage)
+                                        questionView.showPopup()
+                                        // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
+                                        if (questionView.isShowing) {
+                                            questionView.dismiss()
+                                        }
+                                    }
                             }
 
                         }
@@ -213,13 +226,47 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                    // 답변 결과
-                                    val builder = AlertDialog.Builder(this)
-                                    builder.setTitle("답변").setMessage(result?.answerMessage.toString())
-                                        .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                                        })
+                                val answer = result?.answerMessage
+                                val answerResult = GetAnswerResultDialog(this, answer!!)
+                                answerResult.showPopup()
+                            }
 
-                                    builder.setCancelable(false).show()
+                        }
+
+                        // 말 추가 결과를 받는 채널 ( 말 추가 버튼을 누른 경우 )
+                        topic = stomp.join("/topic/game/mal/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Mal>(stompMessage)
+                            runOnUiThread {
+                                val yut = result?.yutResult
+                                if (yut != null) {
+                                    arr[yut.toInt()] += 1 // 말 추가
+                                }
+
+                                // 말판 UI 변경 -> arr[윷 결과] = 말 수
+                                for ((index,item) in arr.withIndex()) {
+                                    Log.d("arr", "$index : $item")
+                                    if (index!=0) {
+                                        // 말판의 TextView 찾기
+                                        var player: TextView = findViewById(getResources().getIdentifier("board" + index, "id", packageName))
+                                        var pick: LinearLayout = findViewById(getResources().getIdentifier("pick" + index, "id", packageName))
+                                        pick.setBackgroundResource(R.drawable.nopick)
+
+                                        if (item!=0) {          // 말이 있는 경우
+                                            if (item > 0)       // 1P 말
+                                                player.setBackgroundResource(resources.getIdentifier(String.format("player_%d_%d", item, 1), "drawable", packageName))
+                                            else                // 2P 말
+                                                player.setBackgroundResource(resources.getIdentifier(String.format("player_%d_%d",
+                                                    Math.abs(item), 1),"drawable", packageName))
+                                        }
+                                        else                    // 말이 없는 경우
+                                            player.setBackgroundResource(R.drawable.board)
+                                    }
+                                }
+//                                for ((index,item) in arr.withIndex())
+//                                    if (item!=0 && index!=0)
+//                                        players[index]?.setOnClickListener(null)
+
                             }
 
                         }
@@ -360,22 +407,6 @@ class GameTestActivity : AppCompatActivity() {
     }
     private fun setImage(image: Int) {
         binding.imgGameSettingCategory.setImageResource(image)
-    }
-
-    // 질문 다이얼로그
-    private fun showQuestion(question : String) {
-
-        // 질문창
-        val builder = AlertDialog.Builder(this)
-//        builder.setTitle("질문").setMessage(question)
-//            .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-//            })
-
-
-
-
-
-        builder.setCancelable(false).show()
     }
 
     private fun moveCharacter(yutResult: Int) {

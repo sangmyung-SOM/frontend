@@ -32,6 +32,8 @@ import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
+import com.smu.som.game.dialog.GetAnswerResultDialog
+import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.Game
 import com.smu.som.game.service.GameApi
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -90,7 +92,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         var kcategory : String? = ""
 
         if (bundle != null) {
-            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!)
+            constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!, "2P")
         }
 
         tv_nickname_p2.text = constant.SENDER
@@ -131,6 +133,19 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
+
+
+                                        if (result.answerMessage == "1P가 들어오지 않았습니다.") {
+                                            // 1P가 올 때까지 기다리는 다이얼로그
+                                            val builder = AlertDialog.Builder(this)
+                                            builder.setTitle("대기중")
+                                            builder.setMessage("1P가 들어오지 않았습니다. 잠시만 기다려주세요.")
+                                            builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                                                dialog.dismiss()
+                                            })
+                                            builder.show()
+                                        }
+
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START){
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
@@ -151,14 +166,6 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                         settingCategory(kcategory, adult)
 
-
-
-                                    }
-
-
-                                    if (result?.messageType == GameConstant.QUESTION) {
-                                        if(!btnState)
-                                            showQuestion(result.questionMessage)
                                     }
 
                                 }
@@ -186,8 +193,16 @@ class GameTestActivity2 : AppCompatActivity()  {
                             val result = Klaxon()
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
-                                if(result?.gameTurn == "1P")
-                                    result?.questionMessage?.let { it1 -> showQuestion(it1) }
+                                if(result?.gameTurn == "1P") {
+                                    val questionMessage = result?.questionMessage
+                                    val questionView = GetQuestionDialog(this, questionMessage)
+                                    questionView.showPopup()
+                                    // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
+                                    if (questionView.isShowing) {
+                                        questionView.dismiss()
+                                    }
+
+                                }
                             }
 
                         }
@@ -197,12 +212,9 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 .parse<Game>(stompMessage)
                             runOnUiThread {
                                 // 답변 결과
-                                val builder = AlertDialog.Builder(this)
-                                builder.setTitle("답변").setMessage(result?.answerMessage.toString())
-                                    .setPositiveButton("확인", DialogInterface.OnClickListener { dialog, id ->
-                                    })
-
-                                builder.setCancelable(false).show()
+                                val answer = result?.answerMessage
+                                val answerResult = GetAnswerResultDialog(this, answer!!)
+                                answerResult.showPopup()
                             }
 
                         }
@@ -345,20 +357,6 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
     private fun setImage(image: Int) {
         binding.imgGameSettingCategory.setImageResource(image)
-    }
-
-    private fun showQuestion(question : String) {
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            // 질문창
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("질문").setMessage(question)
-                .setPositiveButton("상대 플레이어 답변 중 . . .", DialogInterface.OnClickListener { dialog, id ->
-                })
-
-
-            builder.setCancelable(false).show()
-        }, 4000)
     }
 
     private fun showYutResult(num: Int) {

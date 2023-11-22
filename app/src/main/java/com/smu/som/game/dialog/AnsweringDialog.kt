@@ -19,7 +19,6 @@ import org.json.JSONException
 class AnsweringDialog(context: Context, private val questionList: ArrayList<Question>?, val stomp: StompClient) : Dialog(context) {
 
     val bundle: Bundle = Bundle()
-
     var request = JsonObject()
 
 
@@ -27,12 +26,12 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_question_answering)
-
+        setCanceledOnTouchOutside(false) // 다이얼로그 바깥 부분 눌러도 안닫히게
     }
 
     fun showPopup() {
         show()
-        var showQuestionTxt : TextView = findViewById(R.id.question)
+        val showQuestionTxt : TextView = findViewById(R.id.question)
 
         showQuestionTxt.text = questionList?.get(0)?.question
 
@@ -79,6 +78,7 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
                 request.addProperty("messageType", "QUESTION")
                 request.addProperty("gameRoomId", GameConstant.GAMEROOM_ID)
                 request.addProperty("sender", GameConstant.SENDER)
+                request.addProperty("turn", GameConstant.GAME_TURN)
                 request.addProperty("questionMessage", questionList?.get(1)?.question)
 
                 stomp.send("/app/game/question", request.toString())

@@ -2,8 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="291dp"
+    android:layout_width="350dp"
+    android:layout_height="290dp"
     android:orientation="vertical"
     android:layout_gravity="center"
     android:background="@drawable/dialog_container">
@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/question_title"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/dialog_title"
         android:fontFamily="@font/nanum_gothic_bold"
         android:gravity="center"
@@ -34,14 +34,17 @@
         android:text="질문이 들어갈 텍스트 뷰입니다."
         android:textSize = "17sp"
         android:fontFamily="@font/nanum_gothic_bold"
+        android:breakStrategy="balanced"
+        android:layout_gravity="center"
+        android:textAlignment="center"
         />
+
 
     <EditText
         android:id="@+id/user_answer"
         android:layout_width="328dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="109dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/dialog_edittext"
         android:fontFamily="@font/nanum_gothic"
@@ -49,10 +52,9 @@
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/question"
         app:layout_constraintBottom_toTopOf="@+id/changeButton"
-        app:layout_constraintStart_toEndOf="@+id/changeButton"
         app:layout_constraintEnd_toStartOf="@+id/completeButton"
-        app:layout_constraintVertical_bias="0.0" />
-
+        app:layout_constraintHorizontal_bias="0.552"
+        app:layout_constraintStart_toEndOf="@+id/changeButton" />
 
     <Button
         android:id="@+id/changeButton"
@@ -70,8 +72,8 @@
 
     <Button
         android:id="@+id/completeButton"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_width="118.11dp"
+        android:layout_height="42dp"
         android:layout_marginLeft="7dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/answer_complete_btn"
