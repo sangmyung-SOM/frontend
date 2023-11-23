@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -33,7 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 // 게임 설정 Activity
-class OnlineGameSettingActivity(context: Context) : Dialog(context) {
+class OnlineGameSettingDialog(context: Context) : Dialog(context) {
     private lateinit var getGameRoomIdDialog: GetGameRoomIdDialog
     private lateinit var name: EditText
     private var intent = Intent()
@@ -41,20 +40,18 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_online_game_setting)
-
         getGameRoomIdDialog = GetGameRoomIdDialog(context)
 
         // 기존의 게임 설정 값을 받아와서 기본값으로 설정 (game_sp)
 //        val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
-//        var character1 = getInt("character1", 0)
+//        var character1 = sp.getInt("character1", 0)
 
         val categoryMap = hashMapOf("연인" to "COUPLE", "부부" to "MARRIED", "부모자녀" to "PARENT")
         val characterArray = arrayOf("토끼", "병아리", "고양이", "곰")   // 캐릭터 리스트
 
-//        var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, characterArray)
-//        characterSpinner.adapter = adapter
-//
-//        characterSpinner.setSelection(character1)
+        var adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, characterArray)
+        characterSpinner.adapter = adapter
+        characterSpinner.setSelection(2) // 기본값은 고양이
 
         val bundle: Bundle = Bundle()
 
@@ -88,8 +85,6 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
             if (selectedRadioButtonId1 == -1 || selectedRadioButtonId2 == -1) {
                 Toast.makeText(context, "게임 설정을 선택해주세요.", Toast.LENGTH_SHORT).show()
             } else {
-                // 라디오 버튼을 다 선택 후 방 만들기 버튼을 누름
-                getShowGameRoomId() // 서버로부터 게임 방의 roomID를 받아 팝업을 띄움 (팝업창{GetGameRoomIdDialog}에 입장하기 버튼 있음)
 
                 // 게임 설정 하는 부분 (관계, 성인질문 on/off 설정값)
                 val selectedRadioButton1 = findViewById<RadioButton>(selectedRadioButtonId1) // 관계
@@ -98,6 +93,7 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
 
                 val kcategory = selectedOption
                 val category = categoryMap[kcategory]
+                val adult = selectedRadioButton2.text.toString()
 //                val editor = sp.edit()
 
 //                // 게임 설정값 저장
@@ -110,20 +106,24 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
 //                val intent = Intent(context, OnlineGameSettingActivity::class.java)
                 intent.putExtra("category", category)
                 intent.putExtra("kcategory", kcategory)
-                intent.putExtra("adult", selectedRadioButton2.text.toString())
+                intent.putExtra("adult", adult)
+
+                // 라디오 버튼을 다 선택 후 방 만들기 버튼을 누름
+                // 관계, 성인질문 설정값을 서버로 보내고, 서버로부터 게임 방의 roomID를 받아 팝업을 띄움 (팝업창{GetGameRoomIdDialog}에 입장하기 버튼 있음)
+                getShowGameRoomId(category, adult)
+
             }
         }
 
         // 취소 버튼 클릭
         noButton.setOnClickListener {
-//            startActivity(Intent(this, StartActivityClicked::class.java))
-//            finish()
             dismiss()
         }
 
     }
 
-    private fun getShowGameRoomId() {
+
+    private fun getShowGameRoomId(category: String?, adult: String?) {
         //post 요청
         val gson = GsonBuilder()
             .setLenient()
@@ -138,12 +138,12 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
         // GameRoomApi 서비스를 생성합니다.
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
         // POST 요청을 보낼 데이터를 생성합니다.
-//        val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString())
-        val makeGameRoom = name_1P_OG.text.toString()
+        val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString(), category, adult)
+//        val makeGameRoom = name_1P_OG.text.toString()
         var GameRoomId = ""
 
         // POST 요청을 보냅니다.
-        val call = gameRoomApi.makeGameRoom(makeGameRoom)
+        val call = gameRoomApi.makeGameRoom(makeGameRoom.name!!, makeGameRoom.category!!, makeGameRoom.adult!!)
         call.enqueue(object : Callback<GameRoomResponse> {
             override fun onResponse(
                 call: Call<GameRoomResponse>,
@@ -154,10 +154,10 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
                     val roomID = gameRoomResponse?.roomId
                     if (roomID != null) {
                         GameRoomId = roomID
-                        println("서버로부터 생성된 게임 방의 roomID: $roomID")
-                        // 이제 roomID를 사용할 수 있습니다.
+                        Log.d("POST 요청 성공", "response.body(): ${response.body()}")
+
                     } else {
-                        println("서버로부터 유효한 roomID를 수신하지 못했습니다.")
+                        println("POST 요청은 성공했지만 응답 바디가 없음")
                     }
                 } else {
                     println("POST 요청은 성공했지만 응답은 실패함")
@@ -173,8 +173,6 @@ class OnlineGameSettingActivity(context: Context) : Dialog(context) {
         //비동기 처리
         Handler(Looper.getMainLooper()).postDelayed({
             getGameRoomIdDialog.getRoomId(GameRoomId, name_1P_OG.text.toString(), intent)
-            getGameRoomIdDialog.show()
-            Log.d("getShowGameRoomId", "getShowGameRoomId: $GameRoomId")
         }, 500)
     }
 }
