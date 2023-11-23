@@ -26,4 +26,9 @@
     <color name="game_main_brown">#49413D</color>
     <color name="game_light_brown">#70645F</color>
     <color name="game_stroke">#877568</color>
+
+    <color name="game_background">#E8E8E0</color>
+    <color name="game_roomList_click">#EFD389</color>
+    <color name="game_roomList_not_click">#E4DAC9</color>
+
 </resources>
