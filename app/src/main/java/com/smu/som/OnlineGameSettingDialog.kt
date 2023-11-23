@@ -1,5 +1,6 @@
 package com.smu.som
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -18,6 +20,8 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.smu.som.dialog.GetGameRoomIdDialog
+import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.characterSpinner
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
 import kotlinx.android.synthetic.main.activity_online_game_setting.noButton
@@ -28,31 +32,29 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-
-
 // 게임 설정 Activity
-class OnlineGameSettingActivity : AppCompatActivity() {
+class OnlineGameSettingActivity(context: Context) : Dialog(context) {
     private lateinit var getGameRoomIdDialog: GetGameRoomIdDialog
     private lateinit var name: EditText
+    private var intent = Intent()
     override fun onCreate(savedInstanceState: Bundle?) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
-
-        // 배경 투명하게 만들기
         setContentView(R.layout.activity_online_game_setting)
-        getGameRoomIdDialog = GetGameRoomIdDialog(this)
+
+        getGameRoomIdDialog = GetGameRoomIdDialog(context)
 
         // 기존의 게임 설정 값을 받아와서 기본값으로 설정 (game_sp)
-        val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
-        var character1 = sp.getInt("character1", 0)
+//        val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
+//        var character1 = getInt("character1", 0)
 
         val categoryMap = hashMapOf("연인" to "COUPLE", "부부" to "MARRIED", "부모자녀" to "PARENT")
         val characterArray = arrayOf("토끼", "병아리", "고양이", "곰")   // 캐릭터 리스트
 
-        var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, characterArray)
-        characterSpinner.adapter = adapter
-
-        characterSpinner.setSelection(character1)
+//        var adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, characterArray)
+//        characterSpinner.adapter = adapter
+//
+//        characterSpinner.setSelection(character1)
 
         val bundle: Bundle = Bundle()
 
@@ -75,7 +77,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
             // 이름 설정
             name = findViewById(R.id.name_1P_OG)
             if (name.text.toString() == "") {
-                Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -84,7 +86,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
             //라디오 버튼 누르지 않고 makeRoomBtn 누르면 토스트 메시지 띄우기
             if (selectedRadioButtonId1 == -1 || selectedRadioButtonId2 == -1) {
-                Toast.makeText(this, "게임 설정을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "게임 설정을 선택해주세요.", Toast.LENGTH_SHORT).show()
             } else {
                 // 라디오 버튼을 다 선택 후 방 만들기 버튼을 누름
                 getShowGameRoomId() // 서버로부터 게임 방의 roomID를 받아 팝업을 띄움 (팝업창{GetGameRoomIdDialog}에 입장하기 버튼 있음)
@@ -96,15 +98,16 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
                 val kcategory = selectedOption
                 val category = categoryMap[kcategory]
-                val editor = sp.edit()
+//                val editor = sp.edit()
 
-                // 게임 설정값 저장
-                editor.putString("kcategory", kcategory)
-                editor.putString("category", category)
-                editor.putString("adult", selectedRadioButton2.text.toString())
-                editor.commit()
+//                // 게임 설정값 저장
+//                editor.putString("kcategory", kcategory)
+//                editor.putString("category", category)
+//                editor.putString("adult", selectedRadioButton2.text.toString())
+//                editor.commit()
 
                 // 게임 설정값 intent 전송
+//                val intent = Intent(context, OnlineGameSettingActivity::class.java)
                 intent.putExtra("category", category)
                 intent.putExtra("kcategory", kcategory)
                 intent.putExtra("adult", selectedRadioButton2.text.toString())
@@ -113,8 +116,9 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
         // 취소 버튼 클릭
         noButton.setOnClickListener {
-            startActivity(Intent(this, StartActivityClicked::class.java))
-            finish()
+//            startActivity(Intent(this, StartActivityClicked::class.java))
+//            finish()
+            dismiss()
         }
 
     }
@@ -134,7 +138,8 @@ class OnlineGameSettingActivity : AppCompatActivity() {
         // GameRoomApi 서비스를 생성합니다.
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
         // POST 요청을 보낼 데이터를 생성합니다.
-        val makeGameRoom = MakeGameRoom("name")
+//        val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString())
+        val makeGameRoom = name_1P_OG.text.toString()
         var GameRoomId = ""
 
         // POST 요청을 보냅니다.
@@ -156,6 +161,7 @@ class OnlineGameSettingActivity : AppCompatActivity() {
                     }
                 } else {
                     println("POST 요청은 성공했지만 응답은 실패함")
+                    Log.d("POST 요청 실패", "response.errorBody(): ${response.errorBody()}")
                 }
             }
 
@@ -166,8 +172,9 @@ class OnlineGameSettingActivity : AppCompatActivity() {
 
         //비동기 처리
         Handler(Looper.getMainLooper()).postDelayed({
-            //Do something
             getGameRoomIdDialog.getRoomId(GameRoomId, name_1P_OG.text.toString(), intent)
+            getGameRoomIdDialog.show()
+            Log.d("getShowGameRoomId", "getShowGameRoomId: $GameRoomId")
         }, 500)
     }
 }
