@@ -109,7 +109,7 @@ class GameTestActivity : AppCompatActivity() {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken.setOnClickListener{
-            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.pop())
+            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
         }
 
         // 채팅방 입장 클릭 이벤트 리스너
