@@ -36,6 +36,7 @@ import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.Game
 import com.smu.som.game.service.GameApi
+import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.GameMalStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -86,6 +87,7 @@ class GameTestActivity2 : AppCompatActivity()  {
     private val playerId : String = "2P" // 고정값
     private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
+    private val gameMalService: GameMalService = GameMalService()
 
     init {
         stomp.url = GameConstant.URL
