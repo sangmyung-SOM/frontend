@@ -1,5 +1,6 @@
 package com.smu.som.dialog
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -15,6 +16,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.smu.som.R
 import com.smu.som.game.activity.GameTestActivity
+import com.smu.som.gameroom.activity.GameRoomListActivity
 
 
 class GetGameRoomIdDialog(context: Context) : Dialog(context) {
@@ -30,24 +32,33 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
     }
 
     fun getRoomId(gameRoomId: String, name: String, intent: Intent) {
+        show()
         this.gameRoomId = gameRoomId
         this.name_1P = name
         this.intent = intent
 
+        Log.d("intent", intent.toString())
+        Log.d("intent", intent.getStringExtra("category").toString())
+        Log.d("intent", intent.getStringExtra("kcategory").toString())
+        Log.d("intent", intent.getStringExtra("adult").toString())
+
         showPopup()
     }
 
+    @SuppressLint("SetTextI18n")
     fun showPopup() {
-        show()
 
         val closeButton : Button = findViewById(R.id.noButton)
         val enterButton : Button = findViewById(R.id.enterButton)
         val textView : TextView = findViewById(R.id.confirmTextView)
 
         // 방코드
-        textView.setText(gameRoomId)
+//        textView.setText(gameRoomId)
 
-        setClickEventToRoomCodeCopyIcon(gameRoomId)
+        // 방 생성이 완료되었습니다
+        textView.text = "$name_1P 방 생성이 완료되었습니다."
+
+//        setClickEventToRoomCodeCopyIcon(gameRoomId)
 
         val bundle: Bundle = Bundle()
 
@@ -65,20 +76,7 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
             val intent = Intent(context, GameTestActivity::class.java)
             intent.putExtra("myBundle", bundle)
 
-
-            // 임시로 저장해둠 - start
-//            intent.putExtra("category", "COUPLE")
-//            intent.putExtra("kcategory", "연인")
-//            intent.putExtra("name1", "이솜")
-//            intent.putExtra("name2", "박슴우")
-            // 임시로 저장해둠 - end
-
             ContextCompat.startActivity(context, intent, bundle)
-
-            // 가나-팝업창 수정해야될 부분! - 이름 입력하는 팝업창임
-            // 이름 입력하는 창이 뜨고, 확인을 누르면 채팅방으로 이동
-//            val setNameDialog : SetNameDialog = SetNameDialog(context, gameRoomId)
-//            setNameDialog.show()
 
 
         }
@@ -86,6 +84,10 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         closeButton.setOnClickListener {
 //            alertDialog.dismiss()
             dismiss()
+            val intent = Intent(context, GameRoomListActivity::class.java)
+            ContextCompat.startActivity(context, intent, bundle)
+            // 화면 전환 애니메이션 제거
+            (context as GameRoomListActivity).overridePendingTransition(0, 0)
         }
     }
 
@@ -94,7 +96,7 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         val roomCodeCopyIcon : ImageView = findViewById(R.id.img_room_code_copy_icon)
 
         roomCodeCopyIcon.setOnClickListener{
-            val clipboard: ClipboardManager = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("game_room_id", gameRoomId)
             clipboard.setPrimaryClip(clip)
         }
