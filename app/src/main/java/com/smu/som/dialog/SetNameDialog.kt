@@ -11,12 +11,13 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.smu.som.R
-import com.smu.som.game.OnlineGameActivity
 import com.smu.som.game.activity.GameTestActivity2
+import com.smu.som.gameroom.model.GameRoom
 
-class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
+class SetNameDialog(context: Context, gameSettingArray: ArrayList<GameRoom>) : Dialog(context) {
 
     val bundle: Bundle = Bundle()
+    private val gameSetting = gameSettingArray[0] // 게임방 설정 정보 항상 1개만 있음
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
@@ -41,7 +42,9 @@ class SetNameDialog(context: Context, val roomId : String) : Dialog(context) {
                     return@setOnClickListener
                 }
                 bundle.putString("sender", name.text.toString())
-                bundle.putString("gameRoomId", roomId)
+                bundle.putString("gameRoomId", gameSetting.roomId)
+                bundle.putString("category", gameSetting.category)
+                bundle.putString("adult", gameSetting.adult)
 
                 // 가나-게임방으로 이동하게 수정함
                 val intent = Intent(context, GameTestActivity2::class.java)

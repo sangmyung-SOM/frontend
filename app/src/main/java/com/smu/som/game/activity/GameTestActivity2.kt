@@ -112,9 +112,10 @@ class GameTestActivity2 : AppCompatActivity()  {
         val bundle = intent.getBundleExtra("myBundle")
 
         // 게임 설정 불러오기 (bundle)
-        var category : String? = ""
-        var adult : String? = ""
-        var kcategory : String? = ""
+        var category = bundle?.getString("category") // COUPLE, MARRIED, PARENT
+        var adult = bundle?.getString("adult")
+
+        settingCategory(category, adult)
 
         if (bundle != null) {
             constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!, "2P")
@@ -179,12 +180,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             tv_nickname_p2.text = constant.SENDER
                                         }
 
-                                        // category adult 설정
-                                        category = result.gameCategory.split(",")[0]
-                                        kcategory = result.gameCategory.split(",")[1]
-                                        adult = result.gameCategory.split(",")[2]
-
-                                        settingCategory(kcategory, adult)
+//                                        // category adult 설정
+//                                        category = result.gameCategory.split(",")[0]
+//                                        kcategory = result.gameCategory.split(",")[1]
+//                                        adult = result.gameCategory.split(",")[2]
 
                                     }
 
@@ -367,12 +366,12 @@ class GameTestActivity2 : AppCompatActivity()  {
         binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
     }
 
-    private fun settingCategory(kcategory: String?, adult: String?) {
+    private fun settingCategory(category: String?, adult: String?) {
 
-        when(kcategory) {
-            "연인" -> setImage(R.drawable.couple)
-            "부부" -> setImage(R.drawable.married)
-            "부모자녀" -> setImage(R.drawable.parent)
+        when(category) {
+            "COUPLE" -> setImage(R.drawable.couple)
+            "MARRIED" -> setImage(R.drawable.married)
+            "PARENT" -> setImage(R.drawable.parent)
         }
         binding.imgGameSettingAdult.isEnabled = adult == "ON"
     }

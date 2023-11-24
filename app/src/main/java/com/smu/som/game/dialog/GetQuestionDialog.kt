@@ -25,7 +25,7 @@ class GetQuestionDialog(context: Context, val question: String) : Dialog(context
             show()
             val questionText : TextView = findViewById(R.id.question)
             questionText.text = question
-        }, 1000)
+        }, 4000)
 
         dismiss()
     }

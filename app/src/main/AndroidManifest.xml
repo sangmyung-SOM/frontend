@@ -45,7 +45,7 @@
             android:name=".StartActivity"
             android:exported="false" />
         <activity
-            android:name=".OnlineGameSettingActivity"
+            android:name=".OnlineGameSettingDialog"
             android:exported="false" />
         <activity
             android:name=".MypageActivity"
@@ -101,7 +101,11 @@
         <activity
             android:name=".game.activity.GameTestActivity2"
             android:exported="true"
-            android:theme="@style/Transparent" />
+            android:theme="@style/Transparent"/>
+        <activity
+            android:name=".gameroom.activity.GameRoomListActivity"
+            android:exported="true"
+            android:theme="@style/Transparent"/>
     </application>
 
 </manifest>

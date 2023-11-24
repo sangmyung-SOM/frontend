@@ -251,6 +251,7 @@ class GameTestActivity : AppCompatActivity() {
                         }
 
                         // 말 추가 결과를 받는 채널 ( 말 추가 버튼을 누른 경우 )
+                        /*
                         topic = stomp.join("/topic/game/mal/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Mal>(stompMessage)
@@ -287,7 +288,7 @@ class GameTestActivity : AppCompatActivity() {
                             }
 
                         }
-
+                        */
 
 
                         // 처음 입장

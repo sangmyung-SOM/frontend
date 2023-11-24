@@ -13,4 +13,4 @@ data class Mal(
     @Json(name = "yut_result")
     val yutResult: String,
 
-    )
+)
