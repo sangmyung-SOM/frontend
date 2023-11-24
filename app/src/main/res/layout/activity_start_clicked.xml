@@ -27,29 +27,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.007"></TextView>
 
-    <ImageView
-        android:id="@+id/findRoom"
-        android:layout_width="176dp"
-        android:layout_height="50dp"
-        android:src="@drawable/btn_room_find"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.831"></ImageView>
 
-    <ImageView
-        android:id="@+id/makeRoom"
-        android:layout_width="176dp"
-        android:layout_height="50dp"
-        android:src="@drawable/btn_room_create"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.913"></ImageView>
 
     <ImageView
         android:id="@+id/onlineStart"

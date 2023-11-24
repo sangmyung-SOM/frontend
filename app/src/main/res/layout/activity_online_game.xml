@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:background="#DDDFD3">
 <!--    android:background="@drawable/in_game_bg"-->
-
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_footer"
         android:layout_width="wrap_content"
@@ -45,22 +43,141 @@
         app:layout_constraintBottom_toTopOf="@id/guideline_game_info"
         app:layout_constraintStart_toStartOf="parent">
 
+        <ImageView
+            android:id="@+id/header_front"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/online_header_front"
+            />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/online_header"
+            />
+
+        <ImageView
+            android:id="@+id/header_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/online_header_right"
+            />
+        <ImageView
+            android:id="@+id/header_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/online_header_left"
+            />
+
+        <ImageView
+            android:id="@+id/check_couple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/header_left"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/online_check_couple"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/header_left"
+            app:layout_constraintStart_toEndOf="@+id/check_couple"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/online_adult_off"
+            />
+
+        <ImageView
+            android:id="@+id/pause_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/header_right"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/online_btn_pause"
+            />
+        <ImageView
+            android:id="@+id/rule_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/header_right"
+            app:layout_constraintEnd_toStartOf="@+id/pause_btn"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/online_btn_rule"
+            />
+        <ImageView
+            android:id="@+id/setting_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/header_right"
+            app:layout_constraintEnd_toStartOf="@+id/rule_btn"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/online_btn_setting"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_left"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="1p"
+            android:fontFamily="@font/nanum_gothic"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_right"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:text="2p"
+            android:fontFamily="@font/nanum_gothic"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            />
+
+
         <!--    플레이어 1의 정보 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_player1"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@+id/layout_vs"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
+
             <TextView
                 android:id="@+id/player1_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="1P"
+                android:text="1P이름입니다"
+                android:fontFamily="@font/nanum_gothic"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="@+id/layout_player1"
                 app:layout_constraintTop_toTopOf="@+id/layout_player1" />
 
@@ -71,17 +188,19 @@
             android:id="@+id/layout_vs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/layout_player1"
-            app:layout_constraintEnd_toStartOf="@+id/layout_player2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tv_player1_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="30sp"
+                android:textSize="21sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/nanum_gothic"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,7 +209,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="30sp"
+                android:textSize="21sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/nanum_gothic"
+                android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/tv_player1_score"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -99,7 +221,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="30sp"
+                android:textSize="21sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/nanum_gothic"
+                android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/tv_colon"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -119,10 +244,14 @@
                 android:id="@+id/player2_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2P"
+                android:text="2p이름입니다."
                 android:gravity="center"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/nanum_gothic"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -155,7 +284,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="15dp"
-            android:text="채팅창"
+            android:text="채팅창입니다."
+            android:background="#6C615B"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_chat"

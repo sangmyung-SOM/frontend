@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="395dp"
+    android:layout_height="299dp"
+    android:layout_gravity="center"
+    android:background="@drawable/dialog_container">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_title"
+        android:text="설정"
+        android:textSize="22sp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/box"
+        android:layout_width="349dp"
+        android:layout_height="127dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/dialog_edittext"
+        android:fontFamily="@font/nanum_gothic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+
+
+    <TextView
+        android:id="@+id/background_sound_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/box"
+        app:layout_constraintTop_toTopOf="@id/box"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:text="배경음"
+        android:fontFamily="@font/nanum_gothic"
+        android:textStyle="bold"
+        android:textColor="#534A45"
+        android:textSize="20sp"
+        />
+
+
+    <RadioGroup
+        android:id="@+id/radioGroup1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="@+id/box"
+        app:layout_constraintEnd_toEndOf="@+id/box"
+        app:layout_constraintStart_toStartOf="@+id/background_sound_text"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        >
+
+        <RadioButton
+            android:id="@+id/onRadioButton1"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="ON"
+            tools:layout_editor_absoluteX="139dp"
+            tools:layout_editor_absoluteY="294dp" />
+
+        <LinearLayout
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/offRadioButton"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="OFF"
+            app:layout_constraintEnd_toEndOf="@id/box"
+            tools:layout_editor_absoluteX="245dp"
+            tools:layout_editor_absoluteY="252dp"
+
+            />
+    </RadioGroup>
+
+
+
+    <TextView
+        android:id="@+id/effect_sound_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/box"
+        app:layout_constraintStart_toStartOf="@id/box"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="30dp"
+        android:text="효과음"
+        android:fontFamily="@font/nanum_gothic"
+        android:textStyle="bold"
+        android:textColor="#534A45"
+        android:textSize="20sp"
+        />
+
+
+    <RadioGroup
+        android:id="@+id/radioGroup2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/box"
+        app:layout_constraintEnd_toEndOf="@+id/box"
+        app:layout_constraintStart_toStartOf="@+id/effect_sound_text"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="40dp"
+        >
+
+        <RadioButton
+            android:id="@+id/onRadioButton2"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="ON"
+            tools:layout_editor_absoluteX="139dp"
+            tools:layout_editor_absoluteY="294dp" />
+
+        <LinearLayout
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <RadioButton
+            android:id="@+id/offRadioButton2"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/selector_radio_btn"
+            android:button="@null"
+            android:gravity="center"
+            android:text="OFF"
+            app:layout_constraintEnd_toEndOf="@id/box"
+            tools:layout_editor_absoluteX="245dp"
+            tools:layout_editor_absoluteY="252dp"
+
+            />
+    </RadioGroup>
+
+
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/dialog_btn_cancel"
+        android:text="취소"
+        android:textSize="16sp"
+        android:fontFamily="@font/nanum_gothic_bold"
+        app:layout_constraintEnd_toStartOf="@+id/btn_enter"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
+        android:id="@+id/btn_enter"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/dialog_btn_enter"
+        android:text="설정완료"
+        android:textSize="16sp"
+        android:fontFamily="@font/nanum_gothic_bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
