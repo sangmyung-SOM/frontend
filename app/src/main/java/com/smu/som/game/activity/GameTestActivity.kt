@@ -1,6 +1,7 @@
 package com.smu.som.game.activity
 
-import android.app.AlertDialog
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.ContentValues
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -51,10 +52,15 @@ import io.reactivex.schedulers.Schedulers
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
+import com.smu.som.game.response.GameMalResponse
 import com.smu.som.game.response.Mal
+import com.smu.som.game.service.GameMalService
 
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.timer
 
 class GameTestActivity : AppCompatActivity() {
 
@@ -92,6 +98,7 @@ class GameTestActivity : AppCompatActivity() {
 
     private val playerId : String = "1P" // 고정값
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
+    private val gameMalService:GameMalService = GameMalService()
 
     init {
         stomp.url = constant.URL
@@ -109,7 +116,14 @@ class GameTestActivity : AppCompatActivity() {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken.setOnClickListener{
-            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.pop())
+//            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            val mal : ImageView = binding.malBlack0
+            val board : View = mal.parent as View
+            val boardWidth = board.width
+            Log.i("som-gana", "yut board width=${boardWidth}")
+
+            // 임시로 말 움지이는거 테스트함
+            gameMalService.moveMal(mal, board)
         }
 
         // 채팅방 입장 클릭 이벤트 리스너
@@ -150,7 +164,10 @@ class GameTestActivity : AppCompatActivity() {
                         // 말 이동 위치 조회 구독
                         stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
                             .subscribe(
-                                { success -> Log.i("som-gana", success) },
+                                { success -> {
+                                    val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
+                                    Log.i("som-gana", response!!.malList.toString())
+                                } },
                                 { throwable -> Log.i("som-gana", "왜 실패야ㅠㅠ") }
                             )
 

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.user.UserApiClient
 import com.smu.som.gameroom.activity.GameRoomListActivity
+import com.smu.som.test.TestActivity
 import kotlinx.android.synthetic.main.activity_start.*
 
 // 시작 화면 Activity
@@ -20,8 +21,10 @@ class StartActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start)
 
         offlineStart.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, TestActivity::class.java))
             finish()
+//            startActivity(Intent(this, MainActivity::class.java))
+//            finish()
         }
 //        // start 버튼 클릭 리스너 (메인 화면으로 이동)
 //        start.setOnClickListener {

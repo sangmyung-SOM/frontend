@@ -36,6 +36,8 @@ import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.Game
 import com.smu.som.game.service.GameApi
+import com.smu.som.game.service.GameMalService
+import com.smu.som.game.service.GameMalStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -52,6 +54,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Stack
 import java.util.concurrent.TimeUnit
 
 class GameTestActivity2 : AppCompatActivity()  {
@@ -70,8 +73,25 @@ class GameTestActivity2 : AppCompatActivity()  {
     private var btnState : Boolean = false
     val constant: GameConstant = GameConstant
 
+    //1. STOMP init
+    // url: ws://[도메인]/[엔드포인트]/ws
+    val intervalMillis = 5000L
+    val client = OkHttpClient.Builder()
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .build()
+
+    val stomp = StompClient(client, intervalMillis)
 
     private val playerId : String = "2P" // 고정값
+    private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
+    private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
+    private val gameMalService: GameMalService = GameMalService()
+
+    init {
+        stomp.url = GameConstant.URL
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +101,11 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
+        }
+
+        // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
+        binding.btnAddToken2.setOnClickListener{
+            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
         }
 
         val intent = getIntent()
@@ -103,18 +128,6 @@ class GameTestActivity2 : AppCompatActivity()  {
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
         val gamesound = IntArray(8, { 0 } )
 
-        //1. STOMP init
-        // url: ws://[도메인]/[엔드포인트]/ws
-        val url = constant.URL
-        val intervalMillis = 5000L
-        val client = OkHttpClient.Builder()
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .build()
-
-        val stomp = StompClient(client, intervalMillis).apply { this@apply.url = url }
-
         // 2. connect
         stompConnection = stomp.connect()
             .subscribeOn(Schedulers.io()) // 네트워크 작업을 백그라운드 스레드에서 수행
@@ -122,6 +135,13 @@ class GameTestActivity2 : AppCompatActivity()  {
             .subscribe {
                 when (it.type) {
                     Event.Type.OPENED -> {
+
+                        // 말 이동 위치 조회 구독
+                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
+                            .subscribe(
+                                { success -> Log.i("som-gana", success) },
+                                { throwable -> Log.i("som-gana", "왜 실패야ㅠㅠ") }
+                            )
 
                         // subscribe 채널구독
                         gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
@@ -234,6 +254,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                         var throwCount = 0
                         binding.btnThrowYut2.setOnClickListener() {
                             var num = playGame(soundPool, gamesound, yuts.sum())
+                            yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
 
                             throwCount++
                             if(throwCount == 1) {

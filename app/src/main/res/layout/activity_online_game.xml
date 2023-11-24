@@ -330,16 +330,33 @@
         app:layout_constraintBottom_toTopOf="@id/guideline_footer"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
+
+
+        <RelativeLayout
             android:layout_width="375dp"
             android:layout_height="374dp"
-            android:layout_margin="20dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/game_board_ver2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <ImageView
+                android:layout_width="375dp"
+                android:layout_height="374dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/game_board_ver2"
+                />
+
+            <ImageView
+                android:id="@+id/mal_black_0"
+                android:layout_width="31dp"
+                android:layout_height="45dp"
+                app:srcCompat="@drawable/selector_profile_cat"
+                />
+
+        </RelativeLayout>
+
+
 
         <ImageView
             android:id="@+id/gifImageView"
@@ -1077,6 +1094,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1" />
+
+
                 </LinearLayout>
             </LinearLayout>
 
