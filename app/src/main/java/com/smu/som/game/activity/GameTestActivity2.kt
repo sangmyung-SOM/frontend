@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -98,6 +99,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         binding = ActivityOnlineGame2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
@@ -105,7 +107,16 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken2.setOnClickListener{
-            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            //            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            val mal : ImageView = binding.malBlack0
+            val board : View = mal.parent as View
+            val boardWidth = board.width
+            Log.i("som-gana", "yut board width=${boardWidth}")
+
+            // 임시로 말 움지이는거 테스트함
+            gameMalService.moveMal(mal, board)
+
+
         }
 
         val intent = getIntent()

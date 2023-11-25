@@ -33,24 +33,17 @@ class GameMalService {
         AnimatorSet.playTogether(x,y)
         AnimatorSet.duration = 1000
         AnimatorSet.start();
+    }
 
-//            var i=0
-//            timer.run {
-//                timer(period=10){
-//
-//                    runOnUiThread({
-//                        mal.x += wd2
-//                        mal.y += hd2
-////                        mal.translationX()
-//                        Log.i("som-gana", "moving.. x=${mal.x}")
-//                        Log.i("som-gana", "moving.. y=${mal.y}")
-//                    })
-//                    i++
-//
-//                    if(i==interval){
-//                        cancel()
-//                    }
-//                }
-//            }
+    public fun moveMal(mal : ImageView, x:Float, y:Float){
+        mal.x = 0f
+        mal.y = 0f
+
+        val x2 = ObjectAnimator.ofFloat(mal, "translationX", x.toFloat())
+        val y2 = ObjectAnimator.ofFloat(mal, "translationY", y.toFloat())
+        val AnimatorSet = AnimatorSet()
+        AnimatorSet.playTogether(x2,y2)
+        AnimatorSet.duration = 1000
+        AnimatorSet.start();
     }
 }
