@@ -1,10 +1,16 @@
 package com.smu.som.gameroom.activity
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.kakao.sdk.talk.TalkApiClient
+import com.kakao.sdk.talk.model.TalkProfile
 import com.smu.som.OnlineGameSettingDialog
 import com.smu.som.R
 import com.smu.som.dialog.SetNameDialog
@@ -18,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_gameroom_list.createBtn
 import kotlinx.android.synthetic.main.activity_gameroom_list.enterButton
 import kotlinx.android.synthetic.main.activity_gameroom_list.recycler_gameroom
 import kotlinx.android.synthetic.main.activity_gameroom_list.refresh
+import kotlinx.android.synthetic.main.activity_gameroom_list.userNameTextView
 
 class  GameRoomListActivity : AppCompatActivity() {
 
@@ -71,6 +78,8 @@ class  GameRoomListActivity : AppCompatActivity() {
 
         }
 
+        updateProfile()
+
         // 방 목록에서 방을 선택했을 때
         cAdapter.setOnItemClickListener(object : GameRoomAdapter.OnItemClickListener {
             @SuppressLint("NotifyDataSetChanged")
@@ -108,6 +117,29 @@ class  GameRoomListActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun updateProfile() {
+
+        var url : String? = ""
+        val profileImageView = findViewById<ImageView>(R.id.profile_img)
+
+        val receivedIntent = intent
+        val imageUrl = receivedIntent.getStringExtra("profileUrl")
+        val userName = receivedIntent.getStringExtra("userName")
+
+        if (userName != null) {
+            userNameTextView.text = userName
+        }
+
+        // 이미지를 표시할 ImageView 참조 가져오기
+        val imageView: ImageView = findViewById(R.id.profile)
+
+        // Glide를 사용하여 이미지 로드
+        Glide.with(this)
+            .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
+            .into(imageView)
     }
 
 
