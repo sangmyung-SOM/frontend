@@ -11,7 +11,7 @@ object GameConstant {
 
     lateinit var GAME_STATE: String
     var URL: String = "ws://10.0.2.2:8080/ws"
-
+//    var URL: String = "ws://3.37.84.188:8080/ws"
     var GAMEROOM_ID: String = "0"
     var SENDER: String = "DEFAULT"
 

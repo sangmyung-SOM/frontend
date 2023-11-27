@@ -11,7 +11,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.ViewTreeObserver.OnDrawListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -41,6 +40,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
+import com.google.gson.JsonObject
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.game.service.GameMalStompService
@@ -49,6 +49,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 import com.smu.som.game.dialog.AnsweringDialog
+import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.GameMalResponse
@@ -126,7 +127,7 @@ class GameTestActivity : AppCompatActivity() {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken.setOnClickListener{
-//            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
             // 윷판에 있는 말 보이게 하기
             malInList[0].visibility = View.VISIBLE
@@ -200,6 +201,28 @@ class GameTestActivity : AppCompatActivity() {
                                 },
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
                             )
+                        // 스코어 구독
+                        stomp.join("/topic/game/score" + GameConstant.GAMEROOM_ID).subscribe {
+                            stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game>(stompMessage)
+                            runOnUiThread {
+                                if (result?.player2Score != null)
+                                    scoreUIChange(result.player1Score, result.player2Score)
+
+                                // score가 4점이 되면  게임 종료
+                                if (result?.winner == playerId) { // 내가 이겼을 때
+                                    val gameEndDialog = GameEndDialog(this)
+                                    gameEndDialog.showPopup()
+//                                    finish()
+                                } else { // 내가 졌을 때
+                                    val gameEndDialog = GameEndDialog(this)
+                                    gameEndDialog.losePopup()
+
+                                }
+
+                            }
+                        }
 
                         // subscribe 채널구독
                         gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
@@ -280,48 +303,7 @@ class GameTestActivity : AppCompatActivity() {
 
                         }
 
-                        // 말 추가 결과를 받는 채널 ( 말 추가 버튼을 누른 경우 )
-                        /*
-                        topic = stomp.join("/topic/game/mal/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
-                            val result = Klaxon()
-                                .parse<Mal>(stompMessage)
-                            runOnUiThread {
-                                val yut = result?.yutResult
-                                if (yut != null) {
-                                    arr[yut.toInt()] += 1 // 말 추가
-                                }
-
-                                // 말판 UI 변경 -> arr[윷 결과] = 말 수
-                                for ((index,item) in arr.withIndex()) {
-                                    Log.d("arr", "$index : $item")
-                                    if (index!=0) {
-                                        // 말판의 TextView 찾기
-                                        var player: TextView = findViewById(getResources().getIdentifier("board" + index, "id", packageName))
-                                        var pick: LinearLayout = findViewById(getResources().getIdentifier("pick" + index, "id", packageName))
-                                        pick.setBackgroundResource(R.drawable.nopick)
-
-                                        if (item!=0) {          // 말이 있는 경우
-                                            if (item > 0)       // 1P 말
-                                                player.setBackgroundResource(resources.getIdentifier(String.format("player_%d_%d", item, 1), "drawable", packageName))
-                                            else                // 2P 말
-                                                player.setBackgroundResource(resources.getIdentifier(String.format("player_%d_%d",
-                                                    Math.abs(item), 1),"drawable", packageName))
-                                        }
-                                        else                    // 말이 없는 경우
-                                            player.setBackgroundResource(R.drawable.board)
-                                    }
-                                }
-//                                for ((index,item) in arr.withIndex())
-//                                    if (item!=0 && index!=0)
-//                                        players[index]?.setOnClickListener(null)
-
-                            }
-
-                        }
-                        */
-
-
-                        // 처음 입장
+                       // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
                             jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
@@ -332,6 +314,21 @@ class GameTestActivity : AppCompatActivity() {
                             e.printStackTrace()
                         }
                         stomp.send("/app/game/message", jsonObject.toString()).subscribe()
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            // test
+                            try {
+                                jsonObject.put("messageType", "SCORE")
+                                jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                                jsonObject.put("sender", constant.SENDER)
+                                jsonObject.put("player1Score", "0")
+                            } catch (e: JSONException) {
+                                e.printStackTrace()
+                            }
+
+                            stomp.send("/app/game/score", jsonObject.toString()).subscribe()
+
+                        }, 4000)
 
 
                         // 윷 던지기 버튼 클릭 이벤트
@@ -425,6 +422,28 @@ class GameTestActivity : AppCompatActivity() {
             }
     }
 
+    private fun addScore(score: Int) {
+        binding.tvPlayer1Score.text = score.toString()
+
+        Log.i("som-jsy", "addScore")
+        try {
+            JsonObject().addProperty("game_id", GameConstant.GAMEROOM_ID)
+            JsonObject().addProperty("player_id", playerId) // 1P
+            JsonObject().addProperty("1P_score", score)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        // 1P 스코어 점수 보내기
+        stomp.send("/app/game/score", jsonObject.toString()).subscribe()
+
+    }
+
+    // 2P 스코어 UI 변경
+    private fun scoreUIChange(score1P: Int, score2p: Int) {
+        binding.tvPlayer1Score.text = score1P.toString()
+        binding.tvPlayer2Score.text = score2p.toString()
+    }
+
     private fun setTurnChangeUI() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (btnState) // true : 1P 차례
@@ -453,11 +472,6 @@ class GameTestActivity : AppCompatActivity() {
     }
     private fun setImage(image: Int) {
         binding.imgGameSettingCategory.setImageResource(image)
-    }
-
-    private fun moveCharacter(yutResult: Int) {
-        // 캐릭터 말 이동 로직
-
     }
 
     private fun showYutResult(num: Int) {

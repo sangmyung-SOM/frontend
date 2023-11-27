@@ -17,6 +17,9 @@ data class Game(
     val userNameList: String,
     val yut: String,
     val mal: String,
+    val player1Score: Int,
+    val player2Score: Int,
+    val winner: String,
 
 
 
