@@ -18,7 +18,9 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
+import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.dialog.GetGameRoomIdDialog
+import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.characterSpinner
@@ -131,7 +133,7 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
 
         // Retrofit을 초기화합니다.
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")
+            .baseUrl(RetrofitCreator.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
