@@ -4,36 +4,71 @@ import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.kakao.sdk.talk.TalkApiClient
+import com.kakao.sdk.talk.model.TalkProfile
 import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.Profile
 import com.smu.som.dialog.FindGameRoomDialog
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_start.offlineStart
 import kotlinx.android.synthetic.main.activity_start_clicked.*
+import java.lang.reflect.Executable
+import java.net.URL
+import java.util.concurrent.Executors
 
 class StartActivityClicked : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_clicked)
 
-//        clickEnterGameRoomBtn()
-//        clickMakeGameRoomBtn()
+        // 카카오톡 프로필 업데이트
+        var url : String? = ""
+        val profileImageView = findViewById<ImageView>(R.id.profile)
+        var userName : String? = ""
+
+        // 카카오톡 프로필 가져오기
+        TalkApiClient.instance.profile { profile, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오톡 프로필 가져오기 실패", error)
+            }
+            else if (profile != null) {
+                Log.i(TAG, "카카오톡 프로필 가져오기 성공" +
+                        "\n닉네임: ${profile.nickname}" +
+                        "\n프로필사진: ${profile.thumbnailUrl}")
+
+                val profile: TalkProfile? = profile
+                val profileImageUrl: String? = profile?.thumbnailUrl
+                userName = profile?.nickname
+                url = profileImageUrl
+
+                if (!profileImageUrl.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(profileImageUrl)
+                        .error(R.drawable.profile)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(profileImageView)
+                } else {
+                    profileImageView.setImageResource(R.drawable.profile)
+                }
+            }
+        }
+
+
 
         offlineStart.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-//        // start 버튼 클릭 리스너 (메인 화면으로 이동)
-//        start.setOnClickListener {
-//            startActivity(Intent(this, MainActivity::class.java))
-//            finish()
-//        }
-//        clickMakeGameRoomBtn()
 
         explain_btn.setOnClickListener {
             showPopup()
@@ -43,19 +78,36 @@ class StartActivityClicked : AppCompatActivity() {
             // 이동할 액티비티 위에 있는 액티비티 모두 삭제
             // A-B-C-D 이렇게 네개의 액티비티가 스택에 쌓여있을 경우 B를 호출하게 되면 B위에 쌓여있던 C, D는 제거 되고 A와 B만 남게된다.
             val intent = Intent(this, GameRoomListActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.putExtra("profileUrl", url)
+            intent.putExtra("userName", userName)
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
             finish()
         }
     }
 
-    // 게임방 입장하기 버튼 클릭했을 때
-//    private fun clickEnterGameRoomBtn(){
-//        findRoom.setOnClickListener {
-//            val dialog : Dialog = FindGameRoomDialog(this)
-//            dialog.show()
-//        }
-//    }
+    private fun updateKaKaoProfile() {
+        var url = ""
+        val profileImageView = findViewById<ImageView>(R.id.profile)
+
+        // 카카오톡 프로필 가져오기
+        TalkApiClient.instance.profile { profile, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오톡 프로필 가져오기 실패", error)
+            }
+            else if (profile != null) {
+                Log.i(TAG, "카카오톡 프로필 가져오기 성공" +
+                        "\n닉네임: ${profile.nickname}" +
+                        "\n프로필사진: ${profile.thumbnailUrl}")
+//                url = profile.thumbnailUrl.toString()
+                url = profile.profileImageUrl.toString()
+            }
+        }
+
+        Glide.with(this).load(url).into(profileImageView)
+
+
+    }
 
     // 게임 설명을 보여주는 함수
     fun showPopup() {
