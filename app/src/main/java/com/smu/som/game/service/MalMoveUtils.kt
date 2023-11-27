@@ -19,9 +19,8 @@ class MalMoveUtils (val board : View, val mal : ImageView){
     private val gapXDiagonal: Int
     private val gapYDiagonal: Int
 
-    private val bigCircleR : Float
-
     private var coordinates: Array<Coordinate> // 좌표값
+    private val gaps : Array<Float> // 말 위치의 차이값
     private var point: Point = Point()
 
     init {
@@ -30,12 +29,12 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         malWidth = mal.width
         malHeight = mal.height
 
-        bigCircleR = boardWidth * 0.15f
-
         gapXOutline = boardWidth/5
         gapYOutline = boardHeight/5
         gapXDiagonal = boardWidth/6
         gapYDiagonal = boardHeight/6
+
+        gaps = arrayOf(0f, 0.5f, 0.5f, 0.5f, 0.5f, 1f)
 
         coordinates = Array(31, {i -> Coordinate(i.toFloat(), i.toFloat()) })
 
@@ -85,23 +84,16 @@ class MalMoveUtils (val board : View, val mal : ImageView){
 
             for( t in temp){
                 coordinates[t].x = (i * gapXDiagonal).toFloat() - (malWidth/2)
-                when(i){
-                    1 -> coordinates[t].x += (malWidth/2)
-                    5 -> coordinates[t].x -= (malWidth/2)
-                }
             }
         }
 
         // 겉에 있는 점들
         for(i in 0..5){
             val temp : List<Int> = point.sameXOutline[i]
+            val gap : Float = gaps[i]
 
             for( t in temp){
-                coordinates[t].x = (i * gapXOutline).toFloat() - (malWidth/2)
-                when(i){
-                    0 -> coordinates[t].x += (malWidth/2)
-                    5 -> coordinates[t].x -= (malWidth/2)
-                }
+                coordinates[t].x = (i * gapXOutline).toFloat() - (malWidth * gap)
             }
         }
     }
@@ -113,24 +105,16 @@ class MalMoveUtils (val board : View, val mal : ImageView){
 
             for( t in temp){
                 coordinates[t].y = (i * gapYDiagonal).toFloat() - (malHeight/2)
-                when(i){
-                    1 -> coordinates[t].y += (malHeight/2)
-                    5 -> coordinates[t].y -= (malHeight/2)
-                }
             }
         }
 
         // 겉에 있는 점들
         for(i in 0..5){
             val temp : List<Int> = point.sameYOutline[i]
+            val gap : Float = gaps[i]
 
             for( t in temp){
-                coordinates[t].y = (i * gapYOutline).toFloat() - (malHeight/2)
-
-                when(i){
-                    0 -> coordinates[t].y += (malHeight/2)
-                    5 -> coordinates[t].y -= (malHeight/2)
-                }
+                coordinates[t].y = (i * gapYOutline).toFloat() - (malHeight * gap)
             }
         }
     }

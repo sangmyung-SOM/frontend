@@ -406,31 +406,30 @@
 
             <ImageView
                 android:id="@+id/mal_black_0"
-                android:layout_width="31dp"
-                android:layout_height="45dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_1"
-                android:layout_width="31dp"
-                android:layout_height="45dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_2"
-                android:layout_width="31dp"
-                android:layout_height="45dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_3"
-                android:layout_width="31dp"
-                android:layout_height="45dp"
-                app:srcCompat="@drawable/selector_profile_cat"
-                />
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:srcCompat="@drawable/selector_profile_cat" />
 
         </RelativeLayout>
 
