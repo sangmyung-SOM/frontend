@@ -126,15 +126,15 @@ class GameTestActivity : AppCompatActivity() {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken.setOnClickListener{
-//            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
-            // 윷판에 있는 말 보이게 하기
-            malInList[0].visibility = View.VISIBLE
-            malMoveUtils.move(malInList[0], count)
-            count++
-            if(count == 28){
-                count++
-            }
+            // [가나] 말 이동 테스트 - 지우지 말아주세요
+//            malInList[0].visibility = View.VISIBLE
+//            malMoveUtils.move(malInList[0], count)
+//            count++
+//            if(count == 28){
+//                count++
+//            }
         }
 
         // 채팅방 입장 클릭 이벤트 리스너
@@ -632,6 +632,18 @@ class GameTestActivity : AppCompatActivity() {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
+        if(response.nextPosition == 0){
+            malOutList[response.malId].visibility = View.VISIBLE
+            malInList[response.malId].visibility = View.GONE
+            return
+        }
+
+        // 도착한 말인지도 확인해야함
+
+        // 다른말을 잡았는지 확인해야함
+
+        // 말 업었는지 확인해야함
+
         // 윷판 밖에 있는 말 안보이게 하기
         malOutList[response.malId].visibility = View.GONE
 
