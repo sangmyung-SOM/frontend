@@ -387,7 +387,6 @@
         app:layout_constraintStart_toStartOf="parent">
 
 
-
         <RelativeLayout
             android:layout_width="375dp"
             android:layout_height="375dp"
@@ -401,48 +400,44 @@
                 android:layout_width="375dp"
                 android:layout_height="375dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/yut_board_gana"
+                android:src="@drawable/game_board_ver2"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_0"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_1"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_2"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 app:srcCompat="@drawable/selector_profile_cat"
                 />
 
             <ImageView
                 android:id="@+id/mal_black_3"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 app:srcCompat="@drawable/selector_profile_cat" />
 
+            <ImageView
+                android:id="@+id/gifImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:scaleType="fitCenter" />
+
         </RelativeLayout>
-
-
-
-        <ImageView
-            android:id="@+id/gifImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:scaleType="fitCenter"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

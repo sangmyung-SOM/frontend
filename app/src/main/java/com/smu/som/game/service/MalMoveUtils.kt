@@ -20,12 +20,13 @@ class MalMoveUtils (val board : View, val mal : ImageView){
     private val gapYDiagonal: Int
 
     private var coordinates: Array<Coordinate> // 좌표값
-    private val gaps : Array<Float> // 말 위치의 차이값
+    private val regularsOutline : Array<Float> // 말 위치의 정규화 위한 값
+    private val regularsDiagonal : Array<Float> // 말 위치의 정규화 위한 값
     private var point: Point = Point()
 
     init {
-        boardWidth = board.width
-        boardHeight = board.height
+        boardWidth = board.width - mal.width // 윷판 이미지 구성상 mal.width를 빼야했음.
+        boardHeight = board.height - mal.height // 마찬가지. 윷판 이미지 구성이 달라진다면 mal 안빼도 됨.
         malWidth = mal.width
         malHeight = mal.height
 
@@ -34,14 +35,18 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         gapXDiagonal = boardWidth/6
         gapYDiagonal = boardHeight/6
 
-        gaps = arrayOf(0f, 0.5f, 0.5f, 0.5f, 0.5f, 1f)
+        // 윷판 이미지에 따라 값이 변경되어야하기 때문에 하드코딩 된 감이 없잖아 있음.
+        // 하드코딩 하고싶지 않다면 윷판 이미지 변경 필요.
+        // 이러면, 가변적인 윷판 크기에 대해선 대응을 못하게 됨.
+        regularsOutline = arrayOf(-0.5f, -0.3f, 0f, 0f, 0.3f, 0.5f)
+        regularsDiagonal = arrayOf(0f, -0.3f, -0.1f, 0f, 0.1f, 0.3f, 0f)
 
         coordinates = Array(31, {i -> Coordinate(i.toFloat(), i.toFloat()) })
 
         setX()
         setY()
 
-        Log.i("som-gana", "boardWidth=${board.width}")
+        Log.i("som-gana", "boardWidth=${boardWidth}")
         Log.i("som-gana", "boardHeight=${boardHeight}")
         Log.i("som-gana", "malWidth=${malWidth}")
         Log.i("som-gana", "malHeight=${malHeight}")
@@ -81,16 +86,17 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         // 대각선에 있는 점들
         for(i in 1..5){
             val temp : List<Int> = point.sameXDiagonal[i-1]
+            val gap : Float = regularsDiagonal[i]
 
             for( t in temp){
-                coordinates[t].x = (i * gapXDiagonal).toFloat() - (malWidth/2)
+                coordinates[t].x = (i * gapXDiagonal).toFloat() - (malWidth * gap)
             }
         }
 
         // 겉에 있는 점들
         for(i in 0..5){
             val temp : List<Int> = point.sameXOutline[i]
-            val gap : Float = gaps[i]
+            val gap : Float = regularsOutline[i]
 
             for( t in temp){
                 coordinates[t].x = (i * gapXOutline).toFloat() - (malWidth * gap)
@@ -102,16 +108,17 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         // 대각선에 있는 점들
         for(i in 1..5){
             val temp : List<Int> = point.sameYDiagonal[i-1]
+            val gap : Float = regularsDiagonal[i]
 
             for( t in temp){
-                coordinates[t].y = (i * gapYDiagonal).toFloat() - (malHeight/2)
+                coordinates[t].y = (i * gapYDiagonal).toFloat() - (malHeight * gap)
             }
         }
 
         // 겉에 있는 점들
         for(i in 0..5){
             val temp : List<Int> = point.sameYOutline[i]
-            val gap : Float = gaps[i]
+            val gap : Float = regularsOutline[i]
 
             for( t in temp){
                 coordinates[t].y = (i * gapYOutline).toFloat() - (malHeight * gap)
