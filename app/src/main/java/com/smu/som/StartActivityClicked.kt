@@ -85,29 +85,7 @@ class StartActivityClicked : AppCompatActivity() {
             finish()
         }
     }
-
-    private fun updateKaKaoProfile() {
-        var url = ""
-        val profileImageView = findViewById<ImageView>(R.id.profile)
-
-        // 카카오톡 프로필 가져오기
-        TalkApiClient.instance.profile { profile, error ->
-            if (error != null) {
-                Log.e(TAG, "카카오톡 프로필 가져오기 실패", error)
-            }
-            else if (profile != null) {
-                Log.i(TAG, "카카오톡 프로필 가져오기 성공" +
-                        "\n닉네임: ${profile.nickname}" +
-                        "\n프로필사진: ${profile.thumbnailUrl}")
-//                url = profile.thumbnailUrl.toString()
-                url = profile.profileImageUrl.toString()
-            }
-        }
-
-        Glide.with(this).load(url).into(profileImageView)
-
-
-    }
+    
 
     // 게임 설명을 보여주는 함수
     fun showPopup() {
