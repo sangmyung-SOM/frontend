@@ -1,6 +1,7 @@
 package com.smu.som.game.activity
 
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.SoundPool
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
@@ -40,7 +42,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
-import com.google.gson.JsonObject
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.game.service.GameMalStompService
@@ -53,8 +54,11 @@ import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.GameMalResponse
+import com.smu.som.game.response.QnAResponse
+import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.MalMoveUtils
+import com.smu.som.game.service.GameStompService
 
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
@@ -100,6 +104,9 @@ class GameTestActivity : AppCompatActivity() {
 
     var count = 1
     // 끝-가나
+
+
+    val gameStomp = GameStompService(stomp)
 
     init {
         stomp.url = constant.URL
@@ -158,11 +165,15 @@ class GameTestActivity : AppCompatActivity() {
         // 1P 이름 설정
         tv_nickname_p1.text = constant.SENDER
 
+        // 게임 설정 불러오기 (online_game_sp)
+        val sp = this.getSharedPreferences("online_game_sp", Context.MODE_PRIVATE)
+        val profileUrl = sp.getString("profileUrl", null)          // 카카오톡 프로필 사진
+
+        updateProfile(profileUrl, constant.GAME_TURN)
+
         var yuts = IntArray(6, { 0 })                        // 윷 결과 저장 리스트
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
         val gamesound = IntArray(8, { 0 })
-
-
 
         // 2. connect
 
@@ -201,46 +212,58 @@ class GameTestActivity : AppCompatActivity() {
                                 },
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
                             )
+
                         // 스코어 구독
-                        stomp.join("/topic/game/score" + GameConstant.GAMEROOM_ID).subscribe {
+                        stomp.join("/topic/game/score/" + GameConstant.GAMEROOM_ID).subscribe {
                             stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<ScoreInfo>(stompMessage)
                             runOnUiThread {
-                                if (result?.player2Score != null)
+                                if (result?.player2Score != null && result?.player1Score != null)
                                     scoreUIChange(result.player1Score, result.player2Score)
 
+                            }
+                        }
+
+                        // 게임 종료 구독
+                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/end").subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game.GameWinner>(stompMessage)
+                            runOnUiThread {
                                 // score가 4점이 되면  게임 종료
                                 if (result?.winner == playerId) { // 내가 이겼을 때
                                     val gameEndDialog = GameEndDialog(this)
                                     gameEndDialog.showPopup()
 //                                    finish()
-                                } else { // 내가 졌을 때
+                                }
+                                if (result?.loser == playerId) {
                                     val gameEndDialog = GameEndDialog(this)
                                     gameEndDialog.losePopup()
-
                                 }
-
+                                }
                             }
-                        }
+
 
                         // subscribe 채널구독
                         gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
                             .subscribe { stompMessage ->
                                 val result = Klaxon()
-                                    .parse<Game>(stompMessage)
+                                    .parse<Game.GetGameInfo>(stompMessage)
                                 runOnUiThread {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
-                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                                        binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
+
 
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
+                                        val profileUrl = result.profileURL_2P
+                                        updateProfile(profileUrl, "2P")
 
                                         if (name.split(",")[0] == constant.SENDER) {
                                             tv_nickname_p1.text = constant.SENDER
@@ -259,27 +282,24 @@ class GameTestActivity : AppCompatActivity() {
                             }
                         throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
-                                    yuts[0] = result?.yut!!.toInt()
-                                    showYutResult(yuts[0])
-
-                                // 로직 완성되면 주석 풀기
-//                                    if (result?.turnChange == GameConstant.TURN_CHANGE) {
-//                                        btnState = !btnState
-//                                        binding.btnThrowYut.isEnabled = btnState
-//                                        setTurnChangeUI()
-//                                    }
+                                yuts[0] = result?.yut!!.toInt()
+                                showYutResult(yuts[0])
+                                // 윷이나 모인 경우 한번 더
+                                if (result?.messageType == GameConstant.ONE_MORE_THROW) {
+                                    binding.btnThrowYut.isEnabled = true
+                                }
                             }
 
                         }
 
                         questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<QnAResponse.GetQuestion>(stompMessage)
                             runOnUiThread {
-                                    if(result?.gameTurn == "2P") {
-                                        val questionMessage = result?.questionMessage
+                                    if(result?.playerId == "2P") {
+                                        val questionMessage = result.question
                                         val questionView = GetQuestionDialog(this, questionMessage)
                                         questionView.showPopup()
                                         // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
@@ -294,11 +314,19 @@ class GameTestActivity : AppCompatActivity() {
                         // 답변 결과를 받는 채널
                         answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
-                                val answer = result?.answerMessage
+                                val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
+
+                                // 답변 확인 후 턴 변경
+                                // 임시 주석처리 - 테스트용
+//                                if (result?.turnChange == GameConstant.TURN_CHANGE) {
+//                                        btnState = !btnState
+//                                        binding.btnThrowYut.isEnabled = btnState
+//                                        setTurnChangeUI()
+//                                    }
                             }
 
                         }
@@ -306,30 +334,14 @@ class GameTestActivity : AppCompatActivity() {
                        // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
-                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                            jsonObject.put("room_id", constant.GAMEROOM_ID)
                             jsonObject.put("sender", constant.SENDER)
-                            jsonObject.put("turn", "1P")
-                            jsonObject.put("gameCategory", "$category,$kcategory,$adult")
+                            jsonObject.put("player_id", constant.GAME_TURN)
+                            jsonObject.put("profileURL_1P", "$profileUrl")
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
                         stomp.send("/app/game/message", jsonObject.toString()).subscribe()
-
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            // test
-                            try {
-                                jsonObject.put("messageType", "SCORE")
-                                jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                jsonObject.put("sender", constant.SENDER)
-                                jsonObject.put("player1Score", "0")
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
-                            }
-
-                            stomp.send("/app/game/score", jsonObject.toString()).subscribe()
-
-                        }, 4000)
-
 
                         // 윷 던지기 버튼 클릭 이벤트
                         var throwCount = 0
@@ -337,31 +349,14 @@ class GameTestActivity : AppCompatActivity() {
                             var num = playGame(soundPool, gamesound, yuts.sum())
                             yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
                             throwCount++
-                            if (throwCount == 1) {
-                                try {
-                                    jsonObject.put("messageType", "FIRST_THROW")
-                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                    jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("yut", "$num")
-                                    jsonObject.put("turn", "1P")
-                                } catch (e: JSONException) {
-                                    e.printStackTrace()
-                                }
-                            } else {
-                                try {
-                                    jsonObject.put("messageType", "THROW")
-                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                    jsonObject.put("sender", constant.SENDER)
-                                    jsonObject.put("yut", "$num")
-                                    jsonObject.put("turn", "1P")
 
-                                } catch (e: JSONException) {
-                                    e.printStackTrace()
-                                }
+                            if (throwCount == 1) {
+                                    gameStomp.sendThrowResult(GameConstant.FIRST_THROW, "$num")
+                            } else {
+                                gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW, "$num")
                             }
 
-                            stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
-
+                            // 질문 받아오기
                             // 윷이나 모가 아닌 경우
                             if (num != 4 && num != 5) {
                                 // API 로 질문을 받는 함수
@@ -378,13 +373,8 @@ class GameTestActivity : AppCompatActivity() {
                                             val question = response.body()
                                             val questionId = question?.get(0)!!.id
 
-                                            jsonObject.put("messageType", "QUESTION")
-                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                            jsonObject.put("sender", constant.SENDER)
-                                            jsonObject.put("questionMessage", question[0].question.toString())
+                                            gameStomp.sendQuestion(question[0].question.toString(), questionId )
 
-                                            stomp.send("/app/game/question", jsonObject.toString())
-                                                .subscribe()
 
                                             // git 모션 끝나면 질문 다이얼로그 띄우기
                                             Handler(Looper.getMainLooper()).postDelayed({
@@ -404,10 +394,8 @@ class GameTestActivity : AppCompatActivity() {
                                     }
                                 })
                             } // if (num != 4 || num != 5) 끝
-                        }
 
-                        // 말 추가 버튼 클릭 이벤트
-
+                        } // btn_throw_yut.setOnClickListener 끝
                     }
 
                     Event.Type.CLOSED -> {
@@ -422,20 +410,24 @@ class GameTestActivity : AppCompatActivity() {
             }
     }
 
-    private fun addScore(score: Int) {
-        binding.tvPlayer1Score.text = score.toString()
+    private fun updateProfile(profileUrl: String?, playerId : String) {
 
-        Log.i("som-jsy", "addScore")
-        try {
-            JsonObject().addProperty("game_id", GameConstant.GAMEROOM_ID)
-            JsonObject().addProperty("player_id", playerId) // 1P
-            JsonObject().addProperty("1P_score", score)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        // 1P 스코어 점수 보내기
-        stomp.send("/app/game/score", jsonObject.toString()).subscribe()
+        val imageUrl = profileUrl
+        var imageView: ImageView
 
+        // 1P 프로필 설정
+        if (playerId == constant.GAME_TURN)
+            imageView = findViewById(R.id.view_profile_p1)
+
+        // 2P 프로필 설정
+        else
+            imageView = findViewById(R.id.view_profile_p2)
+
+        // Glide를 사용하여 이미지 로드
+        Glide.with(this)
+            .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
+            .into(imageView)
     }
 
     // 2P 스코어 UI 변경
@@ -448,12 +440,12 @@ class GameTestActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (btnState) // true : 1P 차례
              {
-                binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
-                binding.viewProfileP2.setBackgroundResource(R.color.game_dark_brown)
+                binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
+                binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
             }
             else {
-                binding.viewProfileP2.setBackgroundResource(R.drawable.pick)
-                binding.viewProfileP1.setBackgroundResource(R.color.game_dark_brown)
+                binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
+                binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
             }
             binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
             binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled

@@ -22,8 +22,7 @@ object GameConstant {
 
     val GAME_STATE_THROW = "THROW"
 
-    val GAME_TURN_1P: String = "TURN_1P"
-    val GAME_TURN_2P: String = "TURN_2P"
+    val ONE_MORE_THROW: String = "ONE_MORE_THROW"
 
     val GAME_STATE_WIN: String = "WIN"
     val GAME_STATE_LOSE: String = "LOSE"

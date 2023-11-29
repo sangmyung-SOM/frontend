@@ -9,9 +9,10 @@ data class ScoreInfo(
     @Json("player_id")
     var playerId : String,
 
-    @Json("1P_score")
+    @Json("player1Score")
     var player1Score : Int,
 
-    @Json("2P_score")
+    @Json("player2Score")
     var player2Score : Int
+
 )

@@ -1,6 +1,7 @@
 package com.smu.som.game.activity
 
 import android.content.ContentValues
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -10,15 +11,13 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
@@ -33,20 +32,22 @@ import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
+import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.Game
+import com.smu.som.game.response.QnAResponse
+import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.GameApi
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.GameMalStompService
+import com.smu.som.game.service.MalMoveUtils
+import com.smu.som.game.service.GameStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
-import kotlinx.android.synthetic.main.dialog_set_name.btn_cancel
-import kotlinx.android.synthetic.main.dialog_set_name.btn_enter
-import kotlinx.android.synthetic.main.dialog_set_name.tv_title
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -89,6 +90,11 @@ class GameTestActivity2 : AppCompatActivity()  {
     private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
     private val gameMalService: GameMalService = GameMalService()
+    private lateinit var malMoveUtils: MalMoveUtils
+    private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
+    private lateinit var malOutList : Array<ImageView> // 윷판 밖에 있는 내 말
+
+    var count = 1
 
     init {
         stomp.url = GameConstant.URL
@@ -107,19 +113,18 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken2.setOnClickListener{
-            //            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
-            val mal : ImageView = binding.malBlack0
-            val board : View = mal.parent as View
-            val boardWidth = board.width
-            Log.i("som-gana", "yut board width=${boardWidth}")
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
-            // 임시로 말 움지이는거 테스트함
-            gameMalService.moveMal(mal, board)
-
-
+            // 윷판에 있는 말 보이게 하기
+            malInList[0].visibility = View.VISIBLE
+            malMoveUtils.move(malInList[0], count)
+            count++
+            if(count == 28){
+                count++
+            }
         }
 
-        val intent = getIntent()
+        val intent = intent
         val bundle = intent.getBundleExtra("myBundle")
 
         // 게임 설정 불러오기 (bundle)
@@ -128,12 +133,20 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         settingCategory(category, adult)
 
+        // 게임 설정 불러오기 (online_game_sp)
+        val sp = this.getSharedPreferences("online_game_sp", Context.MODE_PRIVATE)
+        val profileUrl = sp.getString("profileUrl", null)          // 카카오톡 프로필 사진
+
+
         if (bundle != null) {
             constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!, "2P")
         }
 
-        tv_nickname_p2.text = constant.SENDER
+        updateProfile(profileUrl, constant.GAME_TURN)
 
+        tv_nickname_p2.text = constant.SENDER
+        binding.profileImgCatP1.isEnabled = true
+        binding.profileImgCatP2.isEnabled = false
 
         var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
@@ -154,20 +167,52 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 { throwable -> Log.i("som-gana", "왜 실패야ㅠㅠ") }
                             )
 
+
+                        // 스코어 구독
+                        stomp.join("/topic/game/score/" + GameConstant.GAMEROOM_ID).subscribe {
+                                stompMessage ->
+                            val result = Klaxon()
+                                .parse<ScoreInfo>(stompMessage)
+                            runOnUiThread {
+                                if (result?.player2Score != null && result?.player1Score != null)
+                                    scoreUIChange(result.player1Score, result.player2Score)
+
+
+                            }
+                        }
+
+                        // 게임종료
+                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/end").subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game.GameWinner>(stompMessage)
+                            runOnUiThread {
+                                // score가 4점이 되면  게임 종료
+                                if (result?.winner == playerId) { // 내가 이겼을 때
+                                    val gameEndDialog = GameEndDialog(this)
+                                    gameEndDialog.showPopup()
+//                                    finish()
+                                }
+                                if (result?.loser == playerId) {
+                                    val gameEndDialog = GameEndDialog(this)
+                                    gameEndDialog.losePopup()
+                                }
+                            }
+                        }
+
                         // subscribe 채널구독
                         gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
                             .subscribe { stompMessage ->
                                 val result = Klaxon()
-                                    .parse<Game>(stompMessage)
+                                    .parse<Game.GetGameInfo>(stompMessage)
                                 runOnUiThread {
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut2.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
-                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                                        binding.btnThrowYut2.isEnabled = false // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
 
 
-                                        if (result.answerMessage == "1P가 들어오지 않았습니다.") {
+                                        if (result.message == "1P가 들어오지 않았습니다.") {
                                             // 1P가 올 때까지 기다리는 다이얼로그
                                             val builder = AlertDialog.Builder(this)
                                             builder.setTitle("대기중")
@@ -180,8 +225,11 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START){
+                                        binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
+                                        val profileUrl = result.profileURL_1P
+                                        updateProfile(profileUrl, "1P")
 
                                         if (name.split(",")[1] == constant.SENDER) {
                                             tv_nickname_p1.text = name.split(",")[0]
@@ -191,10 +239,6 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             tv_nickname_p2.text = constant.SENDER
                                         }
 
-//                                        // category adult 설정
-//                                        category = result.gameCategory.split(",")[0]
-//                                        kcategory = result.gameCategory.split(",")[1]
-//                                        adult = result.gameCategory.split(",")[2]
 
                                     }
 
@@ -204,27 +248,24 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                         throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
                                 yuts[0] = result?.yut!!.toInt()
                                 showYutResult(yuts[0])
-
-                                if(result?.turnChange == GameConstant.TURN_CHANGE) {
-                                    btnState = !btnState
-                                    binding.btnThrowYut2.isEnabled = btnState
-                                    setTurnChangeUI()
-                                    // 말버튼
+                                if (result?.messageType == GameConstant.ONE_MORE_THROW) {
+                                    binding.btnThrowYut2.isEnabled = true
                                 }
+
                             }
 
                         }
 
                         questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<QnAResponse.GetQuestion>(stompMessage)
                             runOnUiThread {
-                                if(result?.gameTurn == "1P") {
-                                    val questionMessage = result?.questionMessage
+                                if(result?.playerId == "1P") {
+                                    val questionMessage = result.question
                                     val questionView = GetQuestionDialog(this, questionMessage)
                                     questionView.showPopup()
                                     // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
@@ -239,12 +280,18 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                         answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
-                                .parse<Game>(stompMessage)
+                                .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
                                 // 답변 결과
-                                val answer = result?.answerMessage
+                                val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
+
+                                if(result?.turnChange == GameConstant.TURN_CHANGE) {
+                                    btnState = !btnState
+                                    binding.btnThrowYut2.isEnabled = btnState
+                                    setTurnChangeUI()
+                                }
                             }
 
                         }
@@ -252,9 +299,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                         // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
-                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
+                            jsonObject.put("room_id", constant.GAMEROOM_ID)
                             jsonObject.put("sender", constant.SENDER)
-                            jsonObject.put("turn", "2P")
+                            jsonObject.put("player_id", constant.GAME_TURN)
+                            jsonObject.put("profileURL_2P", "$profileUrl")
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
@@ -268,24 +316,23 @@ class GameTestActivity2 : AppCompatActivity()  {
                             yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
 
                             throwCount++
-                            if(throwCount == 1) {
+                            var jsonObject = JSONObject()
+
+                            if (throwCount == 1) {
                                 try {
                                     jsonObject.put("messageType", "FIRST_THROW")
-                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                    jsonObject.put("sender", constant.SENDER)
+                                    jsonObject.put("room_id", constant.GAMEROOM_ID)
                                     jsonObject.put("yut", "$num")
-                                    jsonObject.put("turn", "2P")
+                                    jsonObject.put("player_id", constant.GAME_TURN)
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                 }
-                            }
-                            else {
+                            } else {
                                 try {
                                     jsonObject.put("messageType", "THROW")
-                                    jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                    jsonObject.put("sender", constant.SENDER)
+                                    jsonObject.put("room_id", constant.GAMEROOM_ID)
                                     jsonObject.put("yut", "$num")
-                                    jsonObject.put("turn", "2P")
+                                    jsonObject.put("player_id", constant.GAME_TURN)
 
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -293,6 +340,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             }
 
                             stomp.send("/app/game/throw", jsonObject.toString()).subscribe()
+
                             if (num != 4 && num != 5) {
 
                                 // API 로 질문을 받는 함수
@@ -308,24 +356,14 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             val question = response.body()
                                             val questionId = question?.get(0)!!.id
 
-                                            jsonObject.put("messageType", "QUESTION")
-                                            jsonObject.put("gameRoomId", constant.GAMEROOM_ID)
-                                            jsonObject.put("sender", constant.SENDER)
-                                            jsonObject.put(
-                                                "questionMessage",
-                                                question[0].question.toString()
-                                            )
-
-                                            stomp.send("/app/game/question", jsonObject.toString())
-                                                .subscribe()
+                                            val questionStomp = GameStompService(stomp)
+                                            questionStomp.sendQuestion(question[0].question.toString(), questionId )
 
                                             // git 모션 끝나면 질문 다이얼로그 띄우기
                                             Handler(Looper.getMainLooper()).postDelayed({
                                                 val answeringDialog = AnsweringDialog(this@GameTestActivity2, question, stomp)
                                                 answeringDialog.showPopup()
                                             }, 4000)
-
-
 
                                         }
                                     }
@@ -345,10 +383,6 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                         }
 
-                        // 말버튼 클릭 리스터
-
-
-
                     }
 
                     Event.Type.CLOSED -> {
@@ -363,18 +397,46 @@ class GameTestActivity2 : AppCompatActivity()  {
             }
     }
 
+    private fun updateProfile(profileUrl: String?, playerId : String) {
+
+        val imageUrl = profileUrl
+        var imageView: ImageView
+
+        // 1P 프로필 설정
+        if (playerId == constant.GAME_TURN)
+            imageView = findViewById(R.id.view_profile_p2)
+
+        // 2P 프로필 설정
+        else
+            imageView = findViewById(R.id.view_profile_p1)
+
+        // Glide를 사용하여 이미지 로드
+        Glide.with(this)
+            .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
+            .into(imageView)
+    }
+
+    // 2P 스코어 UI 변경
+    private fun scoreUIChange(score1P: Int, score2p: Int) {
+        binding.tvPlayer1Score.text = score1P.toString()
+        binding.tvPlayer2Score.text = score2p.toString()
+    }
+
     private fun setTurnChangeUI() {
-        if (!btnState) // true : 1P 차례
-        {
-            binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
-            binding.viewProfileP2.setBackgroundResource(R.color.game_dark_brown)
-        }
-        else {
-            binding.viewProfileP2.setBackgroundResource(R.drawable.pick)
-            binding.viewProfileP1.setBackgroundResource(R.color.game_dark_brown)
-        }
-        binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
-        binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!btnState) // true : 1P 차례
+            {
+                binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
+                binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
+            }
+            else {
+                binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
+                binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
+            }
+            binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
+            binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
+        }, 4000)
     }
 
     private fun settingCategory(category: String?, adult: String?) {

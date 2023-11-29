@@ -14,6 +14,7 @@ import com.google.gson.JsonObject
 import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.game.GameConstant
+import com.smu.som.game.service.GameStompService
 import org.json.JSONException
 
 class AnsweringDialog(context: Context, private val questionList: ArrayList<Question>?, val stomp: StompClient) : Dialog(context) {
@@ -52,11 +53,9 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
                 return@setOnClickListener
             }
             try {
-                request.addProperty("messageType", "ANSWER")
-                request.addProperty("gameRoomId", GameConstant.GAMEROOM_ID)
-                request.addProperty("sender", GameConstant.SENDER)
-                request.addProperty("questionMessage", questionList?.get(0)?.question)
-                request.addProperty("answerMessage", answer.text.toString())
+                request.addProperty("room_id", GameConstant.GAMEROOM_ID)
+                request.addProperty("player_id", GameConstant.GAME_TURN)
+                request.addProperty("answer", answer.text.toString())
 
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -72,17 +71,13 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         var showQuestionTxt : TextView = findViewById(R.id.question)
         val btnChange : Button = findViewById(R.id.changeButton)
         btnChange.setOnClickListener {
-            showQuestionTxt.text = questionList?.get(1)?.question
+            val questionMsg = questionList?.get(1)?.question
+            showQuestionTxt.text = questionMsg
+            val questionId = questionList?.get(1)?.id
 
             try {
-                request.addProperty("messageType", "QUESTION")
-                request.addProperty("gameRoomId", GameConstant.GAMEROOM_ID)
-                request.addProperty("sender", GameConstant.SENDER)
-                request.addProperty("turn", GameConstant.GAME_TURN)
-                request.addProperty("questionMessage", questionList?.get(1)?.question)
-
-                stomp.send("/app/game/question", request.toString())
-                    .subscribe()
+                val qStompService = GameStompService(stomp)
+                qStompService.sendQuestion(questionMsg!!, questionId!!)
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
