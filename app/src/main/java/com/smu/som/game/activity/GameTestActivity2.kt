@@ -36,9 +36,11 @@ import com.smu.som.game.GameConstant
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.Game
+import com.smu.som.game.response.GameMalResponse
 import com.smu.som.game.service.GameApi
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.GameMalStompService
+import com.smu.som.game.service.MalMoveUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -85,10 +87,18 @@ class GameTestActivity2 : AppCompatActivity()  {
 
     val stomp = StompClient(client, intervalMillis)
 
+    // 가나가 필요해서 정의한 변수
     private val playerId : String = "2P" // 고정값
     private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
-    private val gameMalService: GameMalService = GameMalService()
+    private val gameMalService:GameMalService = GameMalService()
+    private lateinit var malMoveUtils:MalMoveUtils
+    private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
+    private lateinit var malOutList : Array<ImageView> // 윷판 밖에 있는 내 말
+    private lateinit var oppMalInList: Array<ImageView> // 상대방의 윷판에 있는 말
+
+    var count = 1
+    // 끝-가나
 
     init {
         stomp.url = GameConstant.URL
@@ -105,18 +115,27 @@ class GameTestActivity2 : AppCompatActivity()  {
             moveChatDialog(intent.getBundleExtra("myBundle"))
         }
 
+        // 이렇게 안하면, 뷰가 다 그려지지 않은 시점에서 malInit이 호출돼 초기화가 제대로 안됨.
+        binding.yutBoard.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.yutBoard.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                // 말 초기화
+                malInit()
+            }
+        })
+
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken2.setOnClickListener{
-            //            gameMalStompService.sendMal(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
-            val mal : ImageView = binding.malBlack0
-            val board : View = mal.parent as View
-            val boardWidth = board.width
-            Log.i("som-gana", "yut board width=${boardWidth}")
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
-            // 임시로 말 움지이는거 테스트함
-            gameMalService.moveMal(mal, board)
-
-
+            // [가나] 말 이동 테스트 - 지우지 말아주세요
+//            malInList[0].visibility = View.VISIBLE
+//            malMoveUtils.move(malInList[0], count)
+//            count++
+//            if(count == 28){
+//                count++
+//            }
         }
 
         val intent = getIntent()
@@ -150,8 +169,28 @@ class GameTestActivity2 : AppCompatActivity()  {
                         // 말 이동 위치 조회 구독
                         stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
                             .subscribe(
-                                { success -> Log.i("som-gana", success) },
-                                { throwable -> Log.i("som-gana", "왜 실패야ㅠㅠ") }
+                                { success ->
+                                    val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
+                                    Log.i("som-gana", "성공")
+                                    // 말 클릭 이벤트 리스너 등록
+                                    if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
+                                        val yutResult = yutResultStack.pop()
+                                        runOnUiThread{ setMalEventListener(response, yutResult) }
+                                    }
+                                },
+                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                            )
+
+                        // 말 이동하기 구독
+                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal/move")
+                            .subscribe(
+                                { success ->
+                                    val response = Klaxon().parse<GameMalResponse.MoveMalDTO>(success)
+                                    Log.i("som-gana", "성공")
+
+                                    runOnUiThread{ moveMal(response!!) }
+                                },
+                                { throwable -> Log.i("som-gana", throwable.toString()) }
                             )
 
                         // subscribe 채널구독
@@ -391,6 +430,7 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
 
     private fun showYutResult(num: Int) {
+        Log.i("som-gana", "윷 결과 = ${num}")
         val gifImageView = findViewById<ImageView>(R.id.gifImageView)
 
         gifImageView.visibility = View.VISIBLE
@@ -548,6 +588,130 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
 
 
+    // 말 초기화
+    private fun malInit(){
+        malInList = arrayOf(binding.malWhite0, binding.malWhite1, binding.malWhite2, binding.malWhite3)
+        malOutList = arrayOf(binding.malOutWhite0, binding.malOutWhite1, binding.malOutWhite2, binding.malOutWhite3)
+        oppMalInList = arrayOf(binding.malBlack0, binding.malBlack1, binding.malBlack2, binding.malBlack3)
 
+        // 말 움직이기 utils 클래스 생성
+        malMoveUtils = MalMoveUtils(binding.yutBoard, binding.malBlack0)
+
+        // 말의 초기 위치 지정하기
+        malInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
+        oppMalInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
+
+        // 윷판에 있는 말은 숨기기
+        malInList.forEach { mal -> mal.visibility = View.GONE }
+        oppMalInList.forEach { mal -> mal.visibility = View.GONE }
+    }
+
+    // 어늘 말을 이동할지 클릭 이벤트 리스너 등록
+    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition, yutResult: Int){
+        // 윷판 안에 있는 말
+        for(i in 0 until 4){
+            val mal = malInList[i]
+            if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
+                mal.setOnClickListener{sendMoveMal(i, yutResult)}
+            }
+        }
+
+        // 윷판 밖에 있는 말
+        for(i in 0 until 4){
+            val mal = malOutList[i]
+            if(mal.visibility != View.GONE) { // GONE이면 윷판 안에 있는 말임.
+                mal.setOnClickListener{sendMoveMal(i, yutResult)}
+            }
+        }
+    }
+
+    // 서버와 <말 이동하기> 통신하기
+    private fun sendMoveMal(malId : Int, yutResult: Int){
+        gameMalStompService.sendMalMove(
+            gameId = GameConstant.GAMEROOM_ID,
+            playerId = playerId,
+            yutResult = yutResult,
+            malId = malId
+        )
+
+        removeMalEventListener() // 어느 말을 이동시킬지 결정한 이후에는 등록된 이벤트 리스너 지워야함.
+    }
+
+    // 말에 있는 클릭 이벤트 리스너 모두 지우기
+    private fun removeMalEventListener(){
+        malInList.forEach { mal ->
+            mal.setOnClickListener{}
+        }
+
+        malOutList.forEach { mal ->
+            mal.setOnClickListener{}
+        }
+    }
+
+    // 말 이동하기
+    public fun moveMal(response: GameMalResponse.MoveMalDTO){
+
+        if(response.playerId == playerId){ // 내 턴인 경우
+            if(response.isEnd){ // 도착한 말인지도 확인해야함
+
+            }
+            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
+                malOutList[response.malId].visibility = View.VISIBLE
+                malInList[response.malId].visibility = View.GONE
+                return
+            }
+
+            // 윷판 밖에 있는 말 안보이게 하기
+            malOutList[response.malId].visibility = View.GONE
+            // 윷판에 있는 말 보이게 하기
+            malInList[response.malId].visibility = View.VISIBLE
+
+            // 말 움직이기
+            malMoveUtils.move(malInList[response.malId], response.nextPosition)
+
+            if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
+                oppMalInList[response.catchMalId].visibility = View.GONE
+            }
+            if(response.isUpdaMal){ // 내 말을 업었을 때
+                malInList[response.updaMalId].visibility = View.GONE
+                when(response.point){
+                    2 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
+                    3 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    4 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                }
+
+            }
+        }
+        else { // 상대방 턴인 경우
+            if(response.isEnd){ // 도착한 말인지도 확인해야함
+
+            }
+            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
+                oppMalInList[response.malId].visibility = View.GONE
+                return
+            }
+
+            // 윷판에 있는 말 보이게 하기
+            oppMalInList[response.malId].visibility = View.VISIBLE
+
+            // 말 움직이기
+            malMoveUtils.move(oppMalInList[response.malId], response.nextPosition)
+
+            if(response.isCatchMal){ // 상대가 내 말을 잡았을 때
+                malInList[response.catchMalId].visibility = View.GONE
+                malInList[response.catchMalId].setImageResource(R.drawable.selector_profile_cat)
+                malOutList[response.catchMalId].visibility = View.VISIBLE
+            }
+            if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
+                oppMalInList[response.updaMalId].visibility = View.GONE
+                when(response.point){
+                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
+                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                }
+
+            }
+        }
+    }
 
 }

@@ -82,6 +82,11 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         AnimatorSet.start();
     }
 
+    public fun setPosition(mal:ImageView, idx:Int){
+        mal.x = coordinates[idx].x
+        mal.y = coordinates[idx].y
+    }
+
     private fun setX(){
         // 대각선에 있는 점들
         for(i in 1..5){

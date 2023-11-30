@@ -11,7 +11,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.ViewTreeObserver.OnDrawListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -96,6 +95,7 @@ class GameTestActivity : AppCompatActivity() {
     private lateinit var malMoveUtils:MalMoveUtils
     private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
     private lateinit var malOutList : Array<ImageView> // 윷판 밖에 있는 내 말
+    private lateinit var oppMalInList: Array<ImageView> // 상대방의 윷판에 있는 말
 
     var count = 1
     // 끝-가나
@@ -179,8 +179,8 @@ class GameTestActivity : AppCompatActivity() {
                                     val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
                                     Log.i("som-gana", "성공")
                                     // 말 클릭 이벤트 리스너 등록
-                                    val yutResult = yutResultStack.pop()
                                     if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
+                                        val yutResult = yutResultStack.pop()
                                         runOnUiThread{ setMalEventListener(response, yutResult) }
                                     }
                                 },
@@ -194,9 +194,7 @@ class GameTestActivity : AppCompatActivity() {
                                     val response = Klaxon().parse<GameMalResponse.MoveMalDTO>(success)
                                     Log.i("som-gana", "성공")
 
-                                    if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
-                                        runOnUiThread{ moveMal(response!!) }
-                                    }
+                                    runOnUiThread{ moveMal(response!!) }
                                 },
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
                             )
@@ -461,6 +459,7 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     private fun showYutResult(num: Int) {
+        Log.i("som-gana", "윷 결과 = ${num}")
         val gifImageView = findViewById<ImageView>(R.id.gifImageView)
 
         gifImageView.visibility = View.VISIBLE
@@ -571,24 +570,21 @@ class GameTestActivity : AppCompatActivity() {
     private fun malInit(){
         malInList = arrayOf(binding.malBlack0, binding.malBlack1, binding.malBlack2, binding.malBlack3)
         malOutList = arrayOf(binding.malOutBlack0, binding.malOutBlack1, binding.malOutBlack2, binding.malOutBlack3)
+        oppMalInList = arrayOf(binding.malWhite0, binding.malWhite1, binding.malWhite2, binding.malWhite3)
 
-        // 말 움직이기 utils 클래스
+        // 말 움직이기 utils 클래스 생성
         malMoveUtils = MalMoveUtils(binding.yutBoard, binding.malBlack0)
 
-        val initPosition = malMoveUtils.getPosition(20)
-        for (mal in malInList){
-            mal.x = initPosition.first
-            mal.y = initPosition.second
-        }
-        Log.i("som-gana", "init x= ${initPosition.first}, y = ${initPosition.second}")
+        // 말의 초기 위치 지정하기
+        malInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
+        oppMalInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
 
         // 윷판에 있는 말은 숨기기
-        for(malIn in malInList){
-            malIn.visibility = View.GONE
-        }
+        malInList.forEach { mal -> mal.visibility = View.GONE }
+        oppMalInList.forEach { mal -> mal.visibility = View.GONE }
     }
 
-    // 말 클릭 이벤트 리스너
+    // 어늘 말을 이동할지 클릭 이벤트 리스너 등록
     private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition, yutResult: Int){
         // 윷판 안에 있는 말
         for(i in 0 until 4){
@@ -616,7 +612,7 @@ class GameTestActivity : AppCompatActivity() {
             malId = malId
         )
 
-        removeMalEventListener()
+        removeMalEventListener() // 어느 말을 이동시킬지 결정한 이후에는 등록된 이벤트 리스너 지워야함.
     }
 
     // 말에 있는 클릭 이벤트 리스너 모두 지우기
@@ -632,23 +628,67 @@ class GameTestActivity : AppCompatActivity() {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
-        if(response.nextPosition == 0){
-            malOutList[response.malId].visibility = View.VISIBLE
-            malInList[response.malId].visibility = View.GONE
-            return
+
+        if(response.playerId == playerId){ // 내 턴인 경우
+            if(response.isEnd){ // 도착한 말인지도 확인해야함
+
+            }
+            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
+                malOutList[response.malId].visibility = View.VISIBLE
+                malInList[response.malId].visibility = View.GONE
+                return
+            }
+
+            // 윷판 밖에 있는 말 안보이게 하기
+            malOutList[response.malId].visibility = View.GONE
+            // 윷판에 있는 말 보이게 하기
+            malInList[response.malId].visibility = View.VISIBLE
+
+            // 말 움직이기
+            malMoveUtils.move(malInList[response.malId], response.nextPosition)
+
+            if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
+                oppMalInList[response.catchMalId].visibility = View.GONE
+            }
+            if(response.isUpdaMal){ // 내 말을 업었을 때
+                malInList[response.updaMalId].visibility = View.GONE
+                when(response.point){
+                    2 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
+                    3 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    4 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                }
+
+            }
         }
+        else { // 상대방 턴인 경우
+            if(response.isEnd){ // 도착한 말인지도 확인해야함
 
-        // 도착한 말인지도 확인해야함
+            }
+            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
+                oppMalInList[response.malId].visibility = View.GONE
+                return
+            }
 
-        // 다른말을 잡았는지 확인해야함
+            // 윷판에 있는 말 보이게 하기
+            oppMalInList[response.malId].visibility = View.VISIBLE
 
-        // 말 업었는지 확인해야함
+            // 말 움직이기
+            malMoveUtils.move(oppMalInList[response.malId], response.nextPosition)
 
-        // 윷판 밖에 있는 말 안보이게 하기
-        malOutList[response.malId].visibility = View.GONE
+            if(response.isCatchMal){ // 상대가 내 말을 잡았을 때
+                malInList[response.catchMalId].visibility = View.GONE
+                malInList[response.catchMalId].setImageResource(R.drawable.selector_profile_cat)
+                malOutList[response.catchMalId].visibility = View.VISIBLE
+            }
+            if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
+                oppMalInList[response.updaMalId].visibility = View.GONE
+                when(response.point){
+                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
+                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                }
 
-        // 윷판에 있는 말 보이게 하기
-        malInList[response.malId].visibility = View.VISIBLE
-        malMoveUtils.move(malInList[response.malId], response.nextPosition)
+            }
+        }
     }
 }
