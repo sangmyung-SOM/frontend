@@ -70,11 +70,21 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/view_profile_p1"/>
 
-            <TextView
+            <ImageView
                 android:id="@+id/view_profile_p1"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@color/game_dark_brown"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_nickname_p1"
+                app:layout_constraintStart_toEndOf="@+id/tv_p1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/view_profile_pick_1P"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:background="@drawable/not_pick"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_nickname_p1"
                 app:layout_constraintStart_toEndOf="@+id/tv_p1"
@@ -102,11 +112,21 @@
                 app:layout_constraintStart_toEndOf="@+id/tv_nickname_p1"
                 app:layout_constraintEnd_toStartOf="@+id/view_profile_p2"/>
 
-            <TextView
+            <ImageView
                 android:id="@+id/view_profile_p2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="@color/game_dark_brown"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/tv_p2"
+                app:layout_constraintStart_toEndOf="@+id/tv_nickname_p2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/view_profile_pick_2P"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:background="@drawable/not_pick"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tv_p2"
                 app:layout_constraintStart_toEndOf="@+id/tv_nickname_p2"

@@ -37,11 +37,6 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         this.name_1P = name
         this.intent = intent
 
-        Log.d("intent", intent.toString())
-        Log.d("intent", intent.getStringExtra("category").toString())
-        Log.d("intent", intent.getStringExtra("kcategory").toString())
-        Log.d("intent", intent.getStringExtra("adult").toString())
-
         showPopup()
     }
 
@@ -52,9 +47,6 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         val enterButton : Button = findViewById(R.id.enterButton)
         val textView : TextView = findViewById(R.id.confirmTextView)
 
-        // 방코드
-//        textView.setText(gameRoomId)
-
         // 방 생성이 완료되었습니다
         textView.text = "$name_1P 방 생성이 완료되었습니다."
 
@@ -62,13 +54,15 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
 
         val bundle: Bundle = Bundle()
 
-
         // 입장하기 버튼을 누름
         enterButton.setOnClickListener {
             dismiss()
             intent?.getStringExtra("category")?.let { it1 -> bundle.putString("category", it1) }
             intent?.getStringExtra("kcategory")?.let { it1 -> bundle.putString("kcategory", it1) }
             intent?.getStringExtra("adult")?.let { it1 -> bundle.putString("adult", it1) }
+            intent?.getStringExtra("profileUrl")?.let { it1 -> bundle.putString("profileUrl", it1) }
+
+            Log.i("url", intent?.getStringExtra("profileUrl").toString())
 
             bundle.putString("sender", name_1P)
             bundle.putString("gameRoomId", gameRoomId)

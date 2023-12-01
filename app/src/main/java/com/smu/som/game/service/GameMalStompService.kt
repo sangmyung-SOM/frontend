@@ -1,9 +1,12 @@
 package com.smu.som.game.service
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.google.gson.JsonObject
 import com.smu.som.game.YutConverter
+import org.json.JSONException
 
 class GameMalStompService (val stomp: StompClient){
 
@@ -30,5 +33,20 @@ class GameMalStompService (val stomp: StompClient){
 
         stomp.send("/app/game/mal/move", request.toString()).subscribe()
         Log.i("som-gana", "말 이동하기 메시지 보내기")
+
+        // 2초 후에 점수 조회 메시지 보내기
+        Handler(Looper.getMainLooper()).postDelayed({
+
+            var request = JsonObject()
+            try {
+                request.addProperty("game_id", gameId)
+                request.addProperty("player_id", playerId)
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+
+            stomp.send("/app/game/score", request.toString()).subscribe()
+
+        }, 2000)
     }
 }

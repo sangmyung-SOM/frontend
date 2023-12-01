@@ -39,33 +39,6 @@ class StartActivity : AppCompatActivity() {
             showPopup()
         }
 
-        updateKaKaoProfile()
-    }
-
-    private fun updateKaKaoProfile() {
-        // 카카오톡 프로필 가져오기
-        TalkApiClient.instance.profile { profile, error ->
-            if (error != null) {
-                Log.e(TAG, "카카오톡 프로필 가져오기 실패", error)
-            }
-            else if (profile != null) {
-                Log.i(TAG, "카카오톡 프로필 가져오기 성공" +
-                        "\n닉네임: ${profile.nickname}" +
-                        "\n프로필사진: ${profile.thumbnailUrl}")
-            }
-        }
-
-        // 카카오톡 사용자 정보 요청 (기본)
-        UserApiClient.instance.me { user, error ->
-            val ageRange = user?.kakaoAccount?.ageRange     // 사용자 연령대
-            val email = user?.kakaoAccount?.email           // 사용자 이메일
-            var adult = false                               // 성인 여부
-
-            Log.i(TAG, "사용자 정보 요청 성공" +
-                    "\n회원번호: ${user?.id}" +
-                    "\n닉네임: ${user?.kakaoAccount?.profile?.nickname}" +
-                    "\n이메일: ${user?.kakaoAccount?.email}")
-        }
     }
 
     // 게임 설명을 보여주는 함수

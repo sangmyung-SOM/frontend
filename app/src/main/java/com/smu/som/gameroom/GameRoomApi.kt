@@ -10,14 +10,14 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface GameRoomApi {
-    @POST("/game/room") // 실제 엔드포인트 경로를 지정하세요.
+    @POST("/game/room")
     fun makeGameRoom(@Query("name") name: String,
                      @Query("category") category: String,
                      @Query("adult") adult: String,
     ): Call<GameRoomResponse>
 
     interface GameRoomImpl{
-        @GET("/game/rooms") // 백엔드 경로 (나중에 수정 -> /game/rooms)
+        @GET("/game/rooms")
         fun getGameRoom(): Single<List<GameRoom>>
     }
 
