@@ -656,13 +656,14 @@ class GameTestActivity : AppCompatActivity() {
 
             if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
                 oppMalInList[response.catchMalId].visibility = View.GONE
+                oppMalInList[response.catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
             }
             if(response.isUpdaMal){ // 내 말을 업었을 때
                 malInList[response.updaMalId].visibility = View.GONE
                 when(response.point){
-                    2 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
-                    3 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
-                    4 -> malInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    2 -> malInList[response.malId].setImageResource(R.drawable.cat_b_2)
+                    3 -> malInList[response.malId].setImageResource(R.drawable.cat_b_3)
+                    4 -> malInList[response.malId].setImageResource(R.drawable.cat_b_4)
                 }
 
             }
@@ -690,9 +691,9 @@ class GameTestActivity : AppCompatActivity() {
             if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
                 oppMalInList[response.updaMalId].visibility = View.GONE
                 when(response.point){
-                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2)
-                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
-                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.selector_profile_w_cat_2) // 임시로 2개 업은걸로 해둠
+                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_2)
+                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_3)
+                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_4)
                 }
 
             }
