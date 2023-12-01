@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -116,8 +117,8 @@ class GameTestActivity2 : AppCompatActivity()  {
         }
 
         // 이렇게 안하면, 뷰가 다 그려지지 않은 시점에서 malInit이 호출돼 초기화가 제대로 안됨.
-        binding.yutBoard.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
+        binding.yutBoard.viewTreeObserver.addOnGlobalLayoutListener(
+            object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 binding.yutBoard.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 // 말 초기화
@@ -129,13 +130,13 @@ class GameTestActivity2 : AppCompatActivity()  {
         binding.btnAddToken2.setOnClickListener{
             gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
-            // 윷판에 있는 말 보이게 하기
-            malInList[0].visibility = View.VISIBLE
-            malMoveUtils.move(malInList[0], count)
-            count++
-            if(count == 28){
-                count++
-            }
+            // [가나] 말 이동 테스트 - 지우지 말아주세요
+//            malInList[0].visibility = View.VISIBLE
+//            malMoveUtils.move(malInList[0], count)
+//            count++
+//            if(count == 28){
+//                count++
+//            }
         }
 
         val intent = intent
