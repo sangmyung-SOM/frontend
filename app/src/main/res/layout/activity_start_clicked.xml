@@ -27,6 +27,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.007"></TextView>
 
+    <!-- 버튼 숨김
     <ImageView
         android:id="@+id/findRoom"
         android:layout_width="176dp"
@@ -50,6 +51,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.913"></ImageView>
+     -->
 
     <ImageView
         android:id="@+id/onlineStart"
