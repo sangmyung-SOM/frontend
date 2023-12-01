@@ -1,4 +1,5 @@
 package com.smu.som.chat.model.network
+import com.smu.som.game.GameConstant
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -6,8 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitCreator {
 
     companion object{
-//        val BASE_URL = "http://10.0.2.2:8080"
-        val BASE_URL = "http://3.37.84.188:8080"
+
+        val BASE_URL = GameConstant.API_URL
 
         private fun retrofit(BASE_URL:String): Retrofit{
             return Retrofit.Builder()
