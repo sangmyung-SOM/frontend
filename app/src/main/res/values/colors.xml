@@ -31,4 +31,6 @@
     <color name="game_roomList_click">#EFD389</color>
     <color name="game_roomList_not_click">#E4DAC9</color>
 
+    <color name="touch_home">#BCBCBC</color>
+
 </resources>
