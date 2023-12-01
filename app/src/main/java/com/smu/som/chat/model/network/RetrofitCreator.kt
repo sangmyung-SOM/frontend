@@ -7,8 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitCreator {
 
     companion object{
+
         val BASE_URL = GameConstant.API_URL
-//        val BASE_URL = "http://3.37.84.188:8080"
 
         private fun retrofit(BASE_URL:String): Retrofit{
             return Retrofit.Builder()
