@@ -227,7 +227,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     gameEndDialog.showPopup()
 //                                    finish()
                                 }
-                                if (result?.loser == playerId) {
+                                else {
                                     val gameEndDialog = GameEndDialog(this)
                                     gameEndDialog.losePopup()
                                 }
