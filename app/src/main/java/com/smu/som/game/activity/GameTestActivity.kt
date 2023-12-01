@@ -235,12 +235,12 @@ class GameTestActivity : AppCompatActivity() {
                                     gameEndDialog.showPopup()
 //                                    finish()
                                 }
-                                if (result?.loser == playerId) {
+                                else {
                                     val gameEndDialog = GameEndDialog(this)
                                     gameEndDialog.losePopup()
                                 }
-                                }
                             }
+                        }
 
 
                         // subscribe 채널구독
