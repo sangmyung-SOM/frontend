@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
@@ -212,6 +213,24 @@ class GameTestActivity : AppCompatActivity() {
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
                             )
 
+                        // 턴 변경 구독
+                        stomp.join("/topic/game/turn/" + GameConstant.GAMEROOM_ID)
+                            .subscribe(
+                                { success ->
+                                    val response = Klaxon().parse<Game.turnChange>(success)
+                                    runOnUiThread{
+
+                                        if (response?.messageType == GameConstant.TURN_CHANGE) {
+                                            Log.i("som-jsy", "턴 변경")
+                                            btnState = !btnState
+                                            binding.btnThrowYut.isEnabled = btnState
+                                            setTurnChangeUI()
+                                        }
+                                    }
+                                },
+                                { throwable -> Log.i("som-jsy", throwable.toString()) }
+                            )
+
                         // 스코어 구독
                         stomp.join("/topic/game/score/" + GameConstant.GAMEROOM_ID).subscribe {
                             stompMessage ->
@@ -252,6 +271,7 @@ class GameTestActivity : AppCompatActivity() {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnAddToken.isEnabled = false
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
@@ -283,12 +303,37 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
-                                yuts[0] = result?.yut!!.toInt()
-                                showYutResult(yuts[0])
-                                // 윷이나 모인 경우 한번 더
-                                if (result?.messageType == GameConstant.ONE_MORE_THROW) {
+                                if (result?.messageType == "CATCH_MAL" && result.playerId == playerId) {
+                                    val catchMalDialog = AlertDialog.Builder(this)
+                                        .setTitle("말 잡기")
+                                        .setMessage("상대방의 말을 잡았습니다!")
+                                        .setPositiveButton("확인") { dialog, which ->
+                                            dialog.dismiss()
+                                        }
+                                        .create()
+
+                                    catchMalDialog.show()
                                     binding.btnThrowYut.isEnabled = true
                                 }
+                                else if (result?.messageType == "CATCH_MAL" && result.playerId == "2P") {
+                                    val dialog = AlertDialog.Builder(this)
+                                        .setTitle("말 잡기")
+                                        .setMessage("상대방이 당신의 말을 잡았습니다!")
+                                        .setPositiveButton("확인") { dialog, which ->
+                                            dialog.dismiss()
+                                        }
+                                        .create()
+                                    dialog.show()
+                                }
+                                else {
+                                    yuts[0] = result?.yut!!.toInt()
+                                    showYutResult(yuts[0])
+                                    // 윷이나 모인 경우 한번 더
+                                    if (result?.messageType == GameConstant.ONE_MORE_THROW) {
+                                        binding.btnThrowYut.isEnabled = true
+                                    }
+                                }
+
                             }
 
                         }
@@ -319,13 +364,11 @@ class GameTestActivity : AppCompatActivity() {
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
 
-                                // 답변 확인 후 턴 변경
-                                // 임시 주석처리 - 테스트용
-//                                if (result?.turnChange == GameConstant.TURN_CHANGE) {
-//                                        btnState = !btnState
-//                                        binding.btnThrowYut.isEnabled = btnState
-//                                        setTurnChangeUI()
-//                                    }
+                                // 자기 턴이면 말 추가하기 버튼 활성화 (상대방 턴이면 비활성화)
+                                if (result.playerId == playerId) {
+                                    binding.btnThrowYut.isEnabled = false // 답변 결과를 받으면 윷 던지기 버튼 비활성화
+                                    binding.btnAddToken.isEnabled = true // 말 추가하기 버튼 활성화
+                                }
                             }
 
                         }
@@ -448,7 +491,7 @@ class GameTestActivity : AppCompatActivity() {
             }
             binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
             binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
-        }, 4000)
+        }, 2000)
     }
 
     // 카테고리 설정에 따른 UI 변경
@@ -635,6 +678,7 @@ class GameTestActivity : AppCompatActivity() {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
+        binding.btnAddToken.isEnabled = false
       
         if(response.playerId == playerId){ // 내 턴인 경우
             if(response.isEnd){ // 도착한 말인지도 확인해야함

@@ -20,6 +20,8 @@ class Game {
     data class GetThrowResult(
         @Json(name = "messageType")
         val messageType: String,
+        @Json(name = "player_id")
+        val playerId: String,
         @Json(name = "yut")
         val yut: String
     )
@@ -29,6 +31,13 @@ class Game {
         var winner : String,
         @Json("loser")
         var loser : String
+    )
+
+    data class turnChange(
+        @Json(name = "messageType")
+        val messageType: String,
+        @Json(name = "player_id")
+        val playerId: String
     )
 
 }
