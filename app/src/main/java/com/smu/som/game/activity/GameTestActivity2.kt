@@ -10,9 +10,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
@@ -349,6 +351,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                         binding.btnThrowYut2.setOnClickListener() {
                             var num = playGame(soundPool, gamesound, yuts.sum())
                             yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
+                            setYutResultInView(num) // 가나-임시로 윷 결과값 저장
 
                             throwCount++
                             var jsonObject = JSONObject()
@@ -643,6 +646,43 @@ class GameTestActivity2 : AppCompatActivity()  {
             num -= item
         }
         return -1
+    }
+
+    // 윷 결과 화면에 표시하기
+    private fun setYutResultInView(yutResult: Int){
+        var yut : ImageView = ImageView(this)
+
+        // 크기 설정
+        val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(dpToPx(this, 60f), dpToPx(this, 50f))
+        yut.layoutParams = params
+        yut.setPadding(dpToPx(this, 5f), 0, dpToPx(this, 5f), 0)
+
+        when(yutResult){
+            0 -> yut.setImageResource(R.drawable.yut1_back_do)
+            1 -> yut.setImageResource(R.drawable.yut1_do)
+            2 -> yut.setImageResource(R.drawable.yut1_gae)
+            3 -> yut.setImageResource(R.drawable.yut1_gul)
+            4 -> yut.setImageResource(R.drawable.yut1_yut)
+            5 -> yut.setImageResource(R.drawable.yut1_mo)
+        }
+
+        // 클릭 이벤트 리스너 등록
+        yut.setOnClickListener{
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            binding.layoutMalResult.removeView(it) // 해당 윷결과 뷰 삭제
+        }
+
+        // 레이아웃에 추가
+        binding.layoutMalResult.addView(yut)
+    }
+
+    // dp -> px 단위 변경
+    private fun dpToPx(context: Context, dp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        ).toInt()
     }
 
 
