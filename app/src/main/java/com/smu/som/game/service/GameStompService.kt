@@ -22,13 +22,12 @@ class GameStompService(private val stomp : StompClient) {
             .subscribe()
     }
 
-    fun sendThrowResult(messageType : String, yut : String) {
+    fun sendThrowResult(messageType : String) {
         var request = JsonObject()
 
         try {
             request.addProperty("messageType", messageType)
             request.addProperty("room_id", GameConstant.GAMEROOM_ID)
-            request.addProperty("yut", yut)
             request.addProperty("player_id", GameConstant.GAME_TURN)
         } catch (e: Exception) {
             e.printStackTrace()

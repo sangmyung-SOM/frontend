@@ -174,7 +174,11 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
 
         //비동기 처리
         Handler(Looper.getMainLooper()).postDelayed({
-            getGameRoomIdDialog.getRoomId(GameRoomId, name_1P_OG.text.toString(), intent)
+            if (GameRoomId == "") {
+                Toast.makeText(context, "게임방 생성에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                return@postDelayed
+            }
+            else getGameRoomIdDialog.getRoomId(GameRoomId, name_1P_OG.text.toString(), intent)
         }, 500)
     }
 }
