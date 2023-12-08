@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
+import com.smu.som.game.YutConverter
 import com.smu.som.game.service.GameMalStompService
 import java.util.Stack
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -196,8 +197,7 @@ class GameTestActivity : AppCompatActivity() {
                                     Log.i("som-gana", "성공")
                                     // 말 클릭 이벤트 리스너 등록
                                     if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
-                                        val yutResult = yutResultStack.pop()
-                                        runOnUiThread{ setMalEventListener(response, yutResult) }
+                                        runOnUiThread{ setMalEventListener(response) }
                                     }
                                 },
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
@@ -633,7 +633,9 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     // 어늘 말을 이동할지 클릭 이벤트 리스너 등록
-    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition, yutResult: Int){
+    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition){
+        val yutResult = YutConverter.toYutInt(response.yutResult)
+
         // 윷판 안에 있는 말
         for(i in 0 until 4){
             val mal = malInList[i]
