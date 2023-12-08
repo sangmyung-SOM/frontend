@@ -8,19 +8,16 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.AttributeSet
-
 import android.util.Log
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.updateLayoutParams
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
@@ -30,16 +27,13 @@ import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
-
 import com.smu.som.R
-
 import com.smu.som.databinding.ActivityOnlineGameBinding
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
-
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -54,7 +48,6 @@ import com.smu.som.game.service.GameMalStompService
 import java.util.Stack
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
@@ -65,7 +58,8 @@ import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
-
+import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 
@@ -171,6 +165,20 @@ class GameTestActivity : AppCompatActivity() {
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
+        }
+
+        // 게임방법 설명
+        binding.btnRule.setOnClickListener {
+            val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val view1 = inflater.inflate(R.layout.activity_online_gamerule1, null)
+            val alertDialog1 = AlertDialog.Builder(this)
+                .setTitle("게임 방법")
+                .setPositiveButton("다음") { dialog, which ->
+                    showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
+                }
+                .setNegativeButton("취소", null)
+            alertDialog1.setView(view1)
+            alertDialog1.setCancelable(false).show()
         }
 
         if (bundle != null) {
@@ -283,8 +291,8 @@ class GameTestActivity : AppCompatActivity() {
                                 runOnUiThread {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut.isEnabled = false // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
-                                        binding.btnAddToken.isEnabled = false
+                                        binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnAddToken.isEnabled = true
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
@@ -312,31 +320,55 @@ class GameTestActivity : AppCompatActivity() {
                                 }
 
                             }
+
+                        // 상대방 연결 끊긴 경우 sub 구독
+                        stomp.join("/topic/game/disconnect/" + GameConstant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<Game.GetGameDisconnect>(stompMessage)
+                            runOnUiThread {
+                                val dialog = AlertDialog.Builder(this)
+                                    .setTitle("상대방 연결 끊김")
+                                    .setMessage("상대방이 연결을 끊었습니다.")
+                                    .setPositiveButton("확인") { dialog, which ->
+                                        dialog.dismiss()
+                                        val intent = Intent(this, GameRoomListActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                    .create()
+                                dialog.show()
+
+                            }
+                        }
+
                         throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
                                 if (result?.messageType == "CATCH_MAL" && result.playerId == playerId) {
-                                    val catchMalDialog = AlertDialog.Builder(this)
-                                        .setTitle("말 잡기")
-                                        .setMessage("상대방의 말을 잡았습니다!")
-                                        .setPositiveButton("확인") { dialog, which ->
-                                            dialog.dismiss()
-                                        }
-                                        .create()
-
-                                    catchMalDialog.show()
+//                                    val catchMalDialog = AlertDialog.Builder(this)
+//                                        .setTitle("말 잡기")
+//                                        .setMessage("상대방의 말을 잡았습니다!")
+//                                        .setPositiveButton("확인") { dialog, which ->
+//                                            dialog.dismiss()
+//                                        }
+//                                        .create()
+//
+//                                    catchMalDialog.show()
                                     binding.btnThrowYut.isEnabled = true
+                                    Toast.makeText(this, "상대방의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
+
                                 }
                                 else if (result?.messageType == "CATCH_MAL" && result.playerId == "2P") {
-                                    val dialog = AlertDialog.Builder(this)
-                                        .setTitle("말 잡기")
-                                        .setMessage("상대방이 당신의 말을 잡았습니다!")
-                                        .setPositiveButton("확인") { dialog, which ->
-                                            dialog.dismiss()
-                                        }
-                                        .create()
-                                    dialog.show()
+//                                    val dialog = AlertDialog.Builder(this)
+//                                        .setTitle("말 잡기")
+//                                        .setMessage("상대방이 당신의 말을 잡았습니다!")
+//                                        .setPositiveButton("확인") { dialog, which ->
+//                                            dialog.dismiss()
+//                                        }
+//                                        .create()
+//                                    dialog.show()
+                                    Toast.makeText(this, "상대방이 당신의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
                                 }
                                 else {
                                     num = result?.yut!!.toInt()
@@ -422,6 +454,45 @@ class GameTestActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    // 연결 끊긴 경우
+    override fun onDestroy() {
+        super.onDestroy()
+        val request = JSONObject()
+        try {
+            request.put("messageType", "END")
+            request.put("room_id", constant.GAMEROOM_ID)
+            request.put("player_id", constant.GAME_TURN)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        stomp.send("/app/game/disconnect", request.toString()).subscribe()
+
+        // 구독 취소
+        stompConnection.dispose()
+        gametopic.dispose()
+        answerTopic.dispose()
+        questionTopic.dispose()
+        throwTopic.dispose()
+
+        // GameRoomApi 에서 게임 방 삭제
+        val gameRoomApi = GameRoomApi
+        gameRoomApi.deleteGameRoom(constant.GAMEROOM_ID).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d("deleteGameRoom", "success")
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("deleteGameRoom", "fail")
+            }
+        })
+
+        // 이전 화면으로 이동
+        val intent = Intent(this, GameRoomListActivity::class.java)
+        startActivity(intent)
+
+        finish() // 현재 액티비티 종료
     }
 
     // 질문 받아오기
@@ -768,5 +839,28 @@ class GameTestActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    fun showSecondPage(inflater: LayoutInflater) {
+        val view2 = inflater.inflate(R.layout.activity_online_gamerule2, null)
+        val alertDialog2 = AlertDialog.Builder(this).setTitle("게임 방법")
+            .setPositiveButton("확인", null)
+            .setNegativeButton("이전") { dialog, which ->
+                showFirstPage(inflater) // 이전 설명 페이지를 보여주는 함수 호출
+            }
+        alertDialog2.setView(view2)
+        alertDialog2.setCancelable(false).show()
+    }
+
+    fun showFirstPage(inflater: LayoutInflater) {
+        val view1 = inflater.inflate(R.layout.activity_online_gamerule1, null)
+        val alertDialog1 = AlertDialog.Builder(this)
+            .setTitle("게임 방법")
+            .setPositiveButton("다음") { dialog, which ->
+                showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
+            }
+            .setNegativeButton("취소", null)
+        alertDialog1.setView(view1)
+        alertDialog1.setCancelable(false).show()
     }
 }
