@@ -13,11 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="124dp" />
+        app:layout_constraintGuide_percent="0.16"  />
 
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_temp"
+        android:id="@+id/guideline_mal_score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -28,7 +28,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.29" />
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_yut_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.32" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_yut_board"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.78" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_footer"
@@ -306,68 +320,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--    말들-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/guideline_temp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_game_info">
-
-        <ImageView
-            android:id="@+id/mal_out_black_0"
-            android:layout_width="31dp"
-            android:layout_height="45dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_1"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/selector_profile_cat" />
-
-        <ImageView
-            android:id="@+id/mal_out_black_1"
-            android:layout_width="31dp"
-            android:layout_height="45dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_2"
-            app:layout_constraintStart_toEndOf="@id/mal_out_black_0"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/selector_profile_cat" />
-
-        <ImageView
-            android:id="@+id/mal_out_black_2"
-            android:layout_width="31dp"
-            android:layout_height="45dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_3"
-            app:layout_constraintStart_toEndOf="@id/mal_out_black_1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/selector_profile_cat" />
-
-        <ImageView
-            android:id="@+id/mal_out_black_3"
-            android:layout_width="31dp"
-            android:layout_height="45dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/mal_out_black_2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/selector_profile_cat" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <!--    채팅창-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/guideline_temp"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_mal_score"
         app:layout_constraintBottom_toTopOf="@id/guideline_chat"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -398,12 +356,24 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!--    말 결과 리스트 -->
+    <LinearLayout
+        android:id="@+id/layout_mal_result"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/guideline_chat"
+        app:layout_constraintBottom_toTopOf="@id/guideline_yut_result">
+
+    </LinearLayout>
+
     <!--윷판 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/guideline_chat"
-        app:layout_constraintBottom_toTopOf="@id/guideline_footer"
+        app:layout_constraintTop_toBottomOf="@id/guideline_yut_result"
+        app:layout_constraintBottom_toTopOf="@id/guideline_yut_board"
         app:layout_constraintStart_toStartOf="parent">
 
 
@@ -454,7 +424,7 @@
                 android:id="@+id/mal_white_0"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                app:srcCompat="@drawable/selector_profile_cat" />
+                app:srcCompat="@drawable/selector_profile_w_cat" />
 
             <ImageView
                 android:id="@+id/mal_white_1"
@@ -486,6 +456,62 @@
 
         </RelativeLayout>
 
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    말들-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_footer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_yut_board">
+
+        <ImageView
+            android:id="@+id/mal_out_black_0"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_1"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/selector_profile_cat" />
+
+        <ImageView
+            android:id="@+id/mal_out_black_1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_2"
+            app:layout_constraintStart_toEndOf="@id/mal_out_black_0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/selector_profile_cat" />
+
+        <ImageView
+            android:id="@+id/mal_out_black_2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mal_out_black_3"
+            app:layout_constraintStart_toEndOf="@id/mal_out_black_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/selector_profile_cat" />
+
+        <ImageView
+            android:id="@+id/mal_out_black_3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/mal_out_black_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/selector_profile_cat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

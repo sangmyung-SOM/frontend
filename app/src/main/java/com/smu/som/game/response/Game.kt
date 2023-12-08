@@ -39,5 +39,13 @@ class Game {
         @Json(name = "player_id")
         val playerId: String
     )
+    data class GetGameDisconnect(
+        @Json("messageType")
+        var messageType: String,
+        @Json("room_id")
+        var roomId: String?,
+        @Json("player_id")
+        var playerId: String?
+    )
 
 }
