@@ -37,22 +37,24 @@ class GameMalResponse {
         var playerId : String
         var malId : Int
         var point : Int
+        var movement : List<Int>
         var nextPosition : Int
         var isEnd: Boolean
         var isCatchMal : Boolean
-        var catchMalId : Int
+        var catchMalList : List<Int>
         var isUpdaMal : Boolean
         var updaMalId : Int
 
-        constructor(userId: Long, playerId: String, malId: Int, point: Int, nextPosition: Int, isEnd: Boolean, isCatchMal: Boolean, catchMalId: Int, isUpdaMal: Boolean, updaMalId: Int){
+        constructor(userId: Long, playerId: String, malId: Int, point: Int, movement: List<Int>, nextPosition: Int, isEnd: Boolean, isCatchMal: Boolean, catchMalList: List<Int>, isUpdaMal: Boolean, updaMalId: Int){
             this.userId = userId
             this.playerId = playerId
             this.malId = malId
             this.point = point
+            this.movement = movement
             this.nextPosition = nextPosition
             this.isEnd = isEnd
             this.isCatchMal = isCatchMal
-            this.catchMalId = catchMalId
+            this.catchMalList = catchMalList
             this.isUpdaMal = isUpdaMal
             this.updaMalId = updaMalId
         }

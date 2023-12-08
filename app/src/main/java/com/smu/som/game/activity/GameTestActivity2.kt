@@ -37,6 +37,7 @@ import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
+import com.smu.som.game.YutConverter
 import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
@@ -139,7 +140,8 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 말 추가하기 버튼을 눌렀을 때 이벤트 리스너
         binding.btnAddToken2.setOnClickListener{
-            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            // [가나] 이후 수정 예정
+//            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
 
             // [가나] 말 이동 테스트 - 지우지 말아주세요
 //            malInList[0].visibility = View.VISIBLE
@@ -214,8 +216,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     Log.i("som-gana", "성공")
                                     // 말 클릭 이벤트 리스너 등록
                                     if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
-                                        val yutResult = yutResultStack.pop()
-                                        runOnUiThread{ setMalEventListener(response, yutResult) }
+                                        runOnUiThread{ setMalEventListener(response) }
                                     }
                                 },
                                 { throwable -> Log.i("som-gana", throwable.toString()) }
@@ -708,7 +709,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 클릭 이벤트 리스너 등록
         yut.setOnClickListener{
-            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResultStack.peek())
+            gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResult)
             binding.layoutMalResult.removeView(it) // 해당 윷결과 뷰 삭제
         }
 
@@ -744,7 +745,9 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
 
     // 어늘 말을 이동할지 클릭 이벤트 리스너 등록
-    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition, yutResult: Int){
+    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition){
+        val yutResult = YutConverter.toYutInt(response.yutResult)
+
         // 윷판 안에 있는 말
         for(i in 0 until 4){
             val mal = malInList[i]
@@ -791,7 +794,9 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         if(response.playerId == playerId){ // 내 턴인 경우
             if(response.isEnd){ // 도착한 말인지도 확인해야함
-
+                malOutList[response.malId].visibility = View.GONE
+                malInList[response.malId].visibility = View.GONE
+                return
             }
             if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
                 malOutList[response.malId].visibility = View.VISIBLE
@@ -805,27 +810,26 @@ class GameTestActivity2 : AppCompatActivity()  {
             malInList[response.malId].visibility = View.VISIBLE
 
             // 말 움직이기
-            malMoveUtils.move(malInList[response.malId], response.nextPosition)
+            malMoveUtils.move(malInList[response.malId], response.movement)
 
             if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
-                oppMalInList[response.catchMalId].visibility = View.GONE
-                oppMalInList[response.catchMalId].setImageResource(R.drawable.selector_profile_cat)
+                response.catchMalList.forEach { catchMalId ->
+                    oppMalInList[catchMalId].visibility = View.GONE
+                    oppMalInList[catchMalId].setImageResource(R.drawable.selector_profile_cat)
+                }
             }
             if(response.isUpdaMal){ // 내 말을 업었을 때
                 malInList[response.updaMalId].visibility = View.GONE
                 when(response.point){
-                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_2)
-                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_3)
-                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_w_4)
+                    2 -> malInList[response.malId].setImageResource(R.drawable.cat_w_2)
+                    3 -> malInList[response.malId].setImageResource(R.drawable.cat_w_3)
+                    4 -> malInList[response.malId].setImageResource(R.drawable.cat_w_4)
                 }
 
             }
         }
         else { // 상대방 턴인 경우
-            if(response.isEnd){ // 도착한 말인지도 확인해야함
-
-            }
-            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
+            if(response.isEnd || response.nextPosition == 0){ // 도착한 말이거나 윷판 밖에 있는 말에 해당하면
                 oppMalInList[response.malId].visibility = View.GONE
                 return
             }
@@ -834,19 +838,21 @@ class GameTestActivity2 : AppCompatActivity()  {
             oppMalInList[response.malId].visibility = View.VISIBLE
 
             // 말 움직이기
-            malMoveUtils.move(oppMalInList[response.malId], response.nextPosition)
+            malMoveUtils.move(oppMalInList[response.malId], response.movement)
 
             if(response.isCatchMal){ // 상대가 내 말을 잡았을 때
-                malInList[response.catchMalId].visibility = View.GONE
-                malInList[response.catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
-                malOutList[response.catchMalId].visibility = View.VISIBLE
+                response.catchMalList.forEach { catchMalId ->
+                    malInList[catchMalId].visibility = View.GONE
+                    malInList[catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
+                    malOutList[catchMalId].visibility = View.VISIBLE
+                }
             }
             if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
                 oppMalInList[response.updaMalId].visibility = View.GONE
                 when(response.point){
-                    2 -> malInList[response.malId].setImageResource(R.drawable.cat_b_2)
-                    3 -> malInList[response.malId].setImageResource(R.drawable.cat_b_3)
-                    4 -> malInList[response.malId].setImageResource(R.drawable.cat_b_4)
+                    2 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_b_2)
+                    3 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_b_3)
+                    4 -> oppMalInList[response.malId].setImageResource(R.drawable.cat_b_4)
                 }
 
             }
