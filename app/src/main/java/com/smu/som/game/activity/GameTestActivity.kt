@@ -294,7 +294,7 @@ class GameTestActivity : AppCompatActivity() {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
-                                        binding.btnAddToken.isEnabled = true
+                                        binding.btnAddMal.isEnabled = true
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
@@ -426,7 +426,7 @@ class GameTestActivity : AppCompatActivity() {
                                 // 자기 턴이면 말 추가하기 버튼 활성화 (상대방 턴이면 비활성화)
                                 if (result.playerId == playerId) {
                                     binding.btnThrowYut.isEnabled = false // 답변 결과를 받으면 윷 던지기 버튼 비활성화
-                                    binding.btnAddToken.isEnabled = true // 말 추가하기 버튼 활성화
+                                    binding.btnAddMal.isEnabled = true // 말 추가하기 버튼 활성화
                                 }
                             }
 
@@ -779,7 +779,7 @@ class GameTestActivity : AppCompatActivity() {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
-        binding.btnAddToken.isEnabled = false
+        binding.btnAddMal.isEnabled = false
       
         if(response.playerId == playerId){ // 내 턴인 경우
             if(response.isEnd){ // 도착한 말인지도 확인해야함
