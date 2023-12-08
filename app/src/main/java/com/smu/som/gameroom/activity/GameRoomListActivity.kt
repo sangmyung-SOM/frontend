@@ -2,6 +2,7 @@ package com.smu.som.gameroom.activity
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
@@ -121,12 +122,17 @@ class  GameRoomListActivity : AppCompatActivity() {
 
     private fun updateProfile() {
 
+        // 게임 설정 불러오기 (online_game_sp)
+        val sp = this.getSharedPreferences("online_game_sp", Context.MODE_PRIVATE)
+        val imageUrl = sp.getString("profileUrl", null)          // 카카오톡 프로필 사진
+        val userName = sp.getString("userName", null)              // 카카오톡 닉네임
+
         var url : String? = ""
         val profileImageView = findViewById<ImageView>(R.id.profile_img)
 
-        val receivedIntent = intent
-        val imageUrl = receivedIntent.getStringExtra("profileUrl")
-        val userName = receivedIntent.getStringExtra("userName")
+//        val receivedIntent = intent
+//        val imageUrl = receivedIntent.getStringExtra("profileUrl")
+//        val userName = receivedIntent.getStringExtra("userName")
 
         if (userName != null) {
             userNameTextView.text = userName
