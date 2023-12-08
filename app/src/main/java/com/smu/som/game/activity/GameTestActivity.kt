@@ -660,7 +660,7 @@ class GameTestActivity : AppCompatActivity() {
                     resource?.setLoopCount(1) // 1회만 재생하도록 설정
                     resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                         override fun onAnimationEnd(drawable: Drawable?) {
-                            gifImageView.visibility = View.GONE
+                            gifImageView.visibility = View.INVISIBLE
                         }
                     })
                     return false
