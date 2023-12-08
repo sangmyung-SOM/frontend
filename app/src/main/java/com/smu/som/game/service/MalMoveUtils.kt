@@ -5,7 +5,7 @@ import android.animation.ObjectAnimator
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import kotlin.math.log
+import androidx.core.animation.doOnEnd
 
 class MalMoveUtils (val board : View, val mal : ImageView){
 
@@ -24,7 +24,11 @@ class MalMoveUtils (val board : View, val mal : ImageView){
     private val regularsDiagonal : Array<Float> // 말 위치의 정규화 위한 값
     private var point: Point = Point()
 
+    private val sleepTime: Long
+
     init {
+        sleepTime = 300
+
         boardWidth = board.width - mal.width // 윷판 이미지 구성상 mal.width를 빼야했음.
         boardHeight = board.height - mal.height // 마찬가지. 윷판 이미지 구성이 달라진다면 mal 안빼도 됨.
         malWidth = mal.width
@@ -68,18 +72,40 @@ class MalMoveUtils (val board : View, val mal : ImageView){
     }
 
     // 말 움직이기
-    public fun move(mal:ImageView, idx:Int){
-        val coordinate = coordinates[idx]
+    public fun move(mal:ImageView, movement: List<Int>){
+        moveRecursive(mal, movement, 0)
+    }
+
+    private fun moveRecursive(mal: ImageView, movement: List<Int>, idx: Int){
+        if(idx == movement.size){
+            return
+        }
+        val animatorSet = makeMoveAnimation(mal, movement[idx])
+
+        animatorSet.start()
+        animatorSet.doOnEnd {
+            moveRecursive(mal, movement, idx+1)
+        }
+    }
+
+    // 말 움직이기 애니메이션 생성
+    private fun makeMoveAnimation(mal:ImageView, nextPosition: Int) : AnimatorSet{
+        val coordinate = coordinates[nextPosition]
 
         Log.i("som-gana", "trans x=${coordinate.x}")
         Log.i("som-gana", "trans y=${coordinate.y}")
 
         val moveX = ObjectAnimator.ofFloat(mal, "translationX", coordinate.x)
         val moveY = ObjectAnimator.ofFloat(mal, "translationY", coordinate.y)
-        val AnimatorSet = AnimatorSet()
-        AnimatorSet.playTogether(moveX,moveY)
-        AnimatorSet.duration = 300
-        AnimatorSet.start();
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(moveX,moveY)
+        animatorSet.duration = sleepTime
+        return animatorSet;
+    }
+
+    // 말 움직이기
+    public fun move(mal:ImageView, nextPosition: Int){
+        makeMoveAnimation(mal, nextPosition).start();
     }
 
     public fun setPosition(mal:ImageView, idx:Int){
