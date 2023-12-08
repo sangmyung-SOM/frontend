@@ -8,6 +8,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 
 import android.util.Log
 import android.util.TypedValue
@@ -160,8 +161,15 @@ class GameTestActivity : AppCompatActivity() {
 //            }
         }
 
+        var mLastClickTime = 0L
         // 윷 던지기 버튼 클릭 이벤트
-        btn_throw_yut.setOnClickListener() {
+        binding.btnThrowYut.setOnClickListener {
+            // 중복 클릭 시간 차이 1초
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 3000){
+                return@setOnClickListener
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
+
             gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
         }
 
@@ -348,28 +356,11 @@ class GameTestActivity : AppCompatActivity() {
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
                                 if (result?.messageType == "CATCH_MAL" && result.playerId == playerId) {
-//                                    val catchMalDialog = AlertDialog.Builder(this)
-//                                        .setTitle("말 잡기")
-//                                        .setMessage("상대방의 말을 잡았습니다!")
-//                                        .setPositiveButton("확인") { dialog, which ->
-//                                            dialog.dismiss()
-//                                        }
-//                                        .create()
-//
-//                                    catchMalDialog.show()
                                     binding.btnThrowYut.isEnabled = true
                                     Toast.makeText(this, "상대방의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
 
                                 }
                                 else if (result?.messageType == "CATCH_MAL" && result.playerId == "2P") {
-//                                    val dialog = AlertDialog.Builder(this)
-//                                        .setTitle("말 잡기")
-//                                        .setMessage("상대방이 당신의 말을 잡았습니다!")
-//                                        .setPositiveButton("확인") { dialog, which ->
-//                                            dialog.dismiss()
-//                                        }
-//                                        .create()
-//                                    dialog.show()
                                     Toast.makeText(this, "상대방이 당신의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
                                 }
                                 else {
@@ -563,19 +554,17 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     private fun setTurnChangeUI() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (btnState) // true : 1P 차례
-             {
-                binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
-                binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
-            }
-            else {
-                binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
-                binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
-            }
-            binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
-            binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
-        }, 2000)
+        if (btnState) // true : 1P 차례
+         {
+            binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
+            binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
+        }
+        else {
+            binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
+            binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
+        }
+        binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
+        binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
     }
 
     // 카테고리 설정에 따른 UI 변경

@@ -9,6 +9,7 @@ import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -55,8 +56,10 @@ import com.smu.som.gameroom.activity.GameRoomListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
+import kotlinx.android.synthetic.main.activity_online_game_2.btn_throw_yut_2
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -151,10 +154,16 @@ class GameTestActivity2 : AppCompatActivity()  {
 //                count++
 //            }
         }
+        var mLastClickTime = 0L
 
         // 윷 던지기 버튼 클릭 이벤트
-        binding.btnThrowYut2.setOnClickListener() {
-            gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+        binding.btnThrowYut2.setOnClickListener {
+            // 중복 클릭 시간 차이 1초
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 3000){
+                return@setOnClickListener
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
+              gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
         }
 
         // 게임방법 설명
@@ -357,28 +366,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
                                 if (result?.messageType == "CATCH_MAL" && result.playerId == "2P") {
-//                                    val catchMalDialog = AlertDialog.Builder(this)
-//                                        .setTitle("말 잡기")
-//                                        .setMessage("상대방의 말을 잡았습니다!")
-//                                        .setPositiveButton("확인") { dialog, which ->
-//                                            dialog.dismiss()
-//                                        }
-//                                        .create()
-//
-//                                    catchMalDialog.show()
                                     binding.btnThrowYut2.isEnabled = true
-
                                     Toast.makeText(this, "상대방의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
                                 }
                                 else if (result?.messageType == "CATCH_MAL" && result.playerId == "1P") {
-//                                    val dialog = AlertDialog.Builder(this)
-//                                        .setTitle("말 잡기")
-//                                        .setMessage("상대방이 당신의 말을 잡았습니다!")
-//                                        .setPositiveButton("확인") { dialog, which ->
-//                                            dialog.dismiss()
-//                                        }
-//                                        .create()
-//                                    dialog.show()
                                     Toast.makeText(this, "상대방이 당신의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
                                 }
                                 else {
@@ -575,19 +566,18 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
 
     private fun setTurnChangeUI() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (!btnState) // true : 1P 차례
-            {
-                binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
-                binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
-            }
-            else {
-                binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
-                binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
-            }
-            binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
-            binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
-        }, 4000)
+
+        if (!btnState) // true : 1P 차례
+        {
+            binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
+            binding.viewProfilePick2P.setBackgroundResource(R.drawable.not_pick)
+        }
+        else {
+            binding.viewProfilePick1P.setBackgroundResource(R.drawable.not_pick)
+            binding.viewProfilePick2P.setBackgroundResource(R.drawable.pick)
+        }
+        binding.profileImgCatP1.isEnabled = !binding.profileImgCatP1.isEnabled
+        binding.profileImgCatP2.isEnabled = !binding.profileImgCatP2.isEnabled
     }
 
     private fun settingCategory(category: String?, adult: String?) {
