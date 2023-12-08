@@ -75,6 +75,13 @@ class StartActivityClicked : AppCompatActivity() {
         }
 
         onlineStart.setOnClickListener {
+
+            val sp = this.getSharedPreferences("online_game_sp", Context.MODE_PRIVATE)
+            val editor = sp.edit()
+            editor.putString("profileUrl", url)
+            editor.putString("userName", userName)
+            editor.commit()
+
             // 이동할 액티비티 위에 있는 액티비티 모두 삭제
             // A-B-C-D 이렇게 네개의 액티비티가 스택에 쌓여있을 경우 B를 호출하게 되면 B위에 쌓여있던 C, D는 제거 되고 A와 B만 남게된다.
             val intent = Intent(this, GameRoomListActivity::class.java)

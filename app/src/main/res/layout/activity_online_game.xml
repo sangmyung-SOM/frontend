@@ -537,6 +537,7 @@
             android:padding="0dp"
             android:scaleType="centerCrop"
             android:src="@drawable/btn_add_mal"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_throw_yut"
             app:layout_constraintStart_toStartOf="parent"
