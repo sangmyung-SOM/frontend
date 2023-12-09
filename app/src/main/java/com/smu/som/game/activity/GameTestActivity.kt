@@ -714,8 +714,8 @@ class GameTestActivity : AppCompatActivity() {
         malMoveUtils = MalMoveUtils(binding.yutBoard, binding.malBlack0)
 
         // 말의 초기 위치 지정하기
-        malInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
-        oppMalInList.forEach { mal -> malMoveUtils.setPosition(mal, 20) }
+        malInList.forEach { mal -> malMoveUtils.initPosition(mal) }
+        oppMalInList.forEach { mal -> malMoveUtils.initPosition(mal) }
 
         // 윷판에 있는 말은 숨기기
         malInList.forEach { mal -> mal.visibility = View.GONE }
@@ -794,6 +794,7 @@ class GameTestActivity : AppCompatActivity() {
                 response.catchMalList.forEach { catchMalId ->
                     oppMalInList[catchMalId].visibility = View.GONE
                     oppMalInList[catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
+                    malMoveUtils.initPosition(oppMalInList[catchMalId])
                 }
             }
             if(response.isUpdaMal){ // 내 말을 업었을 때
@@ -823,6 +824,7 @@ class GameTestActivity : AppCompatActivity() {
                     malInList[catchMalId].visibility = View.GONE
                     malInList[catchMalId].setImageResource(R.drawable.selector_profile_cat)
                     malOutList[catchMalId].visibility = View.VISIBLE
+                    malMoveUtils.initPosition(malInList[catchMalId])
                 }
             }
             if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
