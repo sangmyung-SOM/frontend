@@ -65,54 +65,6 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         }
     }
 
-    // 특정 위치의 좌표찾기
-    public fun getPosition(idx : Int) : Pair<Float, Float>{
-        val coordinate = coordinates[idx]
-        return Pair(coordinate.x, coordinate.y)
-    }
-
-    // 말 움직이기
-    public fun move(mal:ImageView, movement: List<Int>){
-        moveRecursive(mal, movement, 0)
-    }
-
-    private fun moveRecursive(mal: ImageView, movement: List<Int>, idx: Int){
-        if(idx == movement.size){
-            return
-        }
-        val animatorSet = makeMoveAnimation(mal, movement[idx])
-
-        animatorSet.start()
-        animatorSet.doOnEnd {
-            moveRecursive(mal, movement, idx+1)
-        }
-    }
-
-    // 말 움직이기 애니메이션 생성
-    private fun makeMoveAnimation(mal:ImageView, nextPosition: Int) : AnimatorSet{
-        val coordinate = coordinates[nextPosition]
-
-        Log.i("som-gana", "trans x=${coordinate.x}")
-        Log.i("som-gana", "trans y=${coordinate.y}")
-
-        val moveX = ObjectAnimator.ofFloat(mal, "translationX", coordinate.x)
-        val moveY = ObjectAnimator.ofFloat(mal, "translationY", coordinate.y)
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(moveX,moveY)
-        animatorSet.duration = sleepTime
-        return animatorSet;
-    }
-
-    // 말 움직이기
-    public fun move(mal:ImageView, nextPosition: Int){
-        makeMoveAnimation(mal, nextPosition).start();
-    }
-
-    public fun setPosition(mal:ImageView, idx:Int){
-        mal.x = coordinates[idx].x
-        mal.y = coordinates[idx].y
-    }
-
     private fun setX(){
         // 대각선에 있는 점들
         for(i in 1..5){
@@ -157,12 +109,69 @@ class MalMoveUtils (val board : View, val mal : ImageView){
         }
     }
 
+    // 특정 위치의 좌표찾기
+    public fun getPosition(idx : Int) : Pair<Float, Float>{
+        val coordinate = coordinates[idx]
+        return Pair(coordinate.x, coordinate.y)
+    }
+
+    // 말 움직이기
+    public fun move(mal:ImageView, movement: List<Int>){
+        moveEachCell(mal, movement, 0)
+    }
+
+    // 말이 한칸씩 움직일 수 있도록 애니메이션 설정
+    private fun moveEachCell(mal: ImageView, movement: List<Int>, idx: Int){
+        if(idx == movement.size){ // 이동 완료
+            return
+        }
+        val animatorSet = makeMoveAnimation(mal, movement[idx])
+
+        animatorSet.start()
+        animatorSet.doOnEnd {
+            moveEachCell(mal, movement, idx+1)
+        }
+    }
+
+    // 말 움직이기 애니메이션 생성
+    private fun makeMoveAnimation(mal:ImageView, nextPosition: Int) : AnimatorSet{
+        val coordinate = coordinates[nextPosition]
+
+        Log.i("som-gana", "trans x=${coordinate.x}")
+        Log.i("som-gana", "trans y=${coordinate.y}")
+
+        val moveX = ObjectAnimator.ofFloat(mal, "translationX", coordinate.x)
+        val moveY = ObjectAnimator.ofFloat(mal, "translationY", coordinate.y)
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(moveX,moveY)
+        animatorSet.duration = sleepTime
+        return animatorSet;
+    }
+
+    // 말 움직이기
+    public fun move(mal:ImageView, nextPosition: Int){
+        makeMoveAnimation(mal, nextPosition).start();
+    }
+
+    public fun setPosition(mal:ImageView, idx:Int){
+        mal.x = coordinates[idx].x
+        mal.y = coordinates[idx].y
+    }
+
+    public fun initPosition(mal:ImageView){
+        mal.x = coordinates[point.initPosition].x
+        mal.y = coordinates[point.initPosition].y
+    }
+
+
     private class Point{
         var sameXOutline : Array<List<Int>>
         var sameYOutline : Array<List<Int>>
 
         var sameXDiagonal : Array<List<Int>> // 대각선에 있는 점
         var sameYDiagonal : Array<List<Int>> // 대각선에 있는 점
+
+        val initPosition = 20 // 말의 시작 위치
 
         init {
             sameXOutline = arrayOf(
