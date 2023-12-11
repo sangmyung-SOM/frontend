@@ -3,8 +3,8 @@
     <solid
         android:color="@color/dialog_title"/>
     <corners
-        android:topLeftRadius="15dp"
-        android:topRightRadius="15dp"/>
+        android:topLeftRadius="35dp"
+        android:topRightRadius="35dp"/>
     <stroke
         android:width="3dp"
         android:color="@color/dialog_stroke" />

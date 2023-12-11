@@ -5,5 +5,8 @@
         android:color="@color/dialog_btn_enter"/>
     <corners
         android:radius="10dp"/>
+    <stroke
+        android:width="0.5dp"
+        android:color="@color/dialog_stroke" />
 
 </shape>

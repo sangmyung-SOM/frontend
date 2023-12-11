@@ -11,9 +11,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#6200EE</color>
-    <color name="mymsg">#FEEB34</color>
-    <color name="remsg">#FFFFFF</color>
-    <color name="enmsg">#7797AB</color>
+    <color name="mymsg">#EEC64B</color>
+    <color name="remsg">#FFFCF6</color>
+    <color name="enmsg">#424242</color>
     <color name="colorChatMessageBackground">#99BBD0</color>
 
     <color name="dialog_title">#877568</color>

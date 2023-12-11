@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/sm_space"
-    android:background="@color/enmsg"
+    android:background="@drawable/enter_chat"
     android:orientation="vertical"
     android:padding="@dimen/sm_space">
 
@@ -12,9 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="@font/nanumsquare_acl"
+        android:fontFamily="@font/nanum_gothic"
         android:text="입장 메세지"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:textSize="@dimen/sm_fontsize"
-        android:textStyle="bold"/>
+        />
 </LinearLayout>

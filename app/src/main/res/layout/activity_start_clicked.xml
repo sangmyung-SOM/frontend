@@ -6,15 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--    <ImageView-->
-    <!--        android:id="@+id/start"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:src="@drawable/title_proto"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
         android:id="@+id/userNameTextView"
@@ -25,33 +16,9 @@
         app:layout_constraintHorizontal_bias="0.632"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.007"></TextView>
+        app:layout_constraintVertical_bias="0.007">
+    </TextView>
 
-    <!-- 버튼 숨김
-    <ImageView
-        android:id="@+id/findRoom"
-        android:layout_width="176dp"
-        android:layout_height="50dp"
-        android:src="@drawable/btn_room_find"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.831"></ImageView>
-
-    <ImageView
-        android:id="@+id/makeRoom"
-        android:layout_width="176dp"
-        android:layout_height="50dp"
-        android:src="@drawable/btn_room_create"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.913"></ImageView>
-     -->
 
     <ImageView
         android:id="@+id/select_play_rectangle"
@@ -62,32 +29,29 @@
         android:background="@drawable/online_rectangle"
         />
 
-
     <ImageView
         android:id="@+id/onlineStart"
         android:layout_width="273dp"
         android:layout_height="104dp"
-        android:src="@drawable/btn_online"
         android:layout_marginTop="20dp"
+        android:src="@drawable/btn_online"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/select_play_rectangle"
-        app:layout_constraintVertical_bias="0.866"></ImageView>
+        app:layout_constraintTop_toTopOf="@+id/select_play_rectangle">
+    </ImageView>
 
     <ImageView
         android:id="@+id/profile"
         android:layout_width="70dp"
         android:layout_height="60dp"
         android:src="@drawable/profile"
-        android:background="@drawable/profile_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.073"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023"
-        >
+        app:layout_constraintVertical_bias="0.023">
     </ImageView>
 
     <ImageView
@@ -100,7 +64,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.007"></ImageView>
+        app:layout_constraintVertical_bias="0.007">
+    </ImageView>
 
     <ImageView
         android:id="@+id/explain_btn"
@@ -112,7 +77,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.073"></ImageView>
+        app:layout_constraintVertical_bias="0.073">
+    </ImageView>
 
     <ImageView
         android:id="@+id/offlineStart"
@@ -126,7 +92,21 @@
         app:layout_constraintTop_toTopOf="@+id/onlineStart"
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="5dp"
-        app:layout_constraintVertical_bias="0.976"></ImageView>
+        app:layout_constraintVertical_bias="0.976">
+    </ImageView>
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="393dp"
+        android:layout_height="407dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="51dp"
+        app:layout_constraintBottom_toBottomOf="@+id/onlineStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/mainhome_img"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
