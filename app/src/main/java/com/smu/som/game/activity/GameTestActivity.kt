@@ -12,7 +12,6 @@ import android.os.SystemClock
 
 import android.util.Log
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ImageView
@@ -35,7 +34,6 @@ import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
@@ -53,6 +51,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.dialog.GameEndDialog
+import com.smu.som.game.dialog.GameRuleDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
 import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.GameMalResponse
@@ -61,6 +60,9 @@ import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
+import com.smu.som.game.wish.AnsweringPassDialog
+import com.smu.som.game.wish.AnsweringWishDialog
+import com.smu.som.game.wish.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
@@ -118,6 +120,8 @@ class GameTestActivity : AppCompatActivity() {
     var category: String? = null                                // API 요청 시 필요한 카테고리 (영어)
     var kcategory: String? = null                               // 사용자에게 보여질 카테고리 (한글)
     var adult: String? = null                                   // 성인 여부
+    var passCard_cnt = 0                                        // 패스권 개수
+    var penalty = 0                                             // 패널티 개수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,6 +158,7 @@ class GameTestActivity : AppCompatActivity() {
             mLastClickTime = SystemClock.elapsedRealtime()
 
             gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+            binding.btnThrowYut.isEnabled = false
         }
 
         // 채팅방 입장 클릭 이벤트 리스너
@@ -163,16 +168,8 @@ class GameTestActivity : AppCompatActivity() {
 
         // 게임방법 설명
         binding.btnRule.setOnClickListener {
-            val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val view1 = inflater.inflate(R.layout.activity_online_gamerule1, null)
-            val alertDialog1 = AlertDialog.Builder(this)
-                .setTitle("게임 방법")
-                .setPositiveButton("다음") { dialog, which ->
-                    showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
-                }
-                .setNegativeButton("취소", null)
-            alertDialog1.setView(view1)
-            alertDialog1.setCancelable(false).show()
+            val dialog = GameRuleDialog(this)
+            dialog.show()
         }
 
         if (bundle != null) {
@@ -306,7 +303,7 @@ class GameTestActivity : AppCompatActivity() {
                                             tv_nickname_p2.text = constant.SENDER
                                         }
 
-                                        binding.viewProfileP1.setBackgroundResource(R.drawable.pick)
+                                        binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
 
                                     }
 
@@ -334,12 +331,16 @@ class GameTestActivity : AppCompatActivity() {
                             }
                         }
 
+                        // 윷 던진 결과를 받음
                         throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
+
                                 if (result?.messageType == "CATCH_MAL" && result.playerId == playerId) {
                                     binding.btnThrowYut.isEnabled = true
+                                    val dialog = WishDialog(this, stomp)
+                                    dialog.show()
                                     Toast.makeText(this, "상대방의 말을 잡았습니다!", Toast.LENGTH_SHORT).show()
 
                                 }
@@ -371,22 +372,51 @@ class GameTestActivity : AppCompatActivity() {
 
                         }
 
+                        // 질문을 받아오는 채널
                         questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<QnAResponse.GetQuestion>(stompMessage)
                             runOnUiThread {
-                                    if(result?.playerId == "2P") {
-                                        val questionMessage = result.question
-                                        val questionView = GetQuestionDialog(this, questionMessage)
-                                        questionView.showPopup()
-                                        // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
-                                        if (questionView.isShowing) {
-                                            questionView.dismiss()
+                                if(result?.playerId == "2P") {
+                                    val questionMessage = result.question
+                                    val questionView = GetQuestionDialog(this, questionMessage)
+                                    questionView.showPopup()
+                                    // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
+                                    if (questionView.isShowing) {
+                                        questionView.dismiss()
+                                    }
+                                }
+
+                                if (result?.playerId == playerId) {
+                                    penalty = result.penalty
+                                    if (penalty == 1){
+                                        // 말 놓기 버튼 비활성화 -- 구현중
+                                        binding.btnAddMal.isEnabled = false
+                                        // 윷 결과 삭제
+                                        for (i in 1..yutResultStack.size) {
+                                            num = yutResultStack.pop()
+                                            setYutResultInViewRemove(num)
+                                            Log.i("som-jsy", "윷 $num 삭제")
                                         }
                                     }
-                            }
+                                    Log.i("som-jsy", "penalty: $penalty")
+                                }
 
+                            }
                         }
+
+                        // 상대방이 추가 질문권을 사용하여 대답 해야 하는 경우
+                        stomp.join("/topic/game/question/wish" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<QnAResponse.GetAnswer>(stompMessage)
+                            runOnUiThread {
+                                if (result?.playerId != playerId) {
+                                    val dialog = AnsweringWishDialog(this, result?.answer, stomp)
+                                    dialog.show()
+                                }
+                            }
+                        }
+
 
                         // 답변 결과를 받는 채널
                         answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
@@ -397,16 +427,33 @@ class GameTestActivity : AppCompatActivity() {
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
 
-                                // 자기 턴이면 말 추가하기 버튼 활성화 (상대방 턴이면 비활성화)
-                                if (result.playerId == playerId) {
-                                    binding.btnThrowYut.isEnabled = false // 답변 결과를 받으면 윷 던지기 버튼 비활성화
-//                                    binding.btnAddMal.isEnabled = true // 말 추가하기 버튼 활성화
-                                }
                             }
 
                         }
 
-                       // 처음 입장
+                        // 패스권 적립 결과를 받는 채널
+                        stomp.join("/topic/game/room/" + constant.GAMEROOM_ID + "/wish/pass")
+                            .subscribe(
+                                { success ->
+                                    val response = Klaxon().parse<Game.PassWish>(success)
+                                    if (response?.playerId == playerId) {
+                                        runOnUiThread {
+                                           // 패스권 개수가 기존보다 증가했을 때
+                                            if (passCard_cnt < response.passCard!!) {
+                                                Toast.makeText(this, "패스권이 적립되었습니다.", Toast.LENGTH_SHORT).show()
+                                            }
+                                            // 패스권 개수가 기존보다 감소했을 때
+                                            else {
+                                                Toast.makeText(this, "패스권이 사용되었습니다.", Toast.LENGTH_SHORT).show()
+                                            }
+                                            passCard_cnt = response.passCard!!
+                                        }
+                                    }
+                                },
+                        { throwable -> Log.i("som-jsy", throwable.toString()) }
+                        )
+
+                        // 처음 입장
                         try {
                             jsonObject.put("messageType", "WAIT")
                             jsonObject.put("room_id", constant.GAMEROOM_ID)
@@ -493,8 +540,14 @@ class GameTestActivity : AppCompatActivity() {
 
                         // gif 모션 끝나면 질문 다이얼로그 띄우기
                         Handler(Looper.getMainLooper()).postDelayed({
-                            val answeringDialog = AnsweringDialog(this@GameTestActivity, question, stomp)
-                            answeringDialog.showPopup()
+                            if (passCard_cnt > 0) {
+                                val dialog = AnsweringPassDialog(this@GameTestActivity, question, stomp)
+                                dialog.showPopup()
+                            }
+                            else {
+                                val answeringDialog = AnsweringDialog(this@GameTestActivity, question, stomp, penalty)
+                                answeringDialog.showPopup()
+                            }
                         }, 4000)
 
                     }
@@ -694,6 +747,27 @@ class GameTestActivity : AppCompatActivity() {
         binding.layoutMalResult.addView(yut)
     }
 
+    // 구현중
+    private fun setYutResultInViewRemove(num: Int?) {
+        var yut : ImageView = ImageView(this)
+
+        // 크기 설정
+        val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(dpToPx(this, 60f), dpToPx(this, 50f))
+        yut.layoutParams = params
+        yut.setPadding(dpToPx(this, 5f), 0, dpToPx(this, 5f), 0)
+
+        when(num){
+            0 -> yut.setImageResource(R.drawable.yut1_back_do)
+            1 -> yut.setImageResource(R.drawable.yut1_do)
+            2 -> yut.setImageResource(R.drawable.yut1_gae)
+            3 -> yut.setImageResource(R.drawable.yut1_gul)
+            4 -> yut.setImageResource(R.drawable.yut1_yut)
+            5 -> yut.setImageResource(R.drawable.yut1_mo)
+        }
+        // 레이아웃에 추가되어 있는 윷 결과 뷰 삭제
+        binding.layoutMalResult.removeView(yut)
+    }
+
     // dp -> px 단위 변경
     private fun dpToPx(context: Context, dp: Float): Int {
         return TypedValue.applyDimension(
@@ -813,28 +887,5 @@ class GameTestActivity : AppCompatActivity() {
 
             }
         }
-    }
-
-    fun showSecondPage(inflater: LayoutInflater) {
-        val view2 = inflater.inflate(R.layout.activity_online_gamerule2, null)
-        val alertDialog2 = AlertDialog.Builder(this).setTitle("게임 방법")
-            .setPositiveButton("확인", null)
-            .setNegativeButton("이전") { dialog, which ->
-                showFirstPage(inflater) // 이전 설명 페이지를 보여주는 함수 호출
-            }
-        alertDialog2.setView(view2)
-        alertDialog2.setCancelable(false).show()
-    }
-
-    fun showFirstPage(inflater: LayoutInflater) {
-        val view1 = inflater.inflate(R.layout.activity_online_gamerule1, null)
-        val alertDialog1 = AlertDialog.Builder(this)
-            .setTitle("게임 방법")
-            .setPositiveButton("다음") { dialog, which ->
-                showSecondPage(inflater) // 설명 2페이지를 보여주는 함수 호출
-            }
-            .setNegativeButton("취소", null)
-        alertDialog1.setView(view1)
-        alertDialog1.setCancelable(false).show()
     }
 }

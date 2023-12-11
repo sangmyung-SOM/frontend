@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -17,7 +18,7 @@ import com.smu.som.game.GameConstant
 import com.smu.som.game.service.GameStompService
 import org.json.JSONException
 
-class AnsweringDialog(context: Context, private val questionList: ArrayList<Question>?, val stomp: StompClient) : Dialog(context) {
+class AnsweringDialog(context: Context, private val questionList: ArrayList<Question>?, val stomp: StompClient, private val penalty: Int) : Dialog(context) {
 
     val bundle: Bundle = Bundle()
     var request = JsonObject()
@@ -66,21 +67,31 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         }
     }
 
-    // 질문변경 버튼을 클릭했을 때
+    // 질문변경 버튼을 클릭했을 때 패널티 있는 패스 1회만 허용
     private fun setClickEventToBtnChange(){
-        var showQuestionTxt : TextView = findViewById(R.id.question)
+        val showQuestionTxt : TextView = findViewById(R.id.question)
         val btnChange : Button = findViewById(R.id.changeButton)
+
         btnChange.setOnClickListener {
+            if (penalty == 1) {
+                Toast.makeText(context, "패널티가 있어 질문을 변경할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val questionMsg = questionList?.get(1)?.question
             showQuestionTxt.text = questionMsg
             val questionId = questionList?.get(1)?.id
 
             try {
                 val qStompService = GameStompService(stomp)
-                qStompService.sendQuestion(questionMsg!!, questionId!!)
+                qStompService.sendQuestionPass(questionMsg!!, questionId!!)
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
+
+            btnChange.isEnabled = false
+            btnChange.setOnClickListener(null)
+            Toast.makeText(context, "질문 변경 1회 사용!\n 더이상 변경이 불가능 합니다.", Toast.LENGTH_SHORT).show()
         }
 
     }

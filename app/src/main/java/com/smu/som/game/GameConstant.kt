@@ -2,6 +2,7 @@ package com.smu.som.game
 
 object GameConstant {
     val TURN_CHANGE: String = "TURN_CHANGE"
+    val MY_TURN: String = "MY_TURN"
 
     var GAME_TURN: String = ""
 

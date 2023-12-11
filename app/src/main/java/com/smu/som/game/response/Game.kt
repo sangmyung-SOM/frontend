@@ -47,5 +47,13 @@ class Game {
         @Json("player_id")
         var playerId: String?
     )
+    data class PassWish (
+        @Json("room_id")
+        var roomId: String?,
+        @Json("player_id")
+        var playerId: String?,
+        @Json("pass_card")
+        var passCard: Int?
+    )
 
 }

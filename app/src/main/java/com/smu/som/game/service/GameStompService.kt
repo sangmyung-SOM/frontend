@@ -36,4 +36,21 @@ class GameStompService(private val stomp : StompClient) {
         stomp.send("/app/game/throw", request.toString())
             .subscribe()
     }
+
+    fun sendQuestionPass(questionMsg: String, questionId: Int) {
+        var request = JsonObject()
+
+        try {
+            request.addProperty("room_id", GameConstant.GAMEROOM_ID)
+            request.addProperty("player_id", GameConstant.GAME_TURN)
+            request.addProperty("question_id", questionId)
+            request.addProperty("question", questionMsg)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        stomp.send("/app/game/question/pass", request.toString())
+            .subscribe()
+
+    }
 }

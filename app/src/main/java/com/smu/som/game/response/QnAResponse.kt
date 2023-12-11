@@ -8,7 +8,9 @@ class QnAResponse {
         @Json("player_id")
         var playerId: String,
         @Json("question")
-        var question: String
+        var question: String,
+        @Json("penalty")
+        var penalty: Int
     )
 
     class GetAnswer (
@@ -16,7 +18,5 @@ class QnAResponse {
         var playerId: String,
         @Json("answer")
         var answer: String,
-        @Json("turn_change")
-        var turnChange: String
     )
 }
