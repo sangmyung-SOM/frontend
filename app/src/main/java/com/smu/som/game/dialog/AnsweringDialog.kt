@@ -73,7 +73,7 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         val btnChange : Button = findViewById(R.id.changeButton)
 
         btnChange.setOnClickListener {
-            if (penalty == 1) {
+            if (penalty == 2) {
                 Toast.makeText(context, "패널티가 있어 질문을 변경할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
