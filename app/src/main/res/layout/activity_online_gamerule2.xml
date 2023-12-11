@@ -51,7 +51,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <Button
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btn_cancel_2"
         android:layout_width="142dp"
         android:layout_height="51dp"
         android:layout_marginTop="30dp"
@@ -61,14 +61,14 @@
         android:text="닫기"
         android:textSize="16sp"
         android:fontFamily="@font/nanum_gothic_bold"
-        app:layout_constraintEnd_toStartOf="@+id/btn_enter"
+        app:layout_constraintEnd_toStartOf="@+id/btn_pre"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_gameroom_id"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <Button
-        android:id="@+id/btn_enter"
+        android:id="@+id/btn_pre"
         android:layout_width="142dp"
         android:layout_height="51dp"
         android:layout_marginTop="30dp"
@@ -79,7 +79,7 @@
         android:textSize="16sp"
         android:fontFamily="@font/nanum_gothic_bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+        app:layout_constraintStart_toEndOf="@+id/btn_cancel_2"
         app:layout_constraintTop_toBottomOf="@+id/et_gameroom_id"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

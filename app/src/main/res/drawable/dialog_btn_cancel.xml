@@ -4,6 +4,6 @@
     <solid
         android:color="@color/dialog_btn_cancel"/>
     <corners
-        android:radius="20dp"/>
+        android:radius="10dp"/>
 
 </shape>

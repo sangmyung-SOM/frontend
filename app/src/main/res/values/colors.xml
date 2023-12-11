@@ -32,5 +32,8 @@
     <color name="game_roomList_not_click">#E4DAC9</color>
 
     <color name="touch_home">#BCBCBC</color>
+    <color name="pass_btn">#8CEDA7</color>
+    <color name="text_color">#534A45</color>
+    <color name="wish_info_text">#DF7F3E</color>
 
 </resources>

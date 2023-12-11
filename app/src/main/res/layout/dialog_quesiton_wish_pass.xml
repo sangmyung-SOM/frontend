@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="290dp"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/dialog_container"
+    >
+
+    <TextView
+        android:id="@+id/question_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_title"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:gravity="center"
+        android:text="질문"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.038"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="질문이 들어갈 텍스트 뷰입니다."
+        android:textColor="@color/text_color"
+        android:textSize = "17sp"
+        android:fontFamily="@font/nanum_gothic_bold"
+        android:breakStrategy="balanced"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        />
+
+
+    <EditText
+        android:id="@+id/user_answer"
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/dialog_edittext"
+        android:fontFamily="@font/nanum_gothic"
+        android:hint="답변 입력창"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/question"
+        app:layout_constraintBottom_toTopOf="@+id/passButton"
+        app:layout_constraintEnd_toStartOf="@+id/completeButton"
+        app:layout_constraintHorizontal_bias="0.552"
+        app:layout_constraintStart_toEndOf="@+id/passButton" />
+
+    <Button
+        android:id="@+id/passButton"
+        android:layout_width="118.11dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/passbtn"
+        android:text="질문패스"
+        android:fontFamily="@font/nanum_gothic_bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+    <Button
+        android:id="@+id/completeButton"
+        android:layout_width="118.11dp"
+        android:layout_height="42dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/answer_complete_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintStart_toEndOf="@+id/passButton"
+        tools:ignore="SpeakableTextPresentCheck"
+        />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
