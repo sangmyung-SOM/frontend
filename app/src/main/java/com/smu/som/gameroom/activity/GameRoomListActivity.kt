@@ -23,6 +23,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_gameroom_list.createBtn
 import kotlinx.android.synthetic.main.activity_gameroom_list.enterButton
+import kotlinx.android.synthetic.main.activity_gameroom_list.profile
 import kotlinx.android.synthetic.main.activity_gameroom_list.recycler_gameroom
 import kotlinx.android.synthetic.main.activity_gameroom_list.refresh
 import kotlinx.android.synthetic.main.activity_gameroom_list.userNameTextView
@@ -128,7 +129,6 @@ class  GameRoomListActivity : AppCompatActivity() {
         val userName = sp.getString("userName", null)              // 카카오톡 닉네임
 
         var url : String? = ""
-        val profileImageView = findViewById<ImageView>(R.id.profile_img)
 
 //        val receivedIntent = intent
 //        val imageUrl = receivedIntent.getStringExtra("profileUrl")
@@ -138,14 +138,18 @@ class  GameRoomListActivity : AppCompatActivity() {
             userNameTextView.text = userName
         }
 
-        // 이미지를 표시할 ImageView 참조 가져오기
-        val imageView: ImageView = findViewById(R.id.profile)
+        if (imageUrl == "") {
+            profile.setImageResource(R.drawable.profile)
+        } else {
+            // 이미지를 표시할 ImageView 참조 가져오기
+            val imageView: ImageView = findViewById(R.id.profile)
 
-        // Glide를 사용하여 이미지 로드
-        Glide.with(this)
-            .load(imageUrl)
-            .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
-            .into(imageView)
+            // Glide를 사용하여 이미지 로드
+            Glide.with(this)
+                .load(imageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
+                .into(imageView)
+        }
     }
 
 

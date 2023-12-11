@@ -48,9 +48,8 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         val textView : TextView = findViewById(R.id.confirmTextView)
 
         // 방 생성이 완료되었습니다
-        textView.text = "$name_1P 방 생성이 완료되었습니다."
+        textView.text = "$name_1P 님 방 생성이 완료되었습니다."
 
-//        setClickEventToRoomCodeCopyIcon(gameRoomId)
 
         val bundle: Bundle = Bundle()
 
@@ -76,7 +75,6 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
         }
 
         closeButton.setOnClickListener {
-//            alertDialog.dismiss()
             dismiss()
             val intent = Intent(context, GameRoomListActivity::class.java)
             ContextCompat.startActivity(context, intent, bundle)
@@ -86,14 +84,14 @@ class GetGameRoomIdDialog(context: Context) : Dialog(context) {
     }
 
     // 복사하기 아이콘 이벤트 리스너 추가 - 클릭시 게임방 코드 복사됨.
-    private fun setClickEventToRoomCodeCopyIcon(gameRoomId: String){
-        val roomCodeCopyIcon : ImageView = findViewById(R.id.img_room_code_copy_icon)
-
-        roomCodeCopyIcon.setOnClickListener{
-            val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("game_room_id", gameRoomId)
-            clipboard.setPrimaryClip(clip)
-        }
-    }
+//    private fun setClickEventToRoomCodeCopyIcon(gameRoomId: String){
+//        val roomCodeCopyIcon : ImageView = findViewById(R.id.img_room_code_copy_icon)
+//
+//        roomCodeCopyIcon.setOnClickListener{
+//            val clipboard: ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//            val clip = ClipData.newPlainText("game_room_id", gameRoomId)
+//            clipboard.setPrimaryClip(clip)
+//        }
+//    }
 
 }
