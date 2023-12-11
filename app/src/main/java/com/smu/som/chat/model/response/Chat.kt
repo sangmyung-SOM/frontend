@@ -8,5 +8,6 @@ data class Chat (
     @Json(name = "sender")
     val sender: String,
     @Json(name = "message")
-    val message: String
+    val message: String,
+    val gameRoomMsg: String
 )

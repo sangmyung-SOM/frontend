@@ -23,7 +23,6 @@ import com.smu.som.dialog.GetGameRoomIdDialog
 import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.MakeGameRoom
-import kotlinx.android.synthetic.main.activity_online_game_setting.characterSpinner
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
 import kotlinx.android.synthetic.main.activity_online_game_setting.noButton
 import retrofit2.Callback
@@ -44,26 +43,12 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
         setContentView(R.layout.activity_online_game_setting)
         getGameRoomIdDialog = GetGameRoomIdDialog(context)
 
-        // 기존의 게임 설정 값을 받아와서 기본값으로 설정 (game_sp)
-//        val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)
-//        var character1 = sp.getInt("character1", 0)
-
         val categoryMap = hashMapOf("연인" to "COUPLE", "부부" to "MARRIED", "부모자녀" to "PARENT")
         val characterArray = arrayOf("토끼", "병아리", "고양이", "곰")   // 캐릭터 리스트
 
         var adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, characterArray)
-        characterSpinner.adapter = adapter
-        characterSpinner.setSelection(2) // 기본값은 고양이
-
         val bundle: Bundle = Bundle()
 
-        // 캐릭터 선택 (1P)
-        characterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-            }
-            override fun onNothingSelected(p0: AdapterView<*>?) { }
-        }
 
         //라디오 버튼
         val radioGroup1 = findViewById<RadioGroup>(R.id.radioGroup) // 라디오버튼 그룹1 관계
@@ -137,11 +122,8 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
-        // GameRoomApi 서비스를 생성합니다.
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
-        // POST 요청을 보낼 데이터를 생성합니다.
         val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString(), category, adult)
-//        val makeGameRoom = name_1P_OG.text.toString()
         var GameRoomId = ""
 
         // POST 요청을 보냅니다.
@@ -157,13 +139,7 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
                     if (roomID != null) {
                         GameRoomId = roomID
                         Log.d("POST 요청 성공", "response.body(): ${response.body()}")
-
-                    } else {
-                        println("POST 요청은 성공했지만 응답 바디가 없음")
                     }
-                } else {
-                    println("POST 요청은 성공했지만 응답은 실패함")
-                    Log.d("POST 요청 실패", "response.errorBody(): ${response.errorBody()}")
                 }
             }
 
