@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit
 import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
+import com.smu.som.chat.model.response.Chat
 import com.smu.som.game.YutConverter
 import com.smu.som.game.service.GameMalStompService
 import java.util.Stack
@@ -60,11 +61,13 @@ import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
+import com.smu.som.game.service.YutGifService
 import com.smu.som.game.wish.AnsweringPassDialog
 import com.smu.som.game.wish.AnsweringWishDialog
 import com.smu.som.game.wish.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
+import kotlinx.android.synthetic.main.activity_online_game.btn_chat
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 
@@ -164,6 +167,7 @@ class GameTestActivity : AppCompatActivity() {
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
+            binding.btnChat.setImageResource(R.drawable.chat_icon)
         }
 
         // 게임방법 설명
@@ -351,8 +355,8 @@ class GameTestActivity : AppCompatActivity() {
                                     num = result?.yut!!.toInt()
                                     yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
 
-                                    // 윷 gif 재생
-                                    showYutResult(num)
+                                    val yutService = YutGifService(this)
+                                    yutService.showYutGif(num)
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
                                         binding.btnThrowYut.isEnabled = true
@@ -381,25 +385,12 @@ class GameTestActivity : AppCompatActivity() {
                                     val questionMessage = result.question
                                     val questionView = GetQuestionDialog(this, questionMessage)
                                     questionView.showPopup()
-                                    // 새로운 질문이 들어오면 기존의 질문 다이얼로그는 dismiss
-                                    if (questionView.isShowing) {
-                                        questionView.dismiss()
-                                    }
+
                                 }
 
+                                // 질문 변경을 누른경우 (penalty는 계속 1로 유지 될것임)
                                 if (result?.playerId == playerId) {
                                     penalty = result.penalty
-                                    if (penalty == 1){
-                                        // 말 놓기 버튼 비활성화 -- 구현중
-                                        binding.btnAddMal.isEnabled = false
-                                        // 윷 결과 삭제
-                                        for (i in 1..yutResultStack.size) {
-                                            num = yutResultStack.pop()
-                                            setYutResultInViewRemove(num)
-                                            Log.i("som-jsy", "윷 $num 삭제")
-                                        }
-                                    }
-                                    Log.i("som-jsy", "penalty: $penalty")
                                 }
 
                             }
@@ -450,8 +441,22 @@ class GameTestActivity : AppCompatActivity() {
                                         }
                                     }
                                 },
-                        { throwable -> Log.i("som-jsy", throwable.toString()) }
-                        )
+                                { throwable -> Log.i("som-jsy", throwable.toString()) }
+                            )
+
+                        // 채팅방 메세지 받는 채널
+                        stomp.join("/topic/game/chat/room/" + constant.GAMEROOM_ID).subscribe {
+                                stompMessage ->
+                            val result = Klaxon()
+                                .parse<Chat>(stompMessage)
+                            runOnUiThread {
+                                if (result != null) {
+                                    val message = result.gameRoomMsg
+                                    binding.textView.text = message
+                                    btn_chat.setImageResource(R.drawable.chat_icon_red)
+                                }
+                            }
+                        }
 
                         // 처음 입장
                         try {
@@ -541,7 +546,7 @@ class GameTestActivity : AppCompatActivity() {
                         // gif 모션 끝나면 질문 다이얼로그 띄우기
                         Handler(Looper.getMainLooper()).postDelayed({
                             if (passCard_cnt > 0) {
-                                val dialog = AnsweringPassDialog(this@GameTestActivity, question, stomp)
+                                val dialog = AnsweringPassDialog(this@GameTestActivity, question, stomp, passCard_cnt)
                                 dialog.showPopup()
                             }
                             else {
@@ -617,83 +622,6 @@ class GameTestActivity : AppCompatActivity() {
         binding.imgGameSettingCategory.setImageResource(image)
     }
 
-    private fun showYutResult(num: Int) {
-        Log.i("som-gana", "윷 결과 = ${num}")
-        val gifImageView = findViewById<ImageView>(R.id.gifImageView)
-
-        gifImageView.visibility = View.VISIBLE
-        when(num) {
-            1 -> {
-                // Drawable 리소스에 있는 GIF 파일을 로딩하여 표시
-                var gifResourceId = R.drawable.yut_do
-                gifImageView(gifResourceId)
-
-            }
-            2 -> {
-                var gifResourceId = R.drawable.yut_gae
-                gifImageView(gifResourceId)
-
-            }
-            3 -> {
-                var gifResourceId = R.drawable.yut_gul
-                gifImageView(gifResourceId)
-
-            }
-            4 -> {
-                var gifResourceId = R.drawable.yut_yut
-                gifImageView(gifResourceId)
-
-            }
-            5 -> {
-                var gifResourceId = R.drawable.yut_mo
-                gifImageView(gifResourceId)
-
-            }
-            0 -> {
-                var gifResourceId = R.drawable.yut_backdo
-                gifImageView(gifResourceId)
-
-            }
-
-        }
-
-    }
-
-    private fun gifImageView(gifResourceId: Int) {
-        val gifImageView = findViewById<ImageView>(R.id.gifImageView)
-        Glide.with(this)
-            .asGif()
-            .load(gifResourceId)
-            .listener(object : RequestListener<GifDrawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<GifDrawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: GifDrawable?,
-                    model: Any?,
-                    target: Target<GifDrawable>?,
-                    dataSource: com.bumptech.glide.load.DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    // GIF 애니메이션이 완료되면 ImageView를 숨김
-                    resource?.setLoopCount(1) // 1회만 재생하도록 설정
-                    resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                        override fun onAnimationEnd(drawable: Drawable?) {
-                            gifImageView.visibility = View.INVISIBLE
-                        }
-                    })
-                    return false
-                }
-            })
-            .into(gifImageView)
-
-    }
 
     // 채팅방 입장 버튼 클릭 이벤트
     private fun moveChatDialog(bundle: Bundle?) {
@@ -747,26 +675,6 @@ class GameTestActivity : AppCompatActivity() {
         binding.layoutMalResult.addView(yut)
     }
 
-    // 구현중
-    private fun setYutResultInViewRemove(num: Int?) {
-        var yut : ImageView = ImageView(this)
-
-        // 크기 설정
-        val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(dpToPx(this, 60f), dpToPx(this, 50f))
-        yut.layoutParams = params
-        yut.setPadding(dpToPx(this, 5f), 0, dpToPx(this, 5f), 0)
-
-        when(num){
-            0 -> yut.setImageResource(R.drawable.yut1_back_do)
-            1 -> yut.setImageResource(R.drawable.yut1_do)
-            2 -> yut.setImageResource(R.drawable.yut1_gae)
-            3 -> yut.setImageResource(R.drawable.yut1_gul)
-            4 -> yut.setImageResource(R.drawable.yut1_yut)
-            5 -> yut.setImageResource(R.drawable.yut1_mo)
-        }
-        // 레이아웃에 추가되어 있는 윷 결과 뷰 삭제
-        binding.layoutMalResult.removeView(yut)
-    }
 
     // dp -> px 단위 변경
     private fun dpToPx(context: Context, dp: Float): Int {

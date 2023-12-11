@@ -32,6 +32,7 @@ import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.R
+import com.smu.som.chat.model.response.Chat
 import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
@@ -49,6 +50,7 @@ import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.GameMalStompService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
+import com.smu.som.game.service.YutGifService
 import com.smu.som.game.wish.AnsweringPassDialog
 import com.smu.som.game.wish.AnsweringWishDialog
 import com.smu.som.game.wish.WishDialog
@@ -57,6 +59,7 @@ import com.smu.som.gameroom.activity.GameRoomListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_online_game.btn_chat
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 import okhttp3.OkHttpClient
@@ -125,6 +128,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
             moveChatDialog(intent.getBundleExtra("myBundle"))
+            binding.btnChat.setImageResource(R.drawable.chat_icon)
         }
 
         // 이렇게 안하면, 뷰가 다 그려지지 않은 시점에서 malInit이 호출돼 초기화가 제대로 안됨.
@@ -284,16 +288,8 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
 
-
                                         if (result.message == "1P가 들어오지 않았습니다.") {
-                                            // 1P가 올 때까지 기다리는 다이얼로그
-                                            val builder = AlertDialog.Builder(this)
-                                            builder.setTitle("대기중")
-                                            builder.setMessage("1P가 들어오지 않았습니다. 잠시만 기다려주세요.")
-                                            builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
-                                                dialog.dismiss()
-                                            })
-                                            builder.show()
+                                            Toast.makeText(this, "상대방이 들어오지 않았습니다.", Toast.LENGTH_SHORT).show()
                                         }
 
                                     }
@@ -357,7 +353,8 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
 
                                     // 윷 gif 재생
-                                    showYutResult(num)
+                                    val yutService = YutGifService(this)
+                                    yutService.showYutGif(num)
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
                                         binding.btnThrowYut2.isEnabled = true
@@ -389,16 +386,13 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     questionView.dismiss()
 
                                 }
+
                                 if (result?.playerId == playerId) {
                                     penalty = result.penalty
-                                    if (penalty > 0){
-                                        // 말 놓기 버튼 비활성화 -- 구현
-                                    }
-                                    Log.i("som-jsy", "penalty: $penalty")
                                 }
                             }
-
                         }
+
                         // 상대방이 추가 질문권을 사용하여 대답 해야 하는 경우
                         stomp.join("/topic/game/question/wish" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
@@ -419,8 +413,6 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
-
-
                             }
 
                         }
@@ -446,6 +438,21 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 },
                                 { throwable -> Log.i("som-jsy", throwable.toString()) }
                             )
+
+                        // 채팅방 메세지 받는 채널
+                        stomp.join("/topic/game/chat/room/" + constant.GAMEROOM_ID).subscribe {
+                                stompMessage ->
+                            val result = Klaxon()
+                                .parse<Chat>(stompMessage)
+                            runOnUiThread {
+                                if (result != null) {
+                                    val message = result.gameRoomMsg
+                                    binding.textView.text = message
+                                    btn_chat.setImageResource(R.drawable.chat_icon_red)
+                                }
+                            }
+                        }
+
 
                         // 처음 입장
                         try {
@@ -504,8 +511,6 @@ class GameTestActivity2 : AppCompatActivity()  {
             }
         })
 
-
-
         // 이전 화면으로 이동
         val intent = Intent(this, GameRoomListActivity::class.java)
         startActivity(intent)
@@ -536,7 +541,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                         // gif 모션 끝나면 질문 다이얼로그 띄우기
                         Handler(Looper.getMainLooper()).postDelayed({
                             if (passCard_cnt > 0) {
-                                val dialog = AnsweringPassDialog(this@GameTestActivity2, question, stomp)
+                                val dialog = AnsweringPassDialog(this@GameTestActivity2, question, stomp,passCard_cnt)
                                 dialog.showPopup()
                             }
                             else {
@@ -611,84 +616,6 @@ class GameTestActivity2 : AppCompatActivity()  {
     }
     private fun setImage(image: Int) {
         binding.imgGameSettingCategory.setImageResource(image)
-    }
-
-    private fun showYutResult(num: Int) {
-        Log.i("som-gana", "윷 결과 = ${num}")
-        val gifImageView = findViewById<ImageView>(R.id.gifImageView)
-
-        gifImageView.visibility = View.VISIBLE
-        when(num) {
-            1 -> {
-                // Drawable 리소스에 있는 GIF 파일을 로딩하여 표시
-                var gifResourceId = R.drawable.yut_do
-                gifImageView(gifResourceId)
-
-            }
-            2 -> {
-                var gifResourceId = R.drawable.yut_gae
-                gifImageView(gifResourceId)
-
-            }
-            3 -> {
-                var gifResourceId = R.drawable.yut_gul
-                gifImageView(gifResourceId)
-
-            }
-            4 -> {
-                var gifResourceId = R.drawable.yut_yut
-                gifImageView(gifResourceId)
-
-            }
-            5 -> {
-                var gifResourceId = R.drawable.yut_mo
-                gifImageView(gifResourceId)
-
-            }
-            0 -> {
-                var gifResourceId = R.drawable.yut_backdo
-                gifImageView(gifResourceId)
-
-            }
-
-        }
-
-    }
-
-    private fun gifImageView(gifResourceId: Int) {
-        val gifImageView = findViewById<ImageView>(R.id.gifImageView)
-        Glide.with(this)
-            .asGif()
-            .load(gifResourceId)
-            .listener(object : RequestListener<GifDrawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<GifDrawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: GifDrawable?,
-                    model: Any?,
-                    target: Target<GifDrawable>?,
-                    dataSource: com.bumptech.glide.load.DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    // GIF 애니메이션이 완료되면 ImageView를 숨김
-                    resource?.setLoopCount(1) // 1회만 재생하도록 설정
-                    resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                        override fun onAnimationEnd(drawable: Drawable?) {
-                            gifImageView.visibility = View.GONE
-                        }
-                    })
-                    return false
-                }
-            })
-            .into(gifImageView)
-
     }
 
     // 채팅방 입장 버튼 클릭 이벤트
