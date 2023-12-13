@@ -103,7 +103,6 @@ class GameTestActivity : AppCompatActivity() {
 
     // 가나가 필요해서 정의한 변수
     private val playerId : String = "1P" // 고정값
-    private val yutResultStack : Stack<Int> = Stack() // 윷 결과들 저장. 임시로 쓰는거라 stack으로 만들어둠
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
     private val gameMalService:GameMalService = GameMalService()
     private lateinit var malMoveUtils:MalMoveUtils
@@ -207,7 +206,7 @@ class GameTestActivity : AppCompatActivity() {
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
-                                    Log.i("som-gana", "성공")
+                                    Log.i("som-gana", "말 이동 위치조회 요청 성공")
                                     // 말 클릭 이벤트 리스너 등록
                                     if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
                                         runOnUiThread{ setMalEventListener(response) }
@@ -221,7 +220,7 @@ class GameTestActivity : AppCompatActivity() {
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.MoveMalDTO>(success)
-                                    Log.i("som-gana", "성공")
+                                    Log.i("som-gana", "말 이동하기 요청 성공")
 
                                     runOnUiThread{ moveMal(response!!) }
                                 },
@@ -353,10 +352,9 @@ class GameTestActivity : AppCompatActivity() {
                                 }
                                 else {
                                     num = result?.yut!!.toInt()
-                                    yutResultStack.push(num) // 가나-임시로 윷 결과값 저장
 
                                     val yutService = YutGifService(this)
-                                    yutService.showYutGif(num)
+                                    yutService.showYutGif(num) // [가나] 잠깐만 지워둠.
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
                                         binding.btnThrowYut.isEnabled = true
@@ -734,18 +732,6 @@ class GameTestActivity : AppCompatActivity() {
 //        binding.btnAddMal.isEnabled = false
       
         if(response.playerId == playerId){ // 내 턴인 경우
-            if(response.isEnd){ // 도착한 말인지도 확인해야함
-                malInList[response.malId].visibility = View.GONE
-                return
-            }
-            if(response.nextPosition == 0){ // 윷판 밖에 있는 말에 해당함
-                malInList[response.malId].visibility = View.GONE
-                return
-            }
-
-            // 윷판에 있는 말 보이게 하기
-            malInList[response.malId].visibility = View.VISIBLE
-
             // 말 움직이기
             malMoveUtils.move(malInList[response.malId], response.movement)
 
@@ -767,14 +753,6 @@ class GameTestActivity : AppCompatActivity() {
             }
         }
         else { // 상대방 턴인 경우
-            if(response.isEnd || response.nextPosition == 0){ // 도착한 말이거나 윷판 밖에 있는 말에 해당하면
-                oppMalInList[response.malId].visibility = View.GONE
-                return
-            }
-
-            // 윷판에 있는 말 보이게 하기
-            oppMalInList[response.malId].visibility = View.VISIBLE
-
             // 말 움직이기
             malMoveUtils.move(oppMalInList[response.malId], response.movement)
 
