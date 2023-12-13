@@ -117,12 +117,19 @@ class MalMoveUtils (val board : View, val mal : ImageView){
 
     // 말 움직이기
     public fun move(mal:ImageView, movement: List<Int>){
+        // 윷판에 있는 말 보이게 하기
+        mal.visibility = View.VISIBLE
+
         moveEachCell(mal, movement, 0)
     }
 
     // 말이 한칸씩 움직일 수 있도록 애니메이션 설정
     private fun moveEachCell(mal: ImageView, movement: List<Int>, idx: Int){
         if(idx == movement.size){ // 이동 완료
+            return
+        }
+        if(movement[idx] == 0){ // 도착한 말이거나 윷판 밖에 있는 말에 해당하면
+            mal.visibility = View.GONE
             return
         }
         val animatorSet = makeMoveAnimation(mal, movement[idx])
