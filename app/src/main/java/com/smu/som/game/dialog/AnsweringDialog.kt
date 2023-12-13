@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -35,6 +36,8 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         show()
         val showQuestionTxt : TextView = findViewById(R.id.question)
 
+
+        showQuestionTxt.movementMethod = ScrollingMovementMethod.getInstance()
         showQuestionTxt.text = questionList?.get(0)?.question
 
         setClickEventToBtnComplete()
