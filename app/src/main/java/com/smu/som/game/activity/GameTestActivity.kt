@@ -319,18 +319,19 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<Game.GetGameDisconnect>(stompMessage)
                             runOnUiThread {
-                                val dialog = AlertDialog.Builder(this)
-                                    .setTitle("상대방 연결 끊김")
-                                    .setMessage("상대방이 연결을 끊었습니다.")
-                                    .setPositiveButton("확인") { dialog, which ->
-                                        dialog.dismiss()
-                                        val intent = Intent(this, GameRoomListActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }
-                                    .create()
-                                dialog.show()
-
+                                if (result?.playerId == "2P") {
+                                    val dialog = AlertDialog.Builder(this)
+                                        .setTitle("상대방 연결 끊김")
+                                        .setMessage("상대방이 연결을 끊었습니다.")
+                                        .setPositiveButton("확인") { dialog, which ->
+                                            dialog.dismiss()
+                                            val intent = Intent(this, GameRoomListActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                        .create()
+                                    dialog.show()
+                                }
                             }
                         }
 

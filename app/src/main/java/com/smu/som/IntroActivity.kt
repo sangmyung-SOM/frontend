@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.kakao.sdk.user.UserApiClient
+import com.smu.som.game.TaskService
 
 // 인트로 Activity
 class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
+        startService(Intent(this, TaskService::class.java))
 
         var handler = Handler()
         val sp = this.getSharedPreferences("game_sp", Context.MODE_PRIVATE)

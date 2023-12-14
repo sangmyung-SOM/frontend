@@ -8,6 +8,8 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.kakao.sdk.talk.TalkApiClient
@@ -35,7 +37,10 @@ class  GameRoomListActivity : AppCompatActivity() {
     }
 
     private val gameSettingList = ArrayList<GameRoom>()
+    var page = 1
+    val pageSize = 7
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gameroom_list)
@@ -44,9 +49,12 @@ class  GameRoomListActivity : AppCompatActivity() {
         recycler_gameroom.layoutManager = LinearLayoutManager(this)
         recycler_gameroom.setHasFixedSize(true)
 
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recycler_gameroom)
+
         val compositeDisposable = CompositeDisposable()
         compositeDisposable.add(
-            GameRoomApi.getGameRooms()
+            GameRoomApi.getGameRoom(page, pageSize)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.newThread())
             .subscribe({ response: List<GameRoom> ->
@@ -79,6 +87,32 @@ class  GameRoomListActivity : AppCompatActivity() {
             dialog.show()
 
         }
+
+        // 최하단 도달 시 게임방 목록 추가
+        recycler_gameroom.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount - 1
+                if (lastVisibleItemPosition == itemTotalCount) {
+                    page++
+                    compositeDisposable.add(
+                        GameRoomApi.getGameRoom(page, pageSize)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.newThread())
+                            .subscribe({ response: List<GameRoom> ->
+                                for (item in response) {
+                                    cAdapter.addItem(item)
+                                }
+
+                            }, { error: Throwable ->
+                                error.localizedMessage?.let { Log.d("GameRoom: ", it) }
+                            }))
+                }
+            }
+        })
 
         updateProfile()
 
@@ -114,11 +148,8 @@ class  GameRoomListActivity : AppCompatActivity() {
                     gameSettingList.remove(data)
                 }
 
-                Log.d("selectItems", cAdapter.selectItems.toString())
-                Log.d("gameSettingList", gameSettingList.toString())
             }
         })
-
     }
 
     private fun updateProfile() {
@@ -127,12 +158,6 @@ class  GameRoomListActivity : AppCompatActivity() {
         val sp = this.getSharedPreferences("online_game_sp", Context.MODE_PRIVATE)
         val imageUrl = sp.getString("profileUrl", null)          // 카카오톡 프로필 사진
         val userName = sp.getString("userName", null)              // 카카오톡 닉네임
-
-        var url : String? = ""
-
-//        val receivedIntent = intent
-//        val imageUrl = receivedIntent.getStringExtra("profileUrl")
-//        val userName = receivedIntent.getStringExtra("userName")
 
         if (userName != null) {
             userNameTextView.text = userName

@@ -21,7 +21,11 @@ interface GameRoomApi {
 
     interface GameRoomImpl{
         @GET("/game/rooms")
-        fun getGameRoom(): Single<List<GameRoom>>
+        fun getGameRooms(): Single<List<GameRoom>>
+        @GET("/game/room")
+        fun getGameRoom(@Query("pageNumber") page: Int,
+                        @Query("pageSize") pageSize: Int)
+        : Single<List<GameRoom>>
 
         @DELETE("/game/room/{roomId}")
         fun deleteGameRoom(@Path("roomId") roomId: String): Call<Void>
@@ -29,11 +33,14 @@ interface GameRoomApi {
 
     companion object{
         fun getGameRooms(): Single<List<GameRoom>>{
-            return RetrofitCreator.create(GameRoomImpl::class.java).getGameRoom()
+            return RetrofitCreator.create(GameRoomImpl::class.java).getGameRooms()
         }
 
         fun deleteGameRoom(roomId: String): Call<Void>{
             return RetrofitCreator.create(GameRoomImpl::class.java).deleteGameRoom(roomId)
+        }
+        fun getGameRoom(page: Int, pageSize: Int): Single<List<GameRoom>> {
+            return RetrofitCreator.create(GameRoomImpl::class.java).getGameRoom(page, pageSize)
         }
     }
 }

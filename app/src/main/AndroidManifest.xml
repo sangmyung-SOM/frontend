@@ -106,6 +106,8 @@
             android:name=".gameroom.activity.GameRoomListActivity"
             android:exported="true"
             android:theme="@style/Transparent"/>
+        <service android:name=".game.TaskService"
+            android:stopWithTask="false" />
     </application>
 
 </manifest>
