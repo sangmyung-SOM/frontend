@@ -8,6 +8,7 @@ import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -29,6 +30,9 @@ interface GameRoomApi {
 
         @DELETE("/game/room/{roomId}")
         fun deleteGameRoom(@Path("roomId") roomId: String): Call<Void>
+
+        @PATCH("/game/room/{roomId}/update")
+        fun updateGameState(@Path("roomId") roomId: String, @Query("state") state: Boolean): Call<Void>
     }
 
     companion object{
@@ -41,6 +45,10 @@ interface GameRoomApi {
         }
         fun getGameRoom(page: Int, pageSize: Int): Single<List<GameRoom>> {
             return RetrofitCreator.create(GameRoomImpl::class.java).getGameRoom(page, pageSize)
+        }
+
+        fun updateGameState(gameroomId: String, state: Boolean) : Call<Void> {
+            return RetrofitCreator.create(GameRoomImpl::class.java).updateGameState(gameroomId, state)
         }
     }
 }

@@ -3,7 +3,6 @@ package com.smu.som.game.activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
@@ -19,13 +18,9 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.RequestListener
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.smu.som.R
@@ -41,13 +36,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
-import com.bumptech.glide.request.target.Target
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.chat.model.response.Chat
 import com.smu.som.game.YutConverter
 import com.smu.som.game.service.GameMalStompService
-import java.util.Stack
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import com.smu.som.game.dialog.AnsweringDialog
@@ -307,6 +300,7 @@ class GameTestActivity : AppCompatActivity() {
                                         }
 
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
+                                        updateGameState(GameConstant.GAME_STATE_START)
 
                                     }
 
@@ -481,6 +475,23 @@ class GameTestActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+    // 게임 시작했다는 api 요청
+    private fun updateGameState(gameStateStart: String) {
+        if (gameStateStart != GameConstant.GAME_STATE_START) {
+            return
+        }
+        val gameRoomApi = GameRoomApi
+        gameRoomApi.updateGameState(constant.GAMEROOM_ID, true).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d("updateGameState", "success")
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("updateGameState", "fail")
+            }
+        })
     }
 
     // 연결 끊긴 경우
