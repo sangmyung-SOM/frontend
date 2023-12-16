@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
@@ -101,15 +102,12 @@ class GameTestActivity2 : AppCompatActivity()  {
     // 가나가 필요해서 정의한 변수
     private val playerId : String = "2P" // 고정값
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
-    private val gameMalService:GameMalService = GameMalService()
     private lateinit var malMoveUtils:MalMoveUtils
     private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
     private lateinit var oppMalInList: Array<ImageView> // 상대방의 윷판에 있는 말
+    private lateinit var catHandList: Array<ImageView> // 내 고양이 발
+    private lateinit var oppCatHandList: Array<ImageView> // 상대방 고양이 발
     // 끝-가나
-
-    init {
-        stomp.url = GameConstant.URL
-    }
 
     private val gameStomp = GameStompService(stomp)
     var num = 0
@@ -118,11 +116,14 @@ class GameTestActivity2 : AppCompatActivity()  {
     var passCard_cnt = 0     // 패스권 개수
     var penalty = 0          // 패널티 개수
 
+    init {
+        stomp.url = GameConstant.URL
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOnlineGame2Binding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         // 채팅방 입장 클릭 이벤트 리스너
         binding.btnChat.setOnClickListener {
@@ -184,7 +185,6 @@ class GameTestActivity2 : AppCompatActivity()  {
         tv_nickname_p2.text = constant.SENDER
         binding.profileImgCatP1.isEnabled = true
         binding.profileImgCatP2.isEnabled = false
-        binding.btnAddMal2.isEnabled = false
 
         var yuts = IntArray(6, { 0 } )                        // 윷 결과 저장 리스트
         val soundPool = SoundPool.Builder().build()                // 게임 소리 실행 설정
@@ -209,7 +209,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         runOnUiThread{ setMalEventListener(response) }
                                     }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동 위치조회 실패: ${throwable.toString()}") }
                             )
 
                         // 말 이동하기 구독
@@ -221,7 +221,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                     runOnUiThread{ moveMal(response!!) }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동하기 실패: ${throwable.toString()}") }
                             )
 
                         // 턴 변경 구독
@@ -282,7 +282,6 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 runOnUiThread {
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
                                         binding.btnThrowYut2.isEnabled = false // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
-//                                        binding.btnAddMal.isEnabled = false
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
@@ -295,7 +294,6 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     if (result?.messageType == GameConstant.GAME_STATE_START){
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.btnThrowYut2.isEnabled = false // 2P는 비활성화
-//                                        binding.btnAddMal.isEnabled = false
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         val profileUrl = result.profileURL_1P
                                         updateProfile(profileUrl, "1P")
@@ -645,11 +643,16 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 클릭 이벤트 리스너 등록
         yut.setOnClickListener{
             gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResult)
-            binding.layoutMalResult.removeView(it) // 해당 윷결과 뷰 삭제
+            binding.layoutYutResult.removeView(it) // 해당 윷결과 뷰 삭제
+
+            // 말 이동 완료하기 전까지 다른 윷 결과 클릭 못하게 막기
+            for(yutResult in binding.layoutYutResult.children){
+                yutResult.isEnabled = false
+            }
         }
 
         // 레이아웃에 추가
-        binding.layoutMalResult.addView(yut)
+        binding.layoutYutResult.addView(yut)
     }
 
     // dp -> px 단위 변경
@@ -665,6 +668,8 @@ class GameTestActivity2 : AppCompatActivity()  {
     private fun malInit(){
         malInList = arrayOf(binding.malWhite0, binding.malWhite1, binding.malWhite2, binding.malWhite3)
         oppMalInList = arrayOf(binding.malBlack0, binding.malBlack1, binding.malBlack2, binding.malBlack3)
+        catHandList = arrayOf(binding.catHandW0, binding.catHandW1, binding.catHandW2, binding.catHandW3)
+        oppCatHandList = arrayOf(binding.catHandB0, binding.catHandB1, binding.catHandB2, binding.catHandB3)
 
         // 말 움직이기 utils 클래스 생성
         malMoveUtils = MalMoveUtils(binding.yutBoard, binding.malBlack0)
@@ -676,6 +681,9 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 윷판에 있는 말은 숨기기
         malInList.forEach { mal -> mal.visibility = View.GONE }
         oppMalInList.forEach { mal -> mal.visibility = View.GONE }
+
+        // 말 추가하기 버튼 비활성화
+        binding.btnAddMal.isEnabled = false
     }
 
     // 어느 말을 이동할지 클릭 이벤트 리스너 등록
@@ -684,12 +692,14 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 새로 추가할 수 있는 말이 있다면
         if(response.newMalId != -1){
-            Log.i("som-gana", "말 추가하기 버튼 활성화")
-            binding.btnAddMal2.isEnabled = true
-            binding.btnAddMal2.setOnClickListener{
-                Log.i("som-gana", "말 추가하기 버튼 클릭!")
+            binding.btnAddMal.isEnabled = true
+            binding.btnAddMal.setOnClickListener{
                 sendMoveMal(response.newMalId, yutResult)
-                binding.btnAddMal2.isEnabled = false
+                binding.btnAddMal.isEnabled = false
+
+                for(yutResult in binding.layoutYutResult.children){
+                    yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                }
             }
         }
 
@@ -699,9 +709,12 @@ class GameTestActivity2 : AppCompatActivity()  {
             if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
                 mal.setOnClickListener{
                     sendMoveMal(i, yutResult)
-                    binding.btnAddMal2.isEnabled = false
-                }
+                    binding.btnAddMal.isEnabled = false
 
+                    for(yutResult in binding.layoutYutResult.children){
+                        yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                    }
+                }
             }
         }
     }
@@ -727,17 +740,17 @@ class GameTestActivity2 : AppCompatActivity()  {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
-//        binding.btnAddMal.isEnabled = false
-
         if(response.playerId == playerId){ // 내 턴인 경우
             // 말 움직이기
             malMoveUtils.move(malInList[response.malId], response.movement)
+            catHandList[response.malId].isEnabled = false // 고양이 발 점수
 
             if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
                 response.catchMalList.forEach { catchMalId ->
                     oppMalInList[catchMalId].visibility = View.GONE
                     oppMalInList[catchMalId].setImageResource(R.drawable.selector_profile_cat)
                     malMoveUtils.initPosition(oppMalInList[catchMalId])
+                    oppCatHandList[catchMalId].isEnabled = true
                 }
             }
             if(response.isUpdaMal){ // 내 말을 업었을 때
@@ -753,12 +766,14 @@ class GameTestActivity2 : AppCompatActivity()  {
         else { // 상대방 턴인 경우
             // 말 움직이기
             malMoveUtils.move(oppMalInList[response.malId], response.movement)
+            oppCatHandList[response.malId].isEnabled = false // 고양이 발 점수
 
             if(response.isCatchMal){ // 상대가 내 말을 잡았을 때
                 response.catchMalList.forEach { catchMalId ->
                     malInList[catchMalId].visibility = View.GONE
                     malInList[catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
                     malMoveUtils.initPosition(malInList[catchMalId])
+                    catHandList[catchMalId].isEnabled = true
                 }
             }
             if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때
