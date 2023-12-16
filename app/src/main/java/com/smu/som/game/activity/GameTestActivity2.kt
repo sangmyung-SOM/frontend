@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
@@ -208,7 +209,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         runOnUiThread{ setMalEventListener(response) }
                                     }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동 위치조회 실패: ${throwable.toString()}") }
                             )
 
                         // 말 이동하기 구독
@@ -220,7 +221,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                     runOnUiThread{ moveMal(response!!) }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동하기 실패: ${throwable.toString()}") }
                             )
 
                         // 턴 변경 구독
@@ -642,11 +643,16 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 클릭 이벤트 리스너 등록
         yut.setOnClickListener{
             gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResult)
-            binding.layoutMalResult.removeView(it) // 해당 윷결과 뷰 삭제
+            binding.layoutYutResult.removeView(it) // 해당 윷결과 뷰 삭제
+
+            // 말 이동 완료하기 전까지 다른 윷 결과 클릭 못하게 막기
+            for(yutResult in binding.layoutYutResult.children){
+                yutResult.isEnabled = false
+            }
         }
 
         // 레이아웃에 추가
-        binding.layoutMalResult.addView(yut)
+        binding.layoutYutResult.addView(yut)
     }
 
     // dp -> px 단위 변경
@@ -686,12 +692,14 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 새로 추가할 수 있는 말이 있다면
         if(response.newMalId != -1){
-            Log.i("som-gana", "말 추가하기 버튼 활성화")
             binding.btnAddMal.isEnabled = true
             binding.btnAddMal.setOnClickListener{
-                Log.i("som-gana", "말 추가하기 버튼 클릭!")
                 sendMoveMal(response.newMalId, yutResult)
                 binding.btnAddMal.isEnabled = false
+
+                for(yutResult in binding.layoutYutResult.children){
+                    yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                }
             }
         }
 
@@ -702,8 +710,11 @@ class GameTestActivity2 : AppCompatActivity()  {
                 mal.setOnClickListener{
                     sendMoveMal(i, yutResult)
                     binding.btnAddMal.isEnabled = false
-                }
 
+                    for(yutResult in binding.layoutYutResult.children){
+                        yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                    }
+                }
             }
         }
     }

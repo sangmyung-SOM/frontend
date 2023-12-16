@@ -201,12 +201,11 @@ class GameTestActivity : AppCompatActivity() {
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
                                     Log.i("som-gana", "말 이동 위치조회 요청 성공")
-                                    // 말 클릭 이벤트 리스너 등록
                                     if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
                                         runOnUiThread{ setMalEventListener(response) }
                                     }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동 위치조회 실패: ${throwable.toString()}") }
                             )
 
                         // 말 이동하기 구독
@@ -218,7 +217,7 @@ class GameTestActivity : AppCompatActivity() {
 
                                     runOnUiThread{ moveMal(response!!) }
                                 },
-                                { throwable -> Log.i("som-gana", throwable.toString()) }
+                                { throwable -> Log.i("som-gana", "말 이동하기 실패: ${throwable.toString()}") }
                             )
 
                         // 턴 변경 구독
@@ -283,8 +282,6 @@ class GameTestActivity : AppCompatActivity() {
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
-
-
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
@@ -655,7 +652,7 @@ class GameTestActivity : AppCompatActivity() {
         malInList.forEach { mal -> malMoveUtils.initPosition(mal) }
         oppMalInList.forEach { mal -> malMoveUtils.initPosition(mal) }
 
-        // 윷판에 있는 말은 숨기기
+        // 윷판에 있는 말 숨기기
         malInList.forEach { mal -> mal.visibility = View.GONE }
         oppMalInList.forEach { mal -> mal.visibility = View.GONE }
 
@@ -684,11 +681,16 @@ class GameTestActivity : AppCompatActivity() {
         // 클릭 이벤트 리스너 등록
         yut.setOnClickListener{
             gameMalStompService.sendMalNextPosition(GameConstant.GAMEROOM_ID, playerId, yutResult)
-            binding.layoutMalResult.removeView(it) // 해당 윷결과 뷰 삭제
+            binding.layoutYutResult.removeView(it) // 해당 윷결과 뷰 삭제
+
+            // 말 이동 완료하기 전까지 다른 윷 결과 클릭 못하게 막기
+            for(yutResult in binding.layoutYutResult.children){
+                yutResult.isEnabled = false
+            }
         }
 
         // 레이아웃에 추가
-        binding.layoutMalResult.addView(yut)
+        binding.layoutYutResult.addView(yut)
     }
 
 
@@ -711,6 +713,10 @@ class GameTestActivity : AppCompatActivity() {
             binding.btnAddMal.setOnClickListener{
                 sendMoveMal(response.newMalId, yutResult)
                 binding.btnAddMal.isEnabled = false
+
+                for(yutResult in binding.layoutYutResult.children){
+                    yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                }
             }
         }
 
@@ -721,6 +727,10 @@ class GameTestActivity : AppCompatActivity() {
                 mal.setOnClickListener{
                     sendMoveMal(i, yutResult)
                     binding.btnAddMal.isEnabled = false
+
+                    for(yutResult in binding.layoutYutResult.children){
+                        yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
+                    }
                 }
             }
         }

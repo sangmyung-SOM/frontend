@@ -445,7 +445,7 @@
 
     <!--    윷 결과 리스트 -->
     <LinearLayout
-        android:id="@+id/layout_mal_result"
+        android:id="@+id/layout_yut_result"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
