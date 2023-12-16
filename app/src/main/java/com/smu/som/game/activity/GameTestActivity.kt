@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import com.beust.klaxon.Klaxon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -97,19 +98,15 @@ class GameTestActivity : AppCompatActivity() {
     // 가나가 필요해서 정의한 변수
     private val playerId : String = "1P" // 고정값
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
-    private val gameMalService:GameMalService = GameMalService()
     private lateinit var malMoveUtils:MalMoveUtils
     private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
     private lateinit var oppMalInList: Array<ImageView> // 상대방의 윷판에 있는 말
+    private lateinit var catHandList: Array<ImageView> // 내 고양이 발
+    private lateinit var oppCatHandList: Array<ImageView> // 상대방 고양이 발
     // 끝-가나
 
 
     val gameStomp = GameStompService(stomp)
-
-    init {
-        stomp.url = constant.URL
-    }
-
 
     var num = 0                                                 // 윷 결과
     var category: String? = null                                // API 요청 시 필요한 카테고리 (영어)
@@ -117,6 +114,10 @@ class GameTestActivity : AppCompatActivity() {
     var adult: String? = null                                   // 성인 여부
     var passCard_cnt = 0                                        // 패스권 개수
     var penalty = 0                                             // 패널티 개수
+
+    init {
+        stomp.url = constant.URL
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -644,6 +645,8 @@ class GameTestActivity : AppCompatActivity() {
     private fun malInit(){
         malInList = arrayOf(binding.malBlack0, binding.malBlack1, binding.malBlack2, binding.malBlack3)
         oppMalInList = arrayOf(binding.malWhite0, binding.malWhite1, binding.malWhite2, binding.malWhite3)
+        catHandList = arrayOf(binding.catHandB0, binding.catHandB1, binding.catHandB2, binding.catHandB3)
+        oppCatHandList = arrayOf(binding.catHandW0, binding.catHandW1, binding.catHandW2, binding.catHandW3)
 
         // 말 움직이기 utils 클래스 생성
         malMoveUtils = MalMoveUtils(binding.yutBoard, binding.malBlack0)
@@ -655,6 +658,9 @@ class GameTestActivity : AppCompatActivity() {
         // 윷판에 있는 말은 숨기기
         malInList.forEach { mal -> mal.visibility = View.GONE }
         oppMalInList.forEach { mal -> mal.visibility = View.GONE }
+
+        // 말 추가하기 버튼 비활성화
+        binding.btnAddMal.isEnabled = false
     }
 
     // 윷 결과 화면에 표시하기
@@ -741,17 +747,17 @@ class GameTestActivity : AppCompatActivity() {
 
     // 말 이동하기
     public fun moveMal(response: GameMalResponse.MoveMalDTO){
-//        binding.btnAddMal.isEnabled = false
-      
         if(response.playerId == playerId){ // 내 턴인 경우
             // 말 움직이기
             malMoveUtils.move(malInList[response.malId], response.movement)
+            catHandList[response.malId].isEnabled = false // 고양이 발 점수
 
             if(response.isCatchMal){ // 내가 상대방 말을 잡았을 때
                 response.catchMalList.forEach { catchMalId ->
                     oppMalInList[catchMalId].visibility = View.GONE
                     oppMalInList[catchMalId].setImageResource(R.drawable.selector_profile_w_cat)
                     malMoveUtils.initPosition(oppMalInList[catchMalId])
+                    oppCatHandList[catchMalId].isEnabled = true
                 }
             }
             if(response.isUpdaMal){ // 내 말을 업었을 때
@@ -767,12 +773,14 @@ class GameTestActivity : AppCompatActivity() {
         else { // 상대방 턴인 경우
             // 말 움직이기
             malMoveUtils.move(oppMalInList[response.malId], response.movement)
+            oppCatHandList[response.malId].isEnabled = false // 고양이 발 점수
 
             if(response.isCatchMal){ // 상대가 내 말을 잡았을 때
                 response.catchMalList.forEach { catchMalId ->
                     malInList[catchMalId].visibility = View.GONE
                     malInList[catchMalId].setImageResource(R.drawable.selector_profile_cat)
                     malMoveUtils.initPosition(malInList[catchMalId])
+                    catHandList[catchMalId].isEnabled = true
                 }
             }
             if(response.isUpdaMal){ // 상대가 자신의 말을 업었을 때

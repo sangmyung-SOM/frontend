@@ -313,6 +313,100 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+<!--    고양이 발-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline_mal_score"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_game_info">
+
+        <ImageView
+            android:id="@+id/cat_hand_b_3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_2"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_b" />
+
+        <ImageView
+            android:id="@+id/cat_hand_b_2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_1"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_b" />
+
+        <ImageView
+            android:id="@+id/cat_hand_b_1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_0"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_b" />
+
+        <ImageView
+            android:id="@+id/cat_hand_b_0"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_3"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_b" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_2"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_w" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_1"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_w" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_0"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_w" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_0"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_w" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <!--    채팅창-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_chat"
@@ -349,7 +443,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--    말 결과 리스트 -->
+    <!--    윷 결과 리스트 -->
     <LinearLayout
         android:id="@+id/layout_mal_result"
         android:layout_width="match_parent"
