@@ -340,7 +340,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     binding.btnThrowYut2.isEnabled = true
                                     val dialog = WishDialog(this, stomp)
                                     dialog.show()
-                                    binding.layoutMalResult.visibility = View.INVISIBLE
+                                    binding.layoutYutResult.visibility = View.INVISIBLE
                                     Toast.makeText(this, "상대방의 말을 잡았습니다! 한 번 더!", Toast.LENGTH_SHORT).show()
                                 }
                                 else if (result?.messageType == "CATCH_MAL" && result.playerId == "1P") {
@@ -625,7 +625,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
     // 윷 결과 화면에 표시하기
     private fun setYutResultInView(yutResult: Int){
-        binding.layoutMalResult.visibility = View.VISIBLE
+        binding.layoutYutResult.visibility = View.VISIBLE
 
         var yut : ImageView = ImageView(this)
 
