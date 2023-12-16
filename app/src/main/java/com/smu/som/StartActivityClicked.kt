@@ -16,15 +16,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.talk.model.TalkProfile
-import com.kakao.sdk.user.UserApiClient
-import com.kakao.sdk.user.model.Profile
-import com.smu.som.dialog.FindGameRoomDialog
 import com.smu.som.gameroom.activity.GameRoomListActivity
-import kotlinx.android.synthetic.main.activity_start.offlineStart
 import kotlinx.android.synthetic.main.activity_start_clicked.*
-import java.lang.reflect.Executable
-import java.net.URL
-import java.util.concurrent.Executors
+
 
 class StartActivityClicked : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
