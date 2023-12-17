@@ -8,10 +8,10 @@
         android:name=".MasterApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_v2"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_v2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SOM"
         android:usesCleartextTraffic="true">
