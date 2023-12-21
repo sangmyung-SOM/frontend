@@ -80,10 +80,6 @@ class GameTestActivity2 : AppCompatActivity()  {
 
     lateinit var stompConnection: Disposable
     lateinit var topic: Disposable
-    private lateinit var gametopic: Disposable
-    private lateinit var answerTopic: Disposable
-    private lateinit var questionTopic: Disposable
-    private lateinit var throwTopic: Disposable
 
     private var btnState : Boolean = false
     val constant: GameConstant = GameConstant
@@ -100,6 +96,7 @@ class GameTestActivity2 : AppCompatActivity()  {
     val stomp = StompClient(client, intervalMillis)
 
     // 가나가 필요해서 정의한 변수
+    private val subscribes : MutableList<Disposable> = ArrayList() // stomp 구독들
     private val playerId : String = "2P" // 고정값
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
     private lateinit var malMoveUtils:MalMoveUtils
@@ -199,7 +196,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                     Event.Type.OPENED -> {
 
                         // 말 이동 위치 조회 구독
-                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
+                        val getMalsNextPositionSubscribe = stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal")
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
@@ -211,9 +208,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 },
                                 { throwable -> Log.i("som-gana", "말 이동 위치조회 실패: ${throwable.toString()}") }
                             )
+                        subscribes.add(getMalsNextPositionSubscribe)
 
                         // 말 이동하기 구독
-                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal/move")
+                        val moveMalSubscribe = stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/mal/move")
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.MoveMalDTO>(success)
@@ -223,9 +221,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 },
                                 { throwable -> Log.i("som-gana", "말 이동하기 실패: ${throwable.toString()}") }
                             )
+                        subscribes.add(moveMalSubscribe)
 
                         // 턴 변경 구독
-                        stomp.join("/topic/game/turn/" + GameConstant.GAMEROOM_ID)
+                        val turnChangeSubscribe = stomp.join("/topic/game/turn/" + GameConstant.GAMEROOM_ID)
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<Game.turnChange>(success)
@@ -241,10 +240,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 },
                                 { throwable -> Log.i("som-jsy", throwable.toString()) }
                             )
-
+                        subscribes.add(turnChangeSubscribe)
 
                         // 스코어 구독
-                        stomp.join("/topic/game/score/" + GameConstant.GAMEROOM_ID).subscribe {
+                        val getScoreSubscribe = stomp.join("/topic/game/score/" + GameConstant.GAMEROOM_ID).subscribe {
                                 stompMessage ->
                             val result = Klaxon()
                                 .parse<ScoreInfo>(stompMessage)
@@ -255,9 +254,10 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                             }
                         }
+                        subscribes.add(getScoreSubscribe)
 
                         // 게임종료
-                        stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/end").subscribe { stompMessage ->
+                        val gameOverSubscribe = stomp.join("/topic/game/" + GameConstant.GAMEROOM_ID + "/end").subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game.GameWinner>(stompMessage)
                             runOnUiThread {
@@ -273,9 +273,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 }
                             }
                         }
+                        subscribes.add(gameOverSubscribe)
 
                         // subscribe 채널구독
-                        gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
+                        val gametopic = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID)
                             .subscribe { stompMessage ->
                                 val result = Klaxon()
                                     .parse<Game.GetGameInfo>(stompMessage)
@@ -305,15 +306,13 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             tv_nickname_p1.text = name.split(",")[1]
                                             tv_nickname_p2.text = constant.SENDER
                                         }
-
-
                                     }
-
                                 }
-
                             }
+                        subscribes.add(gametopic)
+
                         // 상대방 연결 끊긴 경우 sub 구독
-                        stomp.join("/topic/game/disconnect/" + GameConstant.GAMEROOM_ID).subscribe { stompMessage ->
+                        val disconnectSubscribe = stomp.join("/topic/game/disconnect/" + GameConstant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game.GetGameDisconnect>(stompMessage)
                             runOnUiThread {
@@ -331,8 +330,9 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                             }
                         }
+                        subscribes.add(disconnectSubscribe)
 
-                        throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                        val throwTopic = stomp.join("/topic/game/throw/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
@@ -366,12 +366,11 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         }
                                     }
                                 }
-
                             }
-
                         }
+                        subscribes.add(throwTopic)
 
-                        questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                        val questionTopic = stomp.join("/topic/game/question/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<QnAResponse.GetQuestion>(stompMessage)
                             runOnUiThread {
@@ -389,9 +388,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 }
                             }
                         }
+                        subscribes.add(questionTopic)
 
                         // 상대방이 추가 질문권을 사용하여 대답 해야 하는 경우
-                        stomp.join("/topic/game/question/wish" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                        val addQuestionSubscribe = stomp.join("/topic/game/question/wish" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
@@ -401,8 +401,9 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 }
                             }
                         }
+                        subscribes.add(addQuestionSubscribe)
 
-                        answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                        val answerTopic = stomp.join("/topic/game/answer/" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
                                 .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
@@ -411,11 +412,11 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
                             }
-
                         }
+                        subscribes.add(answerTopic)
 
                         // 패스권 적립 결과를 받는 채널
-                        stomp.join("/topic/game/room/" + constant.GAMEROOM_ID + "/wish/pass")
+                        val passTicketSubscribe = stomp.join("/topic/game/room/" + constant.GAMEROOM_ID + "/wish/pass")
                             .subscribe(
                                 { success ->
                                     val response = Klaxon().parse<Game.PassWish>(success)
@@ -435,9 +436,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 },
                                 { throwable -> Log.i("som-jsy", throwable.toString()) }
                             )
+                        subscribes.add(passTicketSubscribe)
 
                         // 채팅방 메세지 받는 채널
-                        stomp.join("/topic/game/chat/room/" + constant.GAMEROOM_ID).subscribe {
+                        val chatSubscribe = stomp.join("/topic/game/chat/room/" + constant.GAMEROOM_ID).subscribe {
                                 stompMessage ->
                             val result = Klaxon()
                                 .parse<Chat>(stompMessage)
@@ -449,7 +451,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 }
                             }
                         }
-
+                        subscribes.add(chatSubscribe)
 
                         // 처음 입장
                         try {
@@ -466,7 +468,6 @@ class GameTestActivity2 : AppCompatActivity()  {
                     }
 
                     Event.Type.CLOSED -> {
-
 
                     }
 
@@ -491,10 +492,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 구독 취소
         stompConnection.dispose()
-        gametopic.dispose()
-        answerTopic.dispose()
-        questionTopic.dispose()
-        throwTopic.dispose()
+        subscribes.forEach{subscribe -> subscribe.dispose()}
 
         // GameRoomApi 에서 게임 방 삭제
         val gameRoomApi = GameRoomApi
