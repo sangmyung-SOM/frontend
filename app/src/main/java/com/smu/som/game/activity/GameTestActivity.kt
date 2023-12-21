@@ -94,6 +94,7 @@ class GameTestActivity : AppCompatActivity() {
     // 가나가 필요해서 정의한 변수
     private val subscribes : MutableList<Disposable> = ArrayList() // stomp 구독들
     private val playerId : String = "1P" // 고정값
+    private lateinit var oppQuestionDialog: GetQuestionDialog // 상대방이 질문받은 내용 팝업창
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
     private lateinit var malMoveUtils:MalMoveUtils
     private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
@@ -374,9 +375,8 @@ class GameTestActivity : AppCompatActivity() {
                             runOnUiThread {
                                 if(result?.playerId == "2P") {
                                     val questionMessage = result.question
-                                    val questionView = GetQuestionDialog(this, questionMessage)
-                                    questionView.showPopup()
-
+                                    oppQuestionDialog = GetQuestionDialog(this, questionMessage)
+                                    oppQuestionDialog.showPopup()
                                 }
 
                                 // 질문 변경을 누른경우 (penalty는 계속 1로 유지 될것임)
@@ -407,10 +407,10 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
+                                oppQuestionDialog.dismiss() // 상대방이 받은 질문 팝업창 닫기
                                 val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
-
                             }
                         }
                         subscribes.add(answerTopic)
