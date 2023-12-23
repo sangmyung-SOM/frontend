@@ -407,7 +407,9 @@ class GameTestActivity : AppCompatActivity() {
                             val result = Klaxon()
                                 .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
-                                oppQuestionDialog.dismiss() // 상대방이 받은 질문 팝업창 닫기
+                                if(!result?.playerId.equals(playerId)){
+                                    oppQuestionDialog.dismiss() // 상대방이 받은 질문 팝업창 닫기
+                                }
                                 val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
