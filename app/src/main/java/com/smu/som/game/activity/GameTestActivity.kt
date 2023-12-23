@@ -156,11 +156,10 @@ class GameTestActivity : AppCompatActivity() {
             if (firstThrow) {
                 firstThrow = false
                 gameStomp.sendThrowResult(GameConstant.GAME_STATE_FIRST_THROW)
-                binding.btnThrowYut.isEnabled = false
-                return@setOnClickListener
             }
-
-            gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+            else {
+                gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+            }
             binding.btnThrowYut.isEnabled = false
         }
 
@@ -548,6 +547,25 @@ class GameTestActivity : AppCompatActivity() {
         startActivity(intent)
 
         finish() // 현재 액티비티 종료
+    }
+
+    override fun onBackPressed() {
+        // 뒤로가기 버튼 클릭 시
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("게임 종료")
+            .setMessage("게임을 종료하시겠습니까?")
+            .setPositiveButton("확인") { dialog, which ->
+                dialog.dismiss()
+                val intent = Intent(this, GameRoomListActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("취소") { dialog, which ->
+                dialog.dismiss()
+            }
+            .create()
+
+        dialog.show()
     }
 
     // 질문 받아오기

@@ -152,11 +152,10 @@ class GameTestActivity2 : AppCompatActivity()  {
             if (firstThrow) {
                 firstThrow = false
                 gameStomp.sendThrowResult(GameConstant.GAME_STATE_FIRST_THROW)
-                binding.btnThrowYut2.isEnabled = false
-                return@setOnClickListener
             }
-
-            gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+            else {
+                gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
+            }
             binding.btnThrowYut2.isEnabled = false
         }
 
