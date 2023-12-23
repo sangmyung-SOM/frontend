@@ -371,6 +371,7 @@ class GameTestActivity : AppCompatActivity() {
                                         ) {
                                             binding.btnThrowYut.isEnabled = true
                                             firstThrow = true
+                                            Toast.makeText(this, "빽도입니다. 한 번 더!.", Toast.LENGTH_SHORT).show()
                                         }
                                         // 내 턴이면 질문 받아오기
                                         else if (result.playerId == playerId) {
