@@ -9,8 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -20,7 +18,6 @@ import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.dialog.GetGameRoomIdDialog
-import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
@@ -51,8 +48,8 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
 
 
         //라디오 버튼
-        val radioGroup1 = findViewById<RadioGroup>(R.id.radioGroup) // 라디오버튼 그룹1 관계
-        val radioGroup2 = findViewById<RadioGroup>(R.id.radioGroup2) // 라디오버튼 그룹2 성인질문
+        val rgCategory = findViewById<RadioGroup>(R.id.rg_category) // 라디오버튼 그룹1 관계
+        val rgAdult = findViewById<RadioGroup>(R.id.rg_adult) // 라디오버튼 그룹2 성인질문
         val makeRoomBtn = findViewById<Button>(R.id.makeRoomButton)
 
         // 방 만들기 버튼 클릭
@@ -65,17 +62,21 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
                 return@setOnClickListener
             }
 
-            val selectedRadioButtonId1 = radioGroup1.checkedRadioButtonId
-            val selectedRadioButtonId2 = radioGroup2.checkedRadioButtonId
+            val selectedCategory = rgCategory.checkedRadioButtonId
+            val selectedAdult = rgAdult.checkedRadioButtonId
 
             //라디오 버튼 누르지 않고 makeRoomBtn 누르면 토스트 메시지 띄우기
-            if (selectedRadioButtonId1 == -1 || selectedRadioButtonId2 == -1) {
-                Toast.makeText(context, "게임 설정을 선택해주세요.", Toast.LENGTH_SHORT).show()
-            } else {
+            if (selectedCategory == -1) {
+                Toast.makeText(context, "카테고리를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            }
+            else if(selectedAdult == -1){
+                Toast.makeText(context, "성인질문 포함 여부를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            }
+            else {
 
                 // 게임 설정 하는 부분 (관계, 성인질문 on/off 설정값)
-                val selectedRadioButton1 = findViewById<RadioButton>(selectedRadioButtonId1) // 관계
-                val selectedRadioButton2 = findViewById<RadioButton>(selectedRadioButtonId2) // 성인질문
+                val selectedRadioButton1 = findViewById<RadioButton>(selectedCategory) // 관계
+                val selectedRadioButton2 = findViewById<RadioButton>(selectedAdult) // 성인질문
                 val selectedOption = selectedRadioButton1.text.toString()
 
                 val kcategory = selectedOption
