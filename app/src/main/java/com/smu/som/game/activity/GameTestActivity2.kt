@@ -140,7 +140,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         })
 
         var mLastClickTime = 0L
-
+        var firstThrow = true
         // 윷 던지기 버튼 클릭 이벤트
         binding.btnThrowYut2.setOnClickListener {
             // 중복 클릭 시간 차이 1초
@@ -148,6 +148,14 @@ class GameTestActivity2 : AppCompatActivity()  {
                 return@setOnClickListener
             }
             mLastClickTime = SystemClock.elapsedRealtime()
+
+            if (firstThrow) {
+                firstThrow = false
+                gameStomp.sendThrowResult(GameConstant.GAME_STATE_FIRST_THROW)
+                binding.btnThrowYut2.isEnabled = false
+                return@setOnClickListener
+            }
+
             gameStomp.sendThrowResult(GameConstant.GAME_STATE_THROW)
             binding.btnThrowYut2.isEnabled = false
         }
@@ -358,10 +366,18 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.btnThrowYut2.isEnabled = true
                                         setYutResultInView(num)
 
-                                    } else {
-                                        // 윷이나 모가 아닌 경우
+                                    }else {  // 윷이나 모가 아닌 경우
+                                        // 첫 던진 윷이 빽도인 경우
+                                        if ((result.messageType == GameConstant.GAME_STATE_FIRST_THROW)
+                                            && (result.playerId == playerId)
+                                            && (num == 0)
+                                        ) {
+                                            binding.btnThrowYut2.isEnabled = true
+                                            firstThrow = true
+                                            Toast.makeText(this, "빽도입니다. 한 번 더!", Toast.LENGTH_SHORT).show()
+                                        }
                                         // 내 턴이면 질문 받아오기
-                                        if (result.playerId == playerId) {
+                                        else if (result.playerId == playerId) {
                                             getQuestion()
                                             setYutResultInView(num)
                                         }

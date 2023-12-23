@@ -11,10 +11,10 @@ object GameConstant {
     val ANSWER_RESULT : String = "ANSWER_RESULT"
 
     lateinit var GAME_STATE: String
-//    var URL: String = "ws://10.0.2.2:8080/ws"
-    var URL: String = "ws://3.37.84.188:8080/ws"
-//    val API_URL: String = "http://10.0.2.2:8080"
-    val API_URL: String = "http://3.37.84.188:8080"
+    var URL: String = "ws://10.0.2.2:8080/ws"
+//    var URL: String = "ws://3.37.84.188:8080/ws"
+    val API_URL: String = "http://10.0.2.2:8080"
+//    val API_URL: String = "http://3.37.84.188:8080"
     var GAMEROOM_ID: String = "0"
     var SENDER: String = "DEFAULT"
 
@@ -24,7 +24,7 @@ object GameConstant {
     val GAME_STATE_WAIT: String = "WAIT"
 
     val GAME_STATE_THROW = "THROW"
-
+    val GAME_STATE_FIRST_THROW = "FIRST_THROW"
     val ONE_MORE_THROW: String = "ONE_MORE_THROW"
 
     val GAME_STATE_WIN: String = "WIN"
