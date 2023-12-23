@@ -6,30 +6,34 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.smu.som.R
 import pl.droidsonroids.gif.GifImageView
 
 class YutGifService(context: Context) : Dialog(context) {
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.yut_gif_image_view)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         window?.attributes?.windowAnimations = 0
+
+        // Glide 설정
+        val glideOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .skipMemoryCache(true)
+            .override(Target.SIZE_ORIGINAL)
+
+        Glide.with(context)
+            .setDefaultRequestOptions(glideOptions)
     }
     private var gifResourceId = 0
 
@@ -81,7 +85,5 @@ class YutGifService(context: Context) : Dialog(context) {
                 }
             })
             .into(gifImageView)
-
     }
-
 }
