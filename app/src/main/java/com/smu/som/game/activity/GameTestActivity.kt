@@ -287,7 +287,7 @@ class GameTestActivity : AppCompatActivity() {
                                 runOnUiThread {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnThrowYut.isEnabled = false // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
                                         binding.btnAddMal.isEnabled = false
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
