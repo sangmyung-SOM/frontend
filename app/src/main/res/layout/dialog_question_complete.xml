@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
-    android:layout_height="wrap_content"
+    android:layout_height="219dp"
     android:layout_gravity="center"
     android:orientation="vertical"
     android:background="@drawable/dialog_container">
@@ -26,8 +26,8 @@
     <TextView
         android:id="@+id/question"
         android:layout_width="230dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="65dp"
         android:fontFamily="@font/nanum_gothic_bold"
         android:text="질문에 대한 답변이 들어가는 텍스트 뷰입니다."
         android:textSize = "18sp"
@@ -37,7 +37,10 @@
         android:breakStrategy="balanced"
         android:layout_gravity="center"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@+id/question_title" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/closeButton"
+        android:scrollbars="vertical"
+        />
 
 
     <Button

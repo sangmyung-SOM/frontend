@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import com.smu.som.R
 import kotlinx.android.synthetic.main.dialog_question_complete.closeButton
@@ -23,6 +24,7 @@ class GetAnswerResultDialog(context: Context, val answer : String) : Dialog(cont
         show()
 
         val showQuestionTxt : TextView = findViewById(R.id.question)
+        showQuestionTxt.movementMethod = ScrollingMovementMethod.getInstance()
         showQuestionTxt.text = answer
 
         setClickCloseBtn()

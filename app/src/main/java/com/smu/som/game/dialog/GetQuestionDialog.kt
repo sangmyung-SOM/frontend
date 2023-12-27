@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import com.smu.som.R
 
@@ -24,6 +25,7 @@ class GetQuestionDialog(context: Context, val question: String) : Dialog(context
         Handler(Looper.getMainLooper()).postDelayed({
             show()
             val questionText : TextView = findViewById(R.id.question)
+            questionText.movementMethod = ScrollingMovementMethod.getInstance()
             questionText.text = question
         }, 4000)
         dismiss()
