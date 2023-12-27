@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -27,6 +28,7 @@ class AnsweringWishDialog(context : Context, val question: String?, val stomp: S
         setCanceledOnTouchOutside(false) // 다이얼로그 바깥 부분 눌러도 안닫히게
 
         val questionTxt : TextView = findViewById(R.id.info)
+        questionTxt.movementMethod = ScrollingMovementMethod.getInstance()
         questionTxt.text = question
 
         user_answer.hint = "답변을 입력해주세요."

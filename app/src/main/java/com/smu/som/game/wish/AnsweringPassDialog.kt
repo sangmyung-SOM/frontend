@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -38,7 +39,7 @@ class AnsweringPassDialog(context: Context, private val questionList: ArrayList<
         val showQuestionTxt : TextView = findViewById(R.id.question)
 
         showQuestionTxt.text = questionList?.get(0)?.question
-
+        showQuestionTxt.movementMethod = ScrollingMovementMethod.getInstance()
         clickPassBtn()
         clickCloseBtn()
         setPassCard()
