@@ -413,6 +413,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 if(!result?.playerId.equals(playerId)){
                                     oppQuestionDialog.dismiss() // 상대방이 받은 질문 팝업창 닫기
                                 }
+                                else{
+                                    unlockYutResults() // 질문에 대한 답변까지 하고 나서야 윷 결과 클릭 가능
+                                }
+
                                 // 답변 결과
                                 val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
@@ -658,6 +662,7 @@ class GameTestActivity2 : AppCompatActivity()  {
 
         // 레이아웃에 추가
         binding.layoutYutResult.addView(yut)
+        lockYutResults()
     }
 
     private fun lockYutResults(){
