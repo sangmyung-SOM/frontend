@@ -23,13 +23,13 @@ class GameMalStompService (val stomp: StompClient){
 
     // 말 터치 이벤트 리스너 등록
     // 말을 터치하면 서버로 해당 말 이동한다고 메시지 보냄
-    fun sendMalMove(gameId: String, playerId: String, malId : Int, yutResult: Int){
+    fun sendMalMove(gameId: String, playerId: String, malId : Int, yutResult: String){
         var request = JsonObject()
         request.addProperty("user_id", 1)
         request.addProperty("player_id", playerId)
         request.addProperty("game_id", gameId)
         request.addProperty("mal_id", malId)
-        request.addProperty("yut_result", YutConverter.toYutString(yutResult))
+        request.addProperty("yut_result", yutResult)
 
         stomp.send("/app/game/mal/move", request.toString()).subscribe()
         Log.i("som-gana", "말 이동하기 메시지 보내기")

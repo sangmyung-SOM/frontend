@@ -40,7 +40,6 @@ import java.util.concurrent.TimeUnit
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.chat.model.response.Chat
-import com.smu.som.game.YutConverter
 import com.smu.som.game.service.GameMalStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -52,7 +51,6 @@ import com.smu.som.game.dialog.GetQuestionDialog
 import com.smu.som.game.response.GameMalResponse
 import com.smu.som.game.response.QnAResponse
 import com.smu.som.game.response.ScoreInfo
-import com.smu.som.game.service.GameMalService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
 import com.smu.som.game.service.YutGifService
@@ -94,7 +92,7 @@ class GameTestActivity : AppCompatActivity() {
     // 가나가 필요해서 정의한 변수
     private val subscribes : MutableList<Disposable> = ArrayList() // stomp 구독들
     private val playerId : String = "1P" // 고정값
-    private lateinit var oppQuestionDialog: GetQuestionDialog // 상대방이 질문받은 내용 팝업창
+    private var oppQuestionDialog: GetQuestionDialog? // 상대방이 질문받은 내용 팝업창
     private var gameMalStompService: GameMalStompService = GameMalStompService(stomp)
     private lateinit var malMoveUtils:MalMoveUtils
     private lateinit var malInList : Array<ImageView> // 윷판에 있는 내 말
@@ -115,6 +113,7 @@ class GameTestActivity : AppCompatActivity() {
 
     init {
         stomp.url = constant.URL
+        oppQuestionDialog = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -207,9 +206,7 @@ class GameTestActivity : AppCompatActivity() {
                                 { success ->
                                     val response = Klaxon().parse<GameMalResponse.GetMalMovePosition>(success)
                                     Log.i("som-gana", "말 이동 위치조회 요청 성공")
-                                    if(response!!.playerId == playerId){ // 나에게 해당하는 응답이라면
-                                        runOnUiThread{ setMalEventListener(response) }
-                                    }
+                                    runOnUiThread{ getMalsNextPositionHandler(response!!) }
                                 },
                                 { throwable -> Log.i("som-gana", "말 이동 위치조회 실패: ${throwable.toString()}") }
                             )
@@ -222,7 +219,7 @@ class GameTestActivity : AppCompatActivity() {
                                     val response = Klaxon().parse<GameMalResponse.MoveMalDTO>(success)
                                     Log.i("som-gana", "말 이동하기 요청 성공")
 
-                                    runOnUiThread{ moveMal(response!!) }
+                                    runOnUiThread{ moveMalHandler(response!!) }
                                 },
                                 { throwable -> Log.i("som-gana", "말 이동하기 실패: ${throwable.toString()}") }
                             )
@@ -361,7 +358,7 @@ class GameTestActivity : AppCompatActivity() {
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
                                         binding.btnThrowYut.isEnabled = true
-                                        setYutResultInView(num)
+                                        addYutResult(num)
 
                                     } else {  // 윷이나 모가 아닌 경우
                                         // 첫 던진 윷이 빽도인 경우
@@ -376,7 +373,7 @@ class GameTestActivity : AppCompatActivity() {
                                         // 내 턴이면 질문 받아오기
                                         else if (result.playerId == playerId) {
                                             getQuestion()
-                                            setYutResultInView(num)
+                                            addYutResult(num)
                                         }
                                     }
                                 }
@@ -391,15 +388,18 @@ class GameTestActivity : AppCompatActivity() {
                             runOnUiThread {
                                 if(result?.playerId == "2P") {
                                     val questionMessage = result.question
+                                    oppQuestionDialog?.dismiss()
                                     oppQuestionDialog = GetQuestionDialog(this, questionMessage)
-                                    oppQuestionDialog.showPopup()
+                                    oppQuestionDialog?.showPopup()
                                 }
 
                                 // 질문 변경을 누른경우 (penalty는 계속 1로 유지 될것임)
                                 if (result?.playerId == playerId) {
+                                    if(result.penalty > penalty){ // 패널티로 모든 윷 결과 삭제
+                                        binding.layoutYutResult.removeAllViews()
+                                    }
                                     penalty = result.penalty
                                 }
-
                             }
                         }
                         subscribes.add(questionTopic)
@@ -424,8 +424,12 @@ class GameTestActivity : AppCompatActivity() {
                                 .parse<QnAResponse.GetAnswer>(stompMessage)
                             runOnUiThread {
                                 if(!result?.playerId.equals(playerId)){
-                                    oppQuestionDialog.dismiss() // 상대방이 받은 질문 팝업창 닫기
+                                    oppQuestionDialog?.dismiss() // 상대방이 받은 질문 팝업창 닫기
                                 }
+                                else{
+                                    unlockYutResults() // 질문에 대한 답변까지 하고 나서야 윷 결과 클릭 가능
+                                }
+
                                 val answer = result?.answer
                                 val answerResult = GetAnswerResultDialog(this, answer!!)
                                 answerResult.showPopup()
@@ -699,7 +703,7 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     // 윷 결과 화면에 표시하기
-    private fun setYutResultInView(yutResult: Int){
+    private fun addYutResult(yutResult: Int){
         binding.layoutYutResult.visibility = View.VISIBLE
         var yut : ImageView = ImageView(this)
 
@@ -723,15 +727,25 @@ class GameTestActivity : AppCompatActivity() {
             binding.layoutYutResult.removeView(it) // 해당 윷결과 뷰 삭제
 
             // 말 이동 완료하기 전까지 다른 윷 결과 클릭 못하게 막기
-            for(yutResult in binding.layoutYutResult.children){
-                yutResult.isEnabled = false
-            }
+            lockYutResults()
         }
 
         // 레이아웃에 추가
         binding.layoutYutResult.addView(yut)
+        lockYutResults()
     }
 
+    private fun lockYutResults(){
+        for(yutResult in binding.layoutYutResult.children){
+            yutResult.isEnabled = false // 다른 윷 결과 클릭 불가
+        }
+    }
+
+    private fun unlockYutResults(){
+        for(yutResult in binding.layoutYutResult.children){
+            yutResult.isEnabled = true // 다른 윷 결과 클릭 가능
+        }
+    }
 
     // dp -> px 단위 변경
     private fun dpToPx(context: Context, dp: Float): Int {
@@ -743,19 +757,16 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     // 어느 말을 이동할지 클릭 이벤트 리스너 등록
-    private fun setMalEventListener(response: GameMalResponse.GetMalMovePosition){
-        val yutResult = YutConverter.toYutInt(response.yutResult)
+    private fun getMalsNextPositionHandler(response: GameMalResponse.GetMalMovePosition){
+        if(!response.playerId.equals(playerId)){ // 나에게 해당하는 응답이 아니라면
+            return;
+        }
 
         // 새로 추가할 수 있는 말이 있다면
         if(response.newMalId != -1){
             binding.btnAddMal.isEnabled = true
             binding.btnAddMal.setOnClickListener{
-                sendMoveMal(response.newMalId, yutResult)
-                binding.btnAddMal.isEnabled = false
-
-                for(yutResult in binding.layoutYutResult.children){
-                    yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
-                }
+                sendMoveMal(response.newMalId, response.yutResult)
             }
         }
 
@@ -764,19 +775,14 @@ class GameTestActivity : AppCompatActivity() {
             val mal = malInList[i]
             if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
                 mal.setOnClickListener{
-                    sendMoveMal(i, yutResult)
-                    binding.btnAddMal.isEnabled = false
-
-                    for(yutResult in binding.layoutYutResult.children){
-                        yutResult.isEnabled = true // 이제 다른 윷 결과 클릭 가능
-                    }
+                    sendMoveMal(i, response.yutResult)
                 }
             }
         }
     }
 
     // 서버와 <말 이동하기> 통신하기
-    private fun sendMoveMal(malId : Int, yutResult: Int){
+    private fun sendMoveMal(malId : Int, yutResult: String){
         gameMalStompService.sendMalMove(
             gameId = GameConstant.GAMEROOM_ID,
             playerId = playerId,
@@ -785,6 +791,10 @@ class GameTestActivity : AppCompatActivity() {
         )
 
         removeMalEventListener() // 어느 말을 이동시킬지 결정한 이후에는 등록된 이벤트 리스너 지워야함.
+
+        binding.btnAddMal.isEnabled = false
+
+        unlockYutResults()
     }
 
     // 말에 있는 클릭 이벤트 리스너 모두 지우기
@@ -795,7 +805,7 @@ class GameTestActivity : AppCompatActivity() {
     }
 
     // 말 이동하기
-    public fun moveMal(response: GameMalResponse.MoveMalDTO){
+    public fun moveMalHandler(response: GameMalResponse.MoveMalDTO){
         if(response.playerId == playerId){ // 내 턴인 경우
             // 말 움직이기
             malMoveUtils.move(malInList[response.malId], response.movement)
