@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.chat.model.response.Chat
+import com.smu.som.game.YutConverter
 import com.smu.som.game.service.GameMalStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -760,6 +761,12 @@ class GameTestActivity : AppCompatActivity() {
     private fun getMalsNextPositionHandler(response: GameMalResponse.GetMalMovePosition){
         if(!response.playerId.equals(playerId)){ // 나에게 해당하는 응답이 아니라면
             return;
+        }
+
+        if(!response.isSuccess){
+            Toast.makeText(this, "윷판에 아무 말도 없는 상태에서는 빽도를 먼저 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            addYutResult(YutConverter.toYutInt(response.yutResult))
+            unlockYutResults()
         }
 
         // 새로 추가할 수 있는 말이 있다면

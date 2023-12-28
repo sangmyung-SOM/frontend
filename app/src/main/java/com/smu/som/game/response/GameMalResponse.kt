@@ -3,13 +3,15 @@ package com.smu.som.game.response
 class GameMalResponse {
 
     public class GetMalMovePosition{
+        var isSuccess: Boolean
         var userId : Long
         var playerId : String
         var yutResult : String
         var newMalId : Int
         var malList : List<MalMoveInfo>
 
-        constructor(userId:Long, playerId:String, yutResult: String, newMalId: Int, malList: List<MalMoveInfo>){
+        constructor(isSuccess: Boolean, userId:Long, playerId:String, yutResult: String, newMalId: Int, malList: List<MalMoveInfo>){
+            this.isSuccess = isSuccess
             this.userId = userId
             this.playerId = playerId
             this.yutResult = yutResult
