@@ -347,11 +347,13 @@ class GameTestActivity2 : AppCompatActivity()  {
 
                                     // 윷 gif 재생
                                     val yutService = YutGifService(this)
-                                    yutService.showYutGif(num) // [가나] 잠깐만 지워둠.
+                                    yutService.showYutGif(num) 
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
                                         binding.btnThrowYut2.isEnabled = true
-                                        addYutResult(num)
+                                        yutService.setOnDismissListener {
+                                            addYutResult(num)
+                                        }
 
                                     }else {  // 윷이나 모가 아닌 경우
                                         // 첫 던진 윷이 빽도인 경우
@@ -366,7 +368,9 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         // 내 턴이면 질문 받아오기
                                         else if (result.playerId == playerId) {
                                             getQuestion()
-                                            addYutResult(num)
+                                            yutService.setOnDismissListener {
+                                                addYutResult(num)
+                                            }
                                         }
                                     }
                                 }
