@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:fontFamily="@font/nanum_gothic"
-        android:text="1/2"
+        android:text="1/3"
         android:textColor="#FFFFFF"
         android:textSize="21sp"
         android:textStyle="bold"
