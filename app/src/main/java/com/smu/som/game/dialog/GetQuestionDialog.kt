@@ -17,6 +17,7 @@ class GetQuestionDialog(context: Context, val question: String) : Dialog(context
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_question_wait_answer)
+        setCanceledOnTouchOutside(false)
 
     }
 
@@ -27,8 +28,16 @@ class GetQuestionDialog(context: Context, val question: String) : Dialog(context
             val questionText : TextView = findViewById(R.id.question)
             questionText.movementMethod = ScrollingMovementMethod.getInstance()
             questionText.text = question
-        }, 4000)
+        }, 3000)
         dismiss()
+    }
+
+    fun waitPopup() {
+        show()
+        val questionText : TextView = findViewById(R.id.question)
+        questionText.movementMethod = ScrollingMovementMethod.getInstance()
+        questionText.text = question
+
     }
 
 

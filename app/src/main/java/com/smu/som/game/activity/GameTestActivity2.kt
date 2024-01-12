@@ -401,6 +401,18 @@ class GameTestActivity2 : AppCompatActivity()  {
                         }
                         subscribes.add(questionTopic)
 
+                        // 상대방이 추가 질문권을 사용하고 있는 것을 알려주는 채널
+                        val noticeAddQuestion = stomp.join("/topic/game/question/wish/notice" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<QnAResponse.GetAnswer>(stompMessage)
+                            runOnUiThread {
+                                if (result?.playerId != playerId) {
+                                    Toast.makeText(this, "상대방이 추가 질문권을 사용하고 있습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                        subscribes.add(noticeAddQuestion)
+
                         // 상대방이 추가 질문권을 사용하여 대답 해야 하는 경우
                         val addQuestionSubscribe = stomp.join("/topic/game/question/wish" + constant.GAMEROOM_ID).subscribe { stompMessage ->
                             val result = Klaxon()
@@ -409,6 +421,10 @@ class GameTestActivity2 : AppCompatActivity()  {
                                 if (result?.playerId != playerId) {
                                     val dialog = AnsweringWishDialog(this, result?.answer, stomp)
                                     dialog.show()
+                                }
+                                else {
+                                    oppQuestionDialog = GetQuestionDialog(this, result.answer)
+                                    oppQuestionDialog?.waitPopup()
                                 }
                             }
                         }
@@ -449,6 +465,11 @@ class GameTestActivity2 : AppCompatActivity()  {
                                                 Toast.makeText(this, "패스권이 사용되었습니다.", Toast.LENGTH_SHORT).show()
                                             }
                                             passCard_cnt = response.passCard!!
+                                        }
+                                    }
+                                    if (response?.playerId != playerId) {
+                                        runOnUiThread {
+                                            Toast.makeText(this, "상대방이 패스권을 선택했습니다.", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 },

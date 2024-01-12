@@ -60,6 +60,7 @@ import com.smu.som.game.wish.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.btn_chat
+import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 
@@ -339,6 +340,7 @@ class GameTestActivity : AppCompatActivity() {
                                 .parse<Game.GetThrowResult>(stompMessage)
                             runOnUiThread {
 
+                                // 말을 잡은 경우
                                 if (result?.messageType == "CATCH_MAL" && result.playerId == playerId) {
                                     binding.btnThrowYut.isEnabled = true
                                     val dialog = WishDialog(this, stomp)
@@ -396,7 +398,7 @@ class GameTestActivity : AppCompatActivity() {
                                     oppQuestionDialog?.showPopup()
                                 }
 
-                                // 질문 변경을 누른경우 (penalty는 계속 1로 유지 될것임)
+                                // 질문 변경을 누른경우
                                 if (result?.playerId == playerId) {
                                     if(result.penalty > penalty){ // 패널티로 모든 윷 결과 삭제
                                         binding.layoutYutResult.removeAllViews()
@@ -416,9 +418,25 @@ class GameTestActivity : AppCompatActivity() {
                                     val dialog = AnsweringWishDialog(this, result?.answer, stomp)
                                     dialog.show()
                                 }
+                                else {
+                                    oppQuestionDialog = GetQuestionDialog(this, result.answer)
+                                    oppQuestionDialog?.waitPopup()
+                                }
                             }
                         }
                         subscribes.add(addQuestionSubscribe)
+
+                        // 상대방이 추가 질문권을 사용하고 있는 것을 알려주는 채널
+                        val noticeAddQuestion = stomp.join("/topic/game/question/wish/notice" + constant.GAMEROOM_ID).subscribe { stompMessage ->
+                            val result = Klaxon()
+                                .parse<QnAResponse.GetAnswer>(stompMessage)
+                            runOnUiThread {
+                                if (result?.playerId != playerId) {
+                                    Toast.makeText(this, "상대방이 추가 질문권을 사용하고 있습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                        subscribes.add(noticeAddQuestion)
 
 
                         // 답변 결과를 받는 채널
@@ -456,6 +474,11 @@ class GameTestActivity : AppCompatActivity() {
                                                 Toast.makeText(this, "패스권이 사용되었습니다.", Toast.LENGTH_SHORT).show()
                                             }
                                             passCard_cnt = response.passCard!!
+                                        }
+                                    }
+                                    if (response?.playerId != playerId) {
+                                        runOnUiThread {
+                                            Toast.makeText(this, "상대방이 패스권을 선택했습니다.", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 },

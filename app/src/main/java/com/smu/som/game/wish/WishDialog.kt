@@ -39,6 +39,17 @@ class WishDialog(context: Context, val stomp: StompClient) : Dialog(context) {
             val dialog = WishAddQuestionDialog(context, stomp)
             dialog.show()
             dismiss()
+
+            try {
+                request.addProperty("room_id", GameConstant.GAMEROOM_ID)
+                request.addProperty("player_id", GameConstant.GAME_TURN)
+                request.addProperty("answer", "추가 질문권 사용")
+
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+
+            stomp.send("/app/game/question/wish", request.toString()).subscribe()
         }
     }
 
