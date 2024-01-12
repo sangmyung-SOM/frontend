@@ -126,7 +126,7 @@ class StartActivityClicked : AppCompatActivity() {
 
 
     fun showFirstPage(inflater: LayoutInflater) {
-        val view1 = inflater.inflate(R.layout.activity_gamerule1, null)
+        val view1 = inflater.inflate(R.layout.activity_online_gamerule1, null)
         val alertDialog1 = AlertDialog.Builder(this)
             .setTitle("게임 방법")
             .setPositiveButton("다음") { dialog, which ->
