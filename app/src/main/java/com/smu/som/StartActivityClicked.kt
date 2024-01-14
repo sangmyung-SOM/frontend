@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.kakao.sdk.talk.TalkApiClient
 import com.kakao.sdk.talk.model.TalkProfile
+import com.smu.som.game.dialog.GameRuleDialog
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_start_clicked.*
 
@@ -65,7 +66,9 @@ class StartActivityClicked : AppCompatActivity() {
         }
 
         explain_btn.setOnClickListener {
-            showPopup()
+            val dialog = GameRuleDialog(this)
+            dialog.show()
+
         }
 
         onlineStart.setOnClickListener {
