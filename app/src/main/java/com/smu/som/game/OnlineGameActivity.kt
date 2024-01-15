@@ -954,11 +954,22 @@ class OnlineGameActivity : AppCompatActivity() {
         val view2 = inflater.inflate(R.layout.activity_online_gamerule2, null)
         val alertDialog2 = AlertDialog.Builder(this).setTitle("게임 방법")
             .setPositiveButton("확인", null)
-            .setNegativeButton("이전") { dialog, which ->
-                showFirstPage(inflater) // 이전 설명 페이지를 보여주는 함수 호출
+            .setNegativeButton("다음") { dialog, which ->
+                showThirdPage(inflater) // 설명 3 페이지를 보여주는 함수 호출
             }
         alertDialog2.setView(view2)
         alertDialog2.setCancelable(false).show()
+    }
+
+    fun showThirdPage(inflater: LayoutInflater) {
+        val view3 = inflater.inflate(R.layout.activity_online_gamerule3, null)
+        val alertDialog3 = AlertDialog.Builder(this).setTitle("게임 방법")
+            .setPositiveButton("확인", null)
+            .setNegativeButton("이전") { dialog, which ->
+                showFirstPage(inflater) // 처음 설명 페이지를 보여주는 함수 호출
+            }
+        alertDialog3.setView(view3)
+        alertDialog3.setCancelable(false).show()
     }
 
     fun showFirstPage(inflater: LayoutInflater) {

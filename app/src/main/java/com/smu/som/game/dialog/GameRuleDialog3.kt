@@ -4,23 +4,23 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import com.smu.som.R
-import kotlinx.android.synthetic.main.activity_online_gamerule2.btn_cancel_2
-import kotlinx.android.synthetic.main.activity_online_gamerule2.btn_pre
+import kotlinx.android.synthetic.main.activity_online_gamerule3.btn_cancel_2
+import kotlinx.android.synthetic.main.activity_online_gamerule3.btn_pre
 
-class GameRuleDialog2(context: Context) : Dialog(context) {
+class GameRuleDialog3(context: Context) : Dialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_online_gamerule2)
+        setContentView(R.layout.activity_online_gamerule3)
         setCanceledOnTouchOutside(false)
 
-        clickEnterBtn()
+        clickPreBtn()
         clickCancelBtn()
     }
 
-    private fun clickEnterBtn() {
+    private fun clickPreBtn() {
         btn_pre.setOnClickListener {
-            val dialog = GameRuleDialog3(context)
+            val dialog = GameRuleDialog(context)
             dialog.show()
             dismiss()
             dialog.window?.setWindowAnimations(0)
