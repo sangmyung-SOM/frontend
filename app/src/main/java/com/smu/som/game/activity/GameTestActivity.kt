@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.chat.model.response.Chat
+import com.smu.som.game.reportQnA.dialog.AnswerReportDialog
 import com.smu.som.game.service.GameMalStompService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -54,13 +55,12 @@ import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
 import com.smu.som.game.service.YutGifService
-import com.smu.som.game.wish.AnsweringPassDialog
-import com.smu.som.game.wish.AnsweringWishDialog
-import com.smu.som.game.wish.WishDialog
+import com.smu.som.game.wish.dialog.AnsweringPassDialog
+import com.smu.som.game.wish.dialog.AnsweringWishDialog
+import com.smu.som.game.wish.dialog.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.btn_chat
-import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 
@@ -175,6 +175,12 @@ class GameTestActivity : AppCompatActivity() {
             dialog.show()
         }
 
+        // 질문답변 기록 보는 아이콘
+        binding.btnReport.setOnClickListener {
+            val dialog = AnswerReportDialog(this, stomp, 0)
+            dialog.showPopup()
+        }
+
         if (bundle != null) {
             constant.set(bundle.getString("sender")!!, bundle.getString("gameRoomId")!!, "1P")
         }
@@ -285,7 +291,7 @@ class GameTestActivity : AppCompatActivity() {
                                 runOnUiThread {
 
                                     if (result?.messageType == GameConstant.GAME_STATE_WAIT) {
-                                        binding.btnThrowYut.isEnabled = false // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
+                                        binding.btnThrowYut.isEnabled = true // 로직 완성되면 false로 바꾸기 (현재 1명 들어와있는 상태에서 테스트 하기 위함)
                                         binding.btnAddMal.isEnabled = false
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
