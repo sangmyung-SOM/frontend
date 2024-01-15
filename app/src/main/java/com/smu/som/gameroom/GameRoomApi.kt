@@ -18,6 +18,7 @@ interface GameRoomApi {
     fun makeGameRoom(@Query("name") name: String,
                      @Query("category") category: String,
                      @Query("adult") adult: String,
+                     @Query("mal") mal: Int
     ): Call<GameRoomResponse>
 
     interface GameRoomImpl{

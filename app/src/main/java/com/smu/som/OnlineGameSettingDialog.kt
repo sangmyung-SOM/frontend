@@ -132,9 +132,10 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
         val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString(), category, adult)
         var GameRoomId = ""
+        val malNum = binding.tvMalNum.text.toString().toInt()
 
         // POST 요청을 보냅니다.
-        val call = gameRoomApi.makeGameRoom(makeGameRoom.name!!, makeGameRoom.category!!, makeGameRoom.adult!!)
+        val call = gameRoomApi.makeGameRoom(makeGameRoom.name!!, makeGameRoom.category!!, makeGameRoom.adult!!, malNum)
         call.enqueue(object : Callback<GameRoomResponse> {
             override fun onResponse(
                 call: Call<GameRoomResponse>,
