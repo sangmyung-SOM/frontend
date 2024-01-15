@@ -18,7 +18,7 @@ import com.smu.som.R
 import com.smu.som.game.activity.GameTestActivity
 import com.smu.som.gameroom.activity.GameRoomListActivity
 
-
+// 방 목록 UI 변경으로 인해 사용 안함
 class GetGameRoomIdDialog(context: Context) : Dialog(context) {
 
     private var gameRoomId : String = "1234"

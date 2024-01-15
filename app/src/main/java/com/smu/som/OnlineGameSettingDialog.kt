@@ -16,6 +16,8 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
+import com.smu.som.GameRoomResponse
+import com.smu.som.R
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.dialog.GetGameRoomIdDialog
 import com.smu.som.gameroom.GameRoomApi
