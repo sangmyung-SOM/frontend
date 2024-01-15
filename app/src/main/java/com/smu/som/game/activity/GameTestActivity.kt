@@ -290,12 +290,16 @@ class GameTestActivity : AppCompatActivity() {
                                         binding.viewProfilePick1P.setBackgroundResource(R.drawable.pick)
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
+
+                                        // [가나] 여기서 말개수를 넘겨줘야하나?
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         val profileUrl = result.profileURL_2P
                                         updateProfile(profileUrl, "2P")
+
+                                        // [가나] 여기서 말개수를 넘겨줘야하나?
 
                                         if (name.split(",")[0] == constant.SENDER) {
                                             tv_nickname_p1.text = constant.SENDER
