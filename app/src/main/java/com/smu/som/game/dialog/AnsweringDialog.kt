@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -16,9 +15,12 @@ import com.google.gson.JsonObject
 import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.game.GameConstant
+import com.smu.som.game.reportQnA.model.response.ReportResponse
 import com.smu.som.game.service.GameStompService
+import com.smu.som.game.reportQnA.model.service.SaveQnAService
 import org.json.JSONException
 
+// 잘문에 대한 답변을 입력하는 다이얼로그 (질문과 답변 UI 구성)
 class AnsweringDialog(context: Context, private val questionList: ArrayList<Question>?, val stomp: StompClient, private val penalty: Int) : Dialog(context) {
 
     val bundle: Bundle = Bundle()
@@ -66,6 +68,16 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
 
             stomp.send("/app/game/answer", request.toString()).subscribe()
             dismiss()
+
+            // 질문과 답변을 서버 전송 후 저장
+            val reportResponseAndQuestionList = ReportResponse.AnswerAndQuestionList(
+                answer = answer.text.toString(),
+                question = questionList?.get(0)?.question,
+                playerId = GameConstant.GAME_TURN
+            )
+            val qnaService = SaveQnAService()
+            qnaService.saveQnA(reportResponseAndQuestionList)
+
         }
     }
 
