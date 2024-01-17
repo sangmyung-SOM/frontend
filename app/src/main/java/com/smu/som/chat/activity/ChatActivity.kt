@@ -86,6 +86,8 @@ class ChatActivity : AppCompatActivity() {
                     }
                     stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
 
+
+
                     send.setOnClickListener {
                         try {
                             jsonObject.put("messageType", "TALK")
