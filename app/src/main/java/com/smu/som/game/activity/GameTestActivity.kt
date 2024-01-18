@@ -60,7 +60,6 @@ import com.smu.som.game.wish.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.btn_chat
-import kotlinx.android.synthetic.main.activity_online_game.btn_throw_yut
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p2
 
@@ -291,15 +290,14 @@ class GameTestActivity : AppCompatActivity() {
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
 
-                                        // [가나] 여기서 말개수를 넘겨줘야하나?
+                                        limitMalNum(result.malNum)
                                     }
                                     if (result?.messageType == GameConstant.GAME_STATE_START) {
                                         binding.btnThrowYut.isEnabled = true
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         val profileUrl = result.profileURL_2P
                                         updateProfile(profileUrl, "2P")
-
-                                        // [가나] 여기서 말개수를 넘겨줘야하나?
+                                        limitMalNum(result.malNum)
 
                                         if (name.split(",")[0] == constant.SENDER) {
                                             tv_nickname_p1.text = constant.SENDER
@@ -513,6 +511,7 @@ class GameTestActivity : AppCompatActivity() {
                             jsonObject.put("sender", constant.SENDER)
                             jsonObject.put("player_id", constant.GAME_TURN)
                             jsonObject.put("profileURL_1P", "$profileUrl")
+                            jsonObject.put("mal_num", GameConstant.MAL_NUM)
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
@@ -668,6 +667,20 @@ class GameTestActivity : AppCompatActivity() {
             .into(imageView)
     }
 
+    // 말 개수 조정
+    private fun limitMalNum(malNum: Int){
+        for(i in malNum until  4){
+            malInList[i].isEnabled = false
+            malInList[i].visibility = View.GONE
+            oppMalInList[i].isEnabled = false
+            oppMalInList[i].visibility = View.GONE
+            catHandList[i].isEnabled = false
+            catHandList[i].visibility = View.GONE
+            oppCatHandList[i].isEnabled = false
+            oppCatHandList[i].visibility = View.GONE
+        }
+    }
+
     // 2P 스코어 UI 변경
     private fun scoreUIChange(score1P: Int, score2p: Int) {
         binding.tvPlayer1Score.text = score1P.toString()
@@ -801,11 +814,11 @@ class GameTestActivity : AppCompatActivity() {
         }
 
         // 윷판 안에 있는 말
-        for(i in 0 until 4){
-            val mal = malInList[i]
+        for(nextPositionInfo in response.malList){
+            val mal = malInList[nextPositionInfo.malId]
             if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
                 mal.setOnClickListener{
-                    sendMoveMal(i, response.yutResult)
+                    sendMoveMal(nextPositionInfo.malId, response.yutResult)
                 }
             }
         }

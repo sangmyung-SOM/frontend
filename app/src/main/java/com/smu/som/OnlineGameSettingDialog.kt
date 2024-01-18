@@ -19,6 +19,7 @@ import com.google.gson.GsonBuilder
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.databinding.ActivityOnlineGameSettingBinding
 import com.smu.som.dialog.GetGameRoomIdDialog
+import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
@@ -60,6 +61,8 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
 
         // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
+
+            GameConstant.MAL_NUM = binding.tvMalNum.text.toString().toInt()
 
             // 이름 설정
             name = findViewById(R.id.name_1P_OG)

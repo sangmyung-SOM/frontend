@@ -17,6 +17,7 @@ import com.kakao.sdk.talk.model.TalkProfile
 import com.smu.som.OnlineGameSettingDialog
 import com.smu.som.R
 import com.smu.som.dialog.SetNameDialog
+import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.adapter.GameRoomAdapter
 import com.smu.som.gameroom.model.GameRoom
@@ -60,6 +61,7 @@ class  GameRoomListActivity : AppCompatActivity() {
             .subscribe({ response: List<GameRoom> ->
                 for (item in response) {
                     cAdapter.addItem(item)
+                    println("말 개수: ${item.malNum}")
                 }
 
             }, { error: Throwable ->

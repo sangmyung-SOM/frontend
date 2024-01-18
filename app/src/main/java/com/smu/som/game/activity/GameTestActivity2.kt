@@ -164,6 +164,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 게임 설정 불러오기 (bundle)
         category = bundle?.getString("category") // COUPLE, MARRIED, PARENT
         adult = bundle?.getString("adult")
+        GameConstant.MAL_NUM = bundle?.getInt("malNum")!!
 
         settingCategory(category, adult)
 
@@ -283,6 +284,8 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
 
+                                        limitMalNum(result.malNum)
+
                                         if (result.message == "1P가 들어오지 않았습니다.") {
                                             Toast.makeText(this, "상대방이 들어오지 않았습니다.", Toast.LENGTH_SHORT).show()
                                         }
@@ -294,6 +297,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         val profileUrl = result.profileURL_1P
                                         updateProfile(profileUrl, "1P")
+                                        limitMalNum(result.malNum)
 
                                         if (name.split(",")[1] == constant.SENDER) {
                                             tv_nickname_p1.text = name.split(",")[0]
@@ -499,6 +503,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             jsonObject.put("sender", constant.SENDER)
                             jsonObject.put("player_id", constant.GAME_TURN)
                             jsonObject.put("profileURL_2P", "$profileUrl")
+                            jsonObject.put("mal_num", GameConstant.MAL_NUM)
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
@@ -616,6 +621,20 @@ class GameTestActivity2 : AppCompatActivity()  {
             .load(imageUrl)
             .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
             .into(imageView)
+    }
+
+    // 말 개수 조정
+    private fun limitMalNum(malNum: Int){
+        for(i in malNum until  4){
+            malInList[i].isEnabled = false
+            malInList[i].visibility = View.GONE
+            oppMalInList[i].isEnabled = false
+            oppMalInList[i].visibility = View.GONE
+            catHandList[i].isEnabled = false
+            catHandList[i].visibility = View.GONE
+            oppCatHandList[i].isEnabled = false
+            oppCatHandList[i].visibility = View.GONE
+        }
     }
 
     // 2P 스코어 UI 변경
@@ -752,11 +771,11 @@ class GameTestActivity2 : AppCompatActivity()  {
         }
 
         // 윷판 안에 있는 말
-        for(i in 0 until 4){
-            val mal = malInList[i]
+        for(nextPositionInfo in response.malList){
+            val mal = malInList[nextPositionInfo.malId]
             if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
                 mal.setOnClickListener{
-                    sendMoveMal(i, response.yutResult)
+                    sendMoveMal(nextPositionInfo.malId, response.yutResult)
                 }
             }
         }
