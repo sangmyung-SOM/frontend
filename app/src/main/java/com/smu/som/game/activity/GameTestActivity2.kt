@@ -467,6 +467,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             // 패스권 개수가 기존보다 감소했을 때
                                             else {
                                                 Toast.makeText(this, "패스권이 사용되었습니다.", Toast.LENGTH_SHORT).show()
+                                                unlockYutResults()
                                             }
                                             passCard_cnt = response.passCard!!
                                         }
