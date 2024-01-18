@@ -19,7 +19,7 @@ object GameConstant {
     val API_URL: String = "http://192.168.219.107:8080"
     var GAMEROOM_ID: String = "0"
     var SENDER: String = "DEFAULT"
-    var MAL_NUM: Int = 4
+    var MAL_NUM_LIMIT: Int = 4
 
     val GAME_STATE_START: String = "START"
     val GAME_STATE_END: String = "END"

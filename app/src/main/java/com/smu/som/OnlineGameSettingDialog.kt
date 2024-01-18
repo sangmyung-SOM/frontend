@@ -62,7 +62,7 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
         // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
 
-            GameConstant.MAL_NUM = binding.tvMalNum.text.toString().toInt()
+            GameConstant.MAL_NUM_LIMIT = binding.tvMalNum.text.toString().toInt()
 
             // 이름 설정
             name = findViewById(R.id.name_1P_OG)

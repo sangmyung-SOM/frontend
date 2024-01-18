@@ -15,8 +15,8 @@ class Game {
         val userNameList: String,
         val profileURL_1P: String,
         val profileURL_2P: String,
-        @Json("mal_num")
-        var malNum: Int
+        @Json("mal_num_limit")
+        var malNumLimit: Int
     )
 
     data class GetThrowResult(

@@ -45,7 +45,7 @@ class SetNameDialog(context: Context, gameSettingArray: ArrayList<GameRoom>) : D
                 bundle.putString("gameRoomId", gameSetting.roomId)
                 bundle.putString("category", gameSetting.category)
                 bundle.putString("adult", gameSetting.adult)
-                bundle.putInt("malNum", gameSetting.malNum)
+                bundle.putInt("malNumLimit", gameSetting.malNumLimit)
 
                 // 가나-게임방으로 이동하게 수정함
                 val intent = Intent(context, GameTestActivity2::class.java)

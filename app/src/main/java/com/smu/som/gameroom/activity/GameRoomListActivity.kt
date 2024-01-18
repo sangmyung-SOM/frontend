@@ -1,7 +1,6 @@
 package com.smu.som.gameroom.activity
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,12 +11,9 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.kakao.sdk.talk.TalkApiClient
-import com.kakao.sdk.talk.model.TalkProfile
 import com.smu.som.OnlineGameSettingDialog
 import com.smu.som.R
 import com.smu.som.dialog.SetNameDialog
-import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.adapter.GameRoomAdapter
 import com.smu.som.gameroom.model.GameRoom
@@ -61,7 +57,7 @@ class  GameRoomListActivity : AppCompatActivity() {
             .subscribe({ response: List<GameRoom> ->
                 for (item in response) {
                     cAdapter.addItem(item)
-                    println("말 개수: ${item.malNum}")
+                    println("말 개수: ${item.malNumLimit}")
                 }
 
             }, { error: Throwable ->
