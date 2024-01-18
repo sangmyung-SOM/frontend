@@ -26,6 +26,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.132" />
 
+        <Button
+            android:id="@+id/btn_enter"
+            android:layout_width="118.11dp"
+            android:layout_height="42dp"
+            android:background="@drawable/dialog_btn_enter"
+            android:fontFamily="@font/nanum_gothic_bold"
+            android:text="질문목록 보기"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="50dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
+            tools:ignore="SpeakableTextPresentCheck" />
+
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"

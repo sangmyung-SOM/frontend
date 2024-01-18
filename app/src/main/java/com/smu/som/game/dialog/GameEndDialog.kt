@@ -16,7 +16,7 @@ import com.smu.som.StartActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
-import kotlinx.android.synthetic.main.dialog_game_end.win_or_lose
+import kotlinx.android.synthetic.main.dialog_game_end.btn_enter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +27,7 @@ class GameEndDialog(context: Context) : Dialog(context) {
         super.onCreate(savedInstanceState)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
         setContentView(R.layout.dialog_game_end)
+        clickEnterBtn()
 
         // GameRoomApi 에서 게임 방 삭제
         val gameRoomApi = GameRoomApi
@@ -42,6 +43,15 @@ class GameEndDialog(context: Context) : Dialog(context) {
 
     }
 
+    private fun clickEnterBtn() {
+        btn_enter.setOnClickListener {
+            val dialog = EndingQuestionDialog(context)
+            dialog.show()
+            dismiss()
+            dialog.window?.setWindowAnimations(0)
+        }
+    }
+
     fun showPopup() {
         show()
         // 클릭 감지 리스너
@@ -55,6 +65,7 @@ class GameEndDialog(context: Context) : Dialog(context) {
         // 패배 이미지로 변경
         val winOrLoseImg : ImageView = findViewById(R.id.win_or_lose)
         winOrLoseImg.setImageResource(R.drawable.lose_)
+
 
 
         setClickListener()
