@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.kakao.sdk.user.UserApiClient
-import com.smu.som.game.TaskService
+import com.smu.som.game.service.TaskService
 
 // 인트로 Activity
 class IntroActivity : AppCompatActivity() {

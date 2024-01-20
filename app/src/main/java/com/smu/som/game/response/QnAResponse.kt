@@ -7,6 +7,8 @@ class QnAResponse {
     data class GetQuestion (
         @Json("player_id")
         var playerId: String,
+        @Json("question_id")
+        var questionId: Int,
         @Json("question")
         var question: String,
         @Json("penalty")

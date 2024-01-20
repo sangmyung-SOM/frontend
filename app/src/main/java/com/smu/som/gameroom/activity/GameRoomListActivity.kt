@@ -1,7 +1,6 @@
 package com.smu.som.gameroom.activity
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,8 +11,6 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.kakao.sdk.talk.TalkApiClient
-import com.kakao.sdk.talk.model.TalkProfile
 import com.smu.som.OnlineGameSettingDialog
 import com.smu.som.R
 import com.smu.som.dialog.SetNameDialog
@@ -45,13 +42,16 @@ class  GameRoomListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gameroom_list)
 
+        // 게임방 목록 어댑터 설정
         recycler_gameroom.adapter = cAdapter
         recycler_gameroom.layoutManager = LinearLayoutManager(this)
         recycler_gameroom.setHasFixedSize(true)
 
+        // 스냅 헬퍼 추가
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(recycler_gameroom)
 
+        // 게임방 목록 불러오기
         val compositeDisposable = CompositeDisposable()
         compositeDisposable.add(
             GameRoomApi.getGameRoom(page, pageSize)
@@ -60,6 +60,7 @@ class  GameRoomListActivity : AppCompatActivity() {
             .subscribe({ response: List<GameRoom> ->
                 for (item in response) {
                     cAdapter.addItem(item)
+                    println("말 개수: ${item.malNumLimit}")
                 }
 
             }, { error: Throwable ->
@@ -68,11 +69,13 @@ class  GameRoomListActivity : AppCompatActivity() {
 
         enterButton.isEnabled = false
 
+        // 방 만들기 버튼 클릭 시
         createBtn.setOnClickListener {
             val dialog = OnlineGameSettingDialog(this)
             dialog.show()
         }
 
+        // 새로고침 버튼 클릭 시
         refresh.setOnClickListener {
             finish() //인텐트 종료
             overridePendingTransition(0, 0) //인텐트 효과 없애기
@@ -82,6 +85,7 @@ class  GameRoomListActivity : AppCompatActivity() {
             Log.d("refresh", "refresh")
         }
 
+        // 입장 버튼 클릭 시
         enterButton.setOnClickListener {
             val dialog : SetNameDialog = SetNameDialog(this, gameSettingList)
             dialog.show()
