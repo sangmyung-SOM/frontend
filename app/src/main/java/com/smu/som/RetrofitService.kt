@@ -43,7 +43,7 @@ interface RetrofitService {
         @Path("kakaoID") kakaoID: String,
     ): Call<Data>
 
-    @GET("/room/{roomId}/chatLogs")
+    @GET("/chat/room/{roomId}/chatLogs")
     fun getChatLogs(
         @Path("roomId") roomId: String
     ):Call<ArrayList<Chat>>

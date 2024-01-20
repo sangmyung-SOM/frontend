@@ -112,7 +112,7 @@ class GameChatActivity : AppCompatActivity() {
                                 }
                             }
                             else {
-                                Log.e(ContentValues.TAG, "이전 대화 목록 불러오기 실패.")
+                                Log.e(ContentValues.TAG, "이전 대화 목록 불러오기 실패. 응답 코드: ${response.code()}")
                             }
                         }
 
