@@ -1,4 +1,4 @@
-package com.smu.som.game.wish
+package com.smu.som.game.wish.dialog
 
 import android.annotation.SuppressLint
 import android.app.Dialog

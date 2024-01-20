@@ -1,11 +1,10 @@
-package com.smu.som.game.wish
+package com.smu.som.game.wish.dialog
 
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.google.gson.JsonObject

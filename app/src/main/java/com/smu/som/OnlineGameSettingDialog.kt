@@ -16,8 +16,12 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.google.gson.GsonBuilder
+import com.smu.som.GameRoomResponse
+import com.smu.som.R
 import com.smu.som.chat.model.network.RetrofitCreator
+import com.smu.som.databinding.ActivityOnlineGameSettingBinding
 import com.smu.som.dialog.GetGameRoomIdDialog
+import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
@@ -34,10 +38,13 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
     private lateinit var getGameRoomIdDialog: GetGameRoomIdDialog
     private lateinit var name: EditText
     private var intent = Intent()
+    private lateinit var binding: ActivityOnlineGameSettingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_online_game_setting)
+        binding = ActivityOnlineGameSettingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         getGameRoomIdDialog = GetGameRoomIdDialog(context)
 
         val categoryMap = hashMapOf("연인" to "COUPLE", "부부" to "MARRIED", "부모자녀" to "PARENT")
@@ -46,6 +53,8 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
         var adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, characterArray)
         val bundle: Bundle = Bundle()
 
+        setBtnMalNumMinus()
+        setBtnMalNumPlus()
 
         //라디오 버튼
         val rgCategory = findViewById<RadioGroup>(R.id.rg_category) // 라디오버튼 그룹1 관계
@@ -54,6 +63,8 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
 
         // 방 만들기 버튼 클릭
         makeRoomBtn.setOnClickListener {
+
+            GameConstant.MAL_NUM_LIMIT = binding.tvMalNum.text.toString().toInt()
 
             // 이름 설정
             name = findViewById(R.id.name_1P_OG)
@@ -126,9 +137,10 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
         val gameRoomApi = retrofit.create(GameRoomApi::class.java)
         val makeGameRoom = MakeGameRoom(name_1P_OG.text.toString(), category, adult)
         var GameRoomId = ""
+        val malNum = binding.tvMalNum.text.toString().toInt()
 
         // POST 요청을 보냅니다.
-        val call = gameRoomApi.makeGameRoom(makeGameRoom.name!!, makeGameRoom.category!!, makeGameRoom.adult!!)
+        val call = gameRoomApi.makeGameRoom(makeGameRoom.name!!, makeGameRoom.category!!, makeGameRoom.adult!!, malNum)
         call.enqueue(object : Callback<GameRoomResponse> {
             override fun onResponse(
                 call: Call<GameRoomResponse>,
@@ -160,5 +172,31 @@ class OnlineGameSettingDialog(context: Context) : Dialog(context) {
                 dismiss()
             }
         }, 500)
+    }
+
+    private fun setBtnMalNumPlus(){
+        binding.btnMalPlus.setOnClickListener {
+            var malNum: Int = binding.tvMalNum.text.toString().toInt()
+
+            malNum++
+            if(4 < malNum){
+                malNum = 1
+            }
+
+            binding.tvMalNum.text = malNum.toString()
+        }
+    }
+
+    private fun setBtnMalNumMinus(){
+        binding.btnMalMinus.setOnClickListener {
+            var malNum: Int = binding.tvMalNum.text.toString().toInt()
+
+            malNum--
+            if(malNum < 1){
+                malNum = 4
+            }
+
+            binding.tvMalNum.text = malNum.toString()
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import com.smu.som.R
 
+// 방 목록 UI 변경으로 인해 사용 안함
 class FindGameRoomDialog(context: Context) : Dialog(context) {
 
     val bundle: Bundle = Bundle()

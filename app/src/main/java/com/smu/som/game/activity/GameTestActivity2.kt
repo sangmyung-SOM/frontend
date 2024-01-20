@@ -31,6 +31,7 @@ import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
+import com.smu.som.game.reportQnA.dialog.AnswerReportDialog
 import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GameRuleDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
@@ -43,9 +44,9 @@ import com.smu.som.game.service.GameMalStompService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
 import com.smu.som.game.service.YutGifService
-import com.smu.som.game.wish.AnsweringPassDialog
-import com.smu.som.game.wish.AnsweringWishDialog
-import com.smu.som.game.wish.WishDialog
+import com.smu.som.game.wish.dialog.AnsweringPassDialog
+import com.smu.som.game.wish.dialog.AnsweringWishDialog
+import com.smu.som.game.wish.dialog.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -157,6 +158,12 @@ class GameTestActivity2 : AppCompatActivity()  {
             dialog.show()
         }
 
+        // 질문답변 기록 보는 아이콘
+        binding.btnReport.setOnClickListener {
+            val dialog = AnswerReportDialog(this, stomp, 0)
+            dialog.showPopup()
+        }
+
 
         val intent = intent
         val bundle = intent.getBundleExtra("myBundle")
@@ -164,6 +171,7 @@ class GameTestActivity2 : AppCompatActivity()  {
         // 게임 설정 불러오기 (bundle)
         category = bundle?.getString("category") // COUPLE, MARRIED, PARENT
         adult = bundle?.getString("adult")
+        GameConstant.MAL_NUM_LIMIT = bundle?.getInt("malNumLimit")!!
 
         settingCategory(category, adult)
 
@@ -283,6 +291,8 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         binding.profileImgCatP1.isEnabled = true
                                         binding.profileImgCatP2.isEnabled = false
 
+                                        limitMalNum(result.malNumLimit)
+
                                         if (result.message == "1P가 들어오지 않았습니다.") {
                                             Toast.makeText(this, "상대방이 들어오지 않았습니다.", Toast.LENGTH_SHORT).show()
                                         }
@@ -294,6 +304,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                         val name = result.userNameList // message에 [1P,2P] 이름이 들어있음
                                         val profileUrl = result.profileURL_1P
                                         updateProfile(profileUrl, "1P")
+                                        limitMalNum(result.malNumLimit)
 
                                         if (name.split(",")[1] == constant.SENDER) {
                                             tv_nickname_p1.text = name.split(",")[0]
@@ -463,6 +474,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                             // 패스권 개수가 기존보다 감소했을 때
                                             else {
                                                 Toast.makeText(this, "패스권이 사용되었습니다.", Toast.LENGTH_SHORT).show()
+                                                unlockYutResults()
                                             }
                                             passCard_cnt = response.passCard!!
                                         }
@@ -499,6 +511,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                             jsonObject.put("sender", constant.SENDER)
                             jsonObject.put("player_id", constant.GAME_TURN)
                             jsonObject.put("profileURL_2P", "$profileUrl")
+                            jsonObject.put("mal_num_limit", GameConstant.MAL_NUM_LIMIT)
                         } catch (e: JSONException) {
                             e.printStackTrace()
                         }
@@ -616,6 +629,20 @@ class GameTestActivity2 : AppCompatActivity()  {
             .load(imageUrl)
             .diskCacheStrategy(DiskCacheStrategy.ALL) // 디스크 캐싱 전략 설정
             .into(imageView)
+    }
+
+    // 말 개수 조정
+    private fun limitMalNum(malNumLimit: Int){
+        for(i in malNumLimit until  4){
+            malInList[i].isEnabled = false
+            malInList[i].visibility = View.GONE
+            oppMalInList[i].isEnabled = false
+            oppMalInList[i].visibility = View.GONE
+            catHandList[i].isEnabled = false
+            catHandList[i].visibility = View.GONE
+            oppCatHandList[i].isEnabled = false
+            oppCatHandList[i].visibility = View.GONE
+        }
     }
 
     // 2P 스코어 UI 변경
@@ -752,11 +779,11 @@ class GameTestActivity2 : AppCompatActivity()  {
         }
 
         // 윷판 안에 있는 말
-        for(i in 0 until 4){
-            val mal = malInList[i]
+        for(nextPositionInfo in response.malList){
+            val mal = malInList[nextPositionInfo.malId]
             if(mal.visibility != View.GONE) { // GONE이면 윷판 밖에 있는 말임.
                 mal.setOnClickListener{
-                    sendMoveMal(i, response.yutResult)
+                    sendMoveMal(nextPositionInfo.malId, response.yutResult)
                 }
             }
         }
