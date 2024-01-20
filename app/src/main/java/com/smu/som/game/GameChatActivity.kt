@@ -1,12 +1,15 @@
 package com.smu.som.game
 
+import android.content.ContentValues
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.beust.klaxon.Klaxon
-
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
+import com.smu.som.MasterApplication
+import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.chat.Constant
 import com.smu.som.chat.adapter.ChatAdapter
@@ -16,6 +19,8 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class GameChatActivity : AppCompatActivity() {
@@ -81,6 +86,41 @@ class GameChatActivity : AppCompatActivity() {
                         e.printStackTrace()
                     }
                     stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
+
+                    (application as MasterApplication).service.getChatLogs(constant.CHATROOM_ID
+                    ).enqueue(object : retrofit2.Callback<ArrayList<Chat>>{
+                        override fun onResponse(
+                            call: Call<ArrayList<Chat>>,
+                            response: Response<ArrayList<Chat>>
+                        ) {
+                            if (response.isSuccessful){
+                                val chats = response.body()
+                                if (chats != null) {
+                                    for (chat in chats!!){
+                                        try {
+                                            jsonObject.put("messageType", chat.messageType)
+                                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
+                                            jsonObject.put("sender", chat.sender)
+                                            jsonObject.put("message", chat.message)
+                                        } catch (e: JSONException) {
+                                            e.printStackTrace()
+                                        }
+                                        // send
+                                        stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
+                                        message.text = null
+                                    }
+                                }
+                            }
+                            else {
+                                Log.e(ContentValues.TAG, "이전 대화 목록 불러오기 실패.")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ArrayList<Chat>>, t: Throwable) {
+                            Log.e(ContentValues.TAG, "서버 오류")
+                        }
+                    })
+                    //채팅기록이 있다면 불러오기
 
                     send.setOnClickListener {
                         try {
