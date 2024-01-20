@@ -14,6 +14,7 @@ import com.smu.som.R
 import com.smu.som.chat.Constant
 import com.smu.som.chat.adapter.ChatAdapter
 import com.smu.som.chat.model.response.Chat
+import com.smu.som.gameroom.GameRoomApi
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_chat.*
 import okhttp3.OkHttpClient
@@ -87,8 +88,14 @@ class GameChatActivity : AppCompatActivity() {
                     }
                     stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
 
-                    (application as MasterApplication).service.getChatLogs(constant.CHATROOM_ID
-                    ).enqueue(object : retrofit2.Callback<ArrayList<Chat>>{
+                    val api = retrofit2.Retrofit.Builder()
+                        .baseUrl(GameConstant.API_URL)
+                        .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+                        .build()
+                        .create(GameRoomApi::class.java)
+
+                        api.getChatLogs(GameConstant.GAMEROOM_ID)
+                        .enqueue(object : retrofit2.Callback<ArrayList<Chat>>{
                         override fun onResponse(
                             call: Call<ArrayList<Chat>>,
                             response: Response<ArrayList<Chat>>
@@ -97,17 +104,8 @@ class GameChatActivity : AppCompatActivity() {
                                 val chats = response.body()
                                 if (chats != null) {
                                     for (chat in chats!!){
-                                        try {
-                                            jsonObject.put("messageType", chat.messageType)
-                                            jsonObject.put("chatRoomId", constant.CHATROOM_ID)
-                                            jsonObject.put("sender", chat.sender)
-                                            jsonObject.put("message", chat.message)
-                                        } catch (e: JSONException) {
-                                            e.printStackTrace()
-                                        }
-                                        // send
-                                        stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
-                                        message.text = null
+                                        cAdapter.addItem(chat)
+                                        recycler_chat.smoothScrollToPosition(cAdapter.itemCount)
                                     }
                                 }
                             }
@@ -147,5 +145,11 @@ class GameChatActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stompConnection.dispose()
+        topic.dispose()
     }
 }
