@@ -13,10 +13,13 @@ object GameConstant {
     lateinit var GAME_STATE: String
 //    var URL: String = "ws://10.0.2.2:8080/ws"
     var URL: String = "ws://3.37.84.188:8080/ws"
+//    var URL: String = "ws://192.168.219.107:8080/ws"
 //    val API_URL: String = "http://10.0.2.2:8080"
     val API_URL: String = "http://3.37.84.188:8080"
+//    val API_URL: String = "http://192.168.219.107:8080"
     var GAMEROOM_ID: String = "0"
     var SENDER: String = "DEFAULT"
+    var MAL_NUM_LIMIT: Int = 4
 
     val GAME_STATE_START: String = "START"
     val GAME_STATE_END: String = "END"

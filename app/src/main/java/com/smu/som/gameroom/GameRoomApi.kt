@@ -1,6 +1,5 @@
 package com.smu.som.gameroom
 
-import android.util.Log
 import com.smu.som.GameRoomResponse
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.gameroom.model.GameRoom
@@ -18,6 +17,7 @@ interface GameRoomApi {
     fun makeGameRoom(@Query("name") name: String,
                      @Query("category") category: String,
                      @Query("adult") adult: String,
+                     @Query("mal") malNumLimit: Int
     ): Call<GameRoomResponse>
 
     interface GameRoomImpl{

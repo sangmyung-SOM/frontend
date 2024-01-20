@@ -1,17 +1,14 @@
-package com.smu.som.game
+package com.smu.som.game.service
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.gmail.bishoybasily.stomp.lib.StompClient
+import com.smu.som.game.GameConstant
 import com.smu.som.gameroom.GameRoomApi
-import okhttp3.OkHttpClient
-import org.json.JSONException
-import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 
+// 앱이 종료되었을 때, 게임 방을 삭제하기 위한 서비스
 class TaskService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return null

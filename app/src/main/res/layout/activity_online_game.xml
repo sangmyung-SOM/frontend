@@ -267,19 +267,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btn_rule"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:padding="0dp"
-                android:scaleType="centerCrop"
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:src="@drawable/btn_rule_v2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_report"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/btn_report"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/report"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_rule"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -295,23 +303,13 @@
         app:layout_constraintTop_toBottomOf="@id/guideline_game_info">
 
         <ImageView
-            android:id="@+id/cat_hand_b_3"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_2"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/cat_hand_b" />
-
-        <ImageView
-            android:id="@+id/cat_hand_b_2"
+            android:id="@+id/cat_hand_b_0"
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/cat_hand_b_1"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_b_3"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_b" />
 
@@ -320,40 +318,40 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_0"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_b_2"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_2"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_0"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_b" />
 
         <ImageView
-            android:id="@+id/cat_hand_b_0"
+            android:id="@+id/cat_hand_b_2"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginRight="7dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_3"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_b_3"
             app:layout_constraintStart_toEndOf="@id/cat_hand_b_1"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_b" />
 
         <ImageView
-            android:id="@+id/cat_hand_w_3"
+            android:id="@+id/cat_hand_b_3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_0"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_b" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_0"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginLeft="7dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_2"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_b_0"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/cat_hand_w" />
-
-        <ImageView
-            android:id="@+id/cat_hand_w_2"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/cat_hand_w_1"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_w_3"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_b_3"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_w" />
 
@@ -362,18 +360,28 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_0"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_w_2"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_2"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_0"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_w" />
 
         <ImageView
-            android:id="@+id/cat_hand_w_0"
+            android:id="@+id/cat_hand_w_2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cat_hand_w_3"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cat_hand_w" />
+
+        <ImageView
+            android:id="@+id/cat_hand_w_3"
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cat_hand_w_1"
+            app:layout_constraintStart_toEndOf="@id/cat_hand_w_2"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/cat_hand_w" />
 
