@@ -31,6 +31,7 @@ import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
 import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
+import com.smu.som.game.reportQnA.dialog.AnswerReportDialog
 import com.smu.som.game.dialog.GameEndDialog
 import com.smu.som.game.dialog.GameRuleDialog
 import com.smu.som.game.dialog.GetAnswerResultDialog
@@ -43,9 +44,9 @@ import com.smu.som.game.service.GameMalStompService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
 import com.smu.som.game.service.YutGifService
-import com.smu.som.game.wish.AnsweringPassDialog
-import com.smu.som.game.wish.AnsweringWishDialog
-import com.smu.som.game.wish.WishDialog
+import com.smu.som.game.wish.dialog.AnsweringPassDialog
+import com.smu.som.game.wish.dialog.AnsweringWishDialog
+import com.smu.som.game.wish.dialog.WishDialog
 import com.smu.som.gameroom.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -155,6 +156,12 @@ class GameTestActivity2 : AppCompatActivity()  {
         binding.btnRule.setOnClickListener {
             val dialog = GameRuleDialog(this)
             dialog.show()
+        }
+
+        // 질문답변 기록 보는 아이콘
+        binding.btnReport.setOnClickListener {
+            val dialog = AnswerReportDialog(this, stomp, 0)
+            dialog.showPopup()
         }
 
 

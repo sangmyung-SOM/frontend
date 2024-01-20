@@ -42,13 +42,16 @@ class  GameRoomListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gameroom_list)
 
+        // 게임방 목록 어댑터 설정
         recycler_gameroom.adapter = cAdapter
         recycler_gameroom.layoutManager = LinearLayoutManager(this)
         recycler_gameroom.setHasFixedSize(true)
 
+        // 스냅 헬퍼 추가
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(recycler_gameroom)
 
+        // 게임방 목록 불러오기
         val compositeDisposable = CompositeDisposable()
         compositeDisposable.add(
             GameRoomApi.getGameRoom(page, pageSize)
@@ -66,11 +69,13 @@ class  GameRoomListActivity : AppCompatActivity() {
 
         enterButton.isEnabled = false
 
+        // 방 만들기 버튼 클릭 시
         createBtn.setOnClickListener {
             val dialog = OnlineGameSettingDialog(this)
             dialog.show()
         }
 
+        // 새로고침 버튼 클릭 시
         refresh.setOnClickListener {
             finish() //인텐트 종료
             overridePendingTransition(0, 0) //인텐트 효과 없애기
@@ -80,6 +85,7 @@ class  GameRoomListActivity : AppCompatActivity() {
             Log.d("refresh", "refresh")
         }
 
+        // 입장 버튼 클릭 시
         enterButton.setOnClickListener {
             val dialog : SetNameDialog = SetNameDialog(this, gameSettingList)
             dialog.show()
