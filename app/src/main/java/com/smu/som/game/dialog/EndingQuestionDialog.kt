@@ -9,8 +9,6 @@ import android.text.method.ScrollingMovementMethod
 import android.widget.TextView
 import com.smu.som.R
 import kotlinx.android.synthetic.main.dialog_questions_after_end.btn_cancel
-import kotlinx.android.synthetic.main.dialog_questions_after_end.questions
-
 
 class EndingQuestionDialog(context: Context, val questions : String) : Dialog(context) {
 
