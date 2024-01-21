@@ -31,7 +31,7 @@ class GameEndDialog(context: Context, val stomp: StompClient, val pos: Int) : Di
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 만들기
         setContentView(R.layout.dialog_game_end)
         clickEnterBtn()
-        clickCancelBtn()
+        //clickCancelBtn()
 
         // GameRoomApi 에서 게임 방 삭제
         val gameRoomApi = GameRoomApi
@@ -64,7 +64,7 @@ class GameEndDialog(context: Context, val stomp: StompClient, val pos: Int) : Di
     fun showPopup() {
         show()
         // 클릭 감지 리스너
-        // setClickListener()
+        setClickListener()
         // 다이얼로그 닫히면 게임방 목록으로 이동
         OnDismissListener()
     }
@@ -77,9 +77,9 @@ class GameEndDialog(context: Context, val stomp: StompClient, val pos: Int) : Di
 
 
 
-       // setClickListener()
+        setClickListener()
         // 클릭하면 게임방 목록으로 이동
-        //OnDismissListener()
+        OnDismissListener()
 
     }
 
