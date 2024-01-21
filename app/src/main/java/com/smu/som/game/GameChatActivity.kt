@@ -1,21 +1,27 @@
 package com.smu.som.game
 
+import android.content.ContentValues
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.beust.klaxon.Klaxon
-
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
+import com.smu.som.MasterApplication
+import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.chat.Constant
 import com.smu.som.chat.adapter.ChatAdapter
 import com.smu.som.chat.model.response.Chat
+import com.smu.som.gameroom.GameRoomApi
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_chat.*
 import okhttp3.OkHttpClient
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class GameChatActivity : AppCompatActivity() {
@@ -82,6 +88,38 @@ class GameChatActivity : AppCompatActivity() {
                     }
                     stomp.send("/app/chat/message", jsonObject.toString()).subscribe()
 
+                    val api = retrofit2.Retrofit.Builder()
+                        .baseUrl(GameConstant.API_URL)
+                        .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+                        .build()
+                        .create(GameRoomApi::class.java)
+
+                        api.getChatLogs(GameConstant.GAMEROOM_ID)
+                        .enqueue(object : retrofit2.Callback<ArrayList<Chat>>{
+                        override fun onResponse(
+                            call: Call<ArrayList<Chat>>,
+                            response: Response<ArrayList<Chat>>
+                        ) {
+                            if (response.isSuccessful){
+                                val chats = response.body()
+                                if (chats != null) {
+                                    for (chat in chats!!){
+                                        cAdapter.addItem(chat)
+                                        recycler_chat.smoothScrollToPosition(cAdapter.itemCount)
+                                    }
+                                }
+                            }
+                            else {
+                                Log.e(ContentValues.TAG, "이전 대화 목록 불러오기 실패. 응답 코드: ${response.code()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ArrayList<Chat>>, t: Throwable) {
+                            Log.e(ContentValues.TAG, "서버 오류")
+                        }
+                    })
+                    //채팅기록이 있다면 불러오기
+
                     send.setOnClickListener {
                         try {
                             jsonObject.put("messageType", "TALK")
@@ -107,5 +145,11 @@ class GameChatActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stompConnection.dispose()
+        topic.dispose()
     }
 }

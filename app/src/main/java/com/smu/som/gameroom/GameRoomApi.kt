@@ -2,6 +2,8 @@ package com.smu.som.gameroom
 
 import com.smu.som.GameRoomResponse
 import com.smu.som.chat.model.network.RetrofitCreator
+import com.smu.som.chat.model.response.Chat
+import com.smu.som.chat.model.response.ChatRoom
 import com.smu.som.gameroom.model.GameRoom
 import io.reactivex.Single
 import retrofit2.Call
@@ -19,6 +21,12 @@ interface GameRoomApi {
                      @Query("adult") adult: String,
                      @Query("mal") malNumLimit: Int
     ): Call<GameRoomResponse>
+
+    @GET("/chat/room/{roomId}/chatLogs")
+    fun getChatLogs(
+        @Path("roomId") roomId: String
+    ):Call<ArrayList<Chat>>
+
 
     interface GameRoomImpl{
         @GET("/game/rooms")

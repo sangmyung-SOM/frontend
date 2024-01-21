@@ -1,5 +1,6 @@
 package com.smu.som
 
+import com.smu.som.chat.model.response.Chat
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -42,5 +43,8 @@ interface RetrofitService {
         @Path("kakaoID") kakaoID: String,
     ): Call<Data>
 
-
+    @GET("/chat/room/{roomId}/chatLogs")
+    fun getChatLogs(
+        @Path("roomId") roomId: String
+    ):Call<ArrayList<Chat>>
 }
