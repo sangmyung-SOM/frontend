@@ -64,12 +64,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" 변성호 계정 : kakao8830a05931f367c390e6f8d27db7f0ab-->
 
 <!--교수님 카카오 계정                android:scheme="kakaobf210ef78fb5cdbfc6072c511ac2d6fd"-->
                 <data
                     android:host="oauth"
-                    android:scheme="kakao8830a05931f367c390e6f8d27db7f0ab" />
+                    android:scheme="kakaobf210ef78fb5cdbfc6072c511ac2d6fd" />
             </intent-filter>
         </activity>
         <activity
