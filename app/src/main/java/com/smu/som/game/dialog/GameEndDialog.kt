@@ -49,8 +49,8 @@ class GameEndDialog(context: Context, val stomp: StompClient, val pos: Int) : Di
     private fun clickEnterBtn() {
         btn_enter.setOnClickListener {
             val dialog = AnswerReportDialog(context, stomp, pos)
-            dialog.show()
-            dismiss()
+            dialog.showPopup()
+            //dismiss()
             dialog.window?.setWindowAnimations(0)
         }
     }
