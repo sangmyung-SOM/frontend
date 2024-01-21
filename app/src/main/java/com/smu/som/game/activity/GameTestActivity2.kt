@@ -267,12 +267,12 @@ class GameTestActivity2 : AppCompatActivity()  {
                             runOnUiThread {
                                 // score가 4점이 되면  게임 종료
                                 if (result?.winner == playerId) { // 내가 이겼을 때
-                                    val gameEndDialog = GameEndDialog(this)
+                                    val gameEndDialog = GameEndDialog(this, stomp, 0)
                                     gameEndDialog.showPopup()
 //                                    finish()
                                 }
                                 else {
-                                    val gameEndDialog = GameEndDialog(this)
+                                    val gameEndDialog = GameEndDialog(this, stomp, 0)
                                     gameEndDialog.losePopup()
                                 }
                             }
