@@ -25,6 +25,7 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
 
     val bundle: Bundle = Bundle()
     var request = JsonObject()
+    private var questionChange : Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,12 +70,22 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
             stomp.send("/app/game/answer", request.toString()).subscribe()
             dismiss()
 
-            // 질문과 답변을 서버 전송 후 저장
-            val reportResponseAndQuestionList = ReportResponse.AnswerAndQuestionList(
-                answer = answer.text.toString(),
-                question = questionList?.get(0)?.question,
-                playerId = GameConstant.GAME_TURN
-            )
+
+            // 질문 변경을 했을 경우 변경한 질문 내용을 서버로 전송
+            val reportResponseAndQuestionList = if (questionChange) {
+                ReportResponse.AnswerAndQuestionList(
+                    answer = answer.text.toString(),
+                    question = questionList?.get(1)?.question,
+                    playerId = GameConstant.GAME_TURN
+                )
+            } else {
+                ReportResponse.AnswerAndQuestionList(
+                    answer = answer.text.toString(),
+                    question = questionList?.get(0)?.question,
+                    playerId = GameConstant.GAME_TURN
+                )
+            }
+
             val qnaService = SaveQnAService()
             qnaService.saveQnA(reportResponseAndQuestionList)
 
@@ -104,6 +115,7 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
                 e.printStackTrace()
             }
 
+            questionChange = true // 질문 변경 했음을 표시
             btnChange.isEnabled = false
             btnChange.setOnClickListener(null)
             Toast.makeText(context, "질문 변경 1회 사용!\n 더이상 변경이 불가능 합니다.", Toast.LENGTH_SHORT).show()
