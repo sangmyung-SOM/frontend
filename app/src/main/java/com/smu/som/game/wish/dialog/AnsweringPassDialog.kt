@@ -16,6 +16,8 @@ import com.google.gson.JsonObject
 import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.game.GameConstant
+import com.smu.som.game.reportQnA.model.response.ReportResponse
+import com.smu.som.game.reportQnA.model.service.SaveQnAService
 import org.json.JSONException
 
 
@@ -68,6 +70,15 @@ class AnsweringPassDialog(context: Context, private val questionList: ArrayList<
 
             decreasePassCard()
             dismiss()
+
+            // 질문과 답변을 서버 전송 후 저장
+            val reportResponseAndQuestionList = ReportResponse.AnswerAndQuestionList(
+                answer = "패스권을 사용했습니다.",
+                question = questionList?.get(0)?.question,
+                playerId = GameConstant.GAME_TURN
+            )
+            val qnaService = SaveQnAService()
+            qnaService.saveQnA(reportResponseAndQuestionList)
         }
     }
 
@@ -107,6 +118,15 @@ class AnsweringPassDialog(context: Context, private val questionList: ArrayList<
 
             stomp.send("/app/game/answer", request.toString()).subscribe()
             dismiss()
+
+            // 질문과 답변을 서버 전송 후 저장
+            val reportResponseAndQuestionList = ReportResponse.AnswerAndQuestionList(
+                answer = answer.text.toString(),
+                question = questionList?.get(0)?.question,
+                playerId = GameConstant.GAME_TURN
+            )
+            val qnaService = SaveQnAService()
+            qnaService.saveQnA(reportResponseAndQuestionList)
         }
     }
 }

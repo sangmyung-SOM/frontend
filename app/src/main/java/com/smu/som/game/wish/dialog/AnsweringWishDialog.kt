@@ -14,6 +14,8 @@ import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.google.gson.JsonObject
 import com.smu.som.R
 import com.smu.som.game.GameConstant
+import com.smu.som.game.reportQnA.model.response.ReportResponse
+import com.smu.som.game.reportQnA.model.service.SaveQnAService
 import kotlinx.android.synthetic.main.dialog_input_qna.user_answer
 import org.json.JSONException
 
@@ -53,7 +55,7 @@ class AnsweringWishDialog(context : Context, val question: String?, val stomp: S
             try {
                 request.addProperty("room_id", GameConstant.GAMEROOM_ID)
                 request.addProperty("player_id", GameConstant.GAME_TURN)
-                request.addProperty("answer", answer.text.toString()) // 추가 질문권 사용 시 답변 내용
+                request.addProperty("answer", answer.text.toString()) // 추가 질문권 사용 시 추가 질문권에 대한 답변 내용
 
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -61,6 +63,15 @@ class AnsweringWishDialog(context : Context, val question: String?, val stomp: S
 
             stomp.send("/app/game/answer", request.toString()).subscribe()
             dismiss()
+
+            // 질문과 답변을 서버 전송 후 저장
+            val reportResponseAndQuestionList = ReportResponse.AnswerAndQuestionList(
+                answer = answer.text.toString(), // 추가 질문권에 대한 답변 내용
+                question = question, // 추가 질문권에 대한 질문 내용
+                playerId = GameConstant.GAME_TURN
+            )
+            val qnaService = SaveQnAService()
+            qnaService.saveQnA(reportResponseAndQuestionList)
         }
     }
 
