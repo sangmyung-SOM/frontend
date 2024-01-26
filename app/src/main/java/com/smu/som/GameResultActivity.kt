@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import com.smu.som.version1.GameActivity
+import com.smu.som.version1.GameSettingActivity
+import com.smu.som.version1.MainActivity
 import kotlinx.android.synthetic.main.activity_game_result.*
 
 class GameResultActivity : AppCompatActivity() {

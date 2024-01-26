@@ -1,10 +1,12 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.smu.som.Question
+import com.smu.som.R
 
 
 // 질문 배열을 목록 형태로 보여주는 Adapter

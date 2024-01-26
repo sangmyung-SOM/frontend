@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.smu.som.Data
+import com.smu.som.MasterApplication
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_game_data.*
 import retrofit2.Call
 import retrofit2.Callback

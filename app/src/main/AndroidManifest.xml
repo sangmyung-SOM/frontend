@@ -23,21 +23,21 @@
             android:name=".StartActivityClicked"
             android:exported="false" />
         <activity
-            android:name=".GameDataActivity"
+            android:name=".version1.GameDataActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".QuestionListActivity"
+            android:name=".version1.QuestionListActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".GameSettingActivity"
+            android:name=".version1.GameSettingActivity"
             android:exported="false" />
         <activity
             android:name=".GameResultActivity"
@@ -50,7 +50,7 @@
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".MypageActivity"
+            android:name=".version1.MypageActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
@@ -83,10 +83,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".version1.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".GameActivity"
+            android:name=".version1.GameActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".chat.activity.ChatActivity"

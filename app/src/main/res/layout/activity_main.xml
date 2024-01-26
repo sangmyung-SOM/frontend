@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/main2"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".version1.MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -16,12 +16,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.smu.som.GameResult
 import com.smu.som.GameResultActivity
-import com.smu.som.GameSettingActivity
-import com.smu.som.MainActivity
+import com.smu.som.version1.GameSettingActivity
+import com.smu.som.version1.MainActivity
 import com.smu.som.MasterApplication
 import com.smu.som.Question
 import com.smu.som.R
-import com.smu.som.chat.activity.ChatActivity
 import com.smu.som.databinding.ActivityOnlineGameBinding
 import kotlinx.android.synthetic.main.activity_game.*
 import retrofit2.Call
