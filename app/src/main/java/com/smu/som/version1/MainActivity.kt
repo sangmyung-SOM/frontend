@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -8,10 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.AgeRange
-import io.reactivex.disposables.Disposable
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
 import org.json.JSONObject

@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -14,6 +14,11 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.smu.som.GameResult
+import com.smu.som.GameResultActivity
+import com.smu.som.MasterApplication
+import com.smu.som.Question
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_game.*
 import retrofit2.Call
 import retrofit2.Callback

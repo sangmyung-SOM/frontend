@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -9,6 +9,8 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.Gender
+import com.smu.som.IntroActivity
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_mypage.*
 
 // 마이페이지 Activity

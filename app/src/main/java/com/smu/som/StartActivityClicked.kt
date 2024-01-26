@@ -58,12 +58,10 @@ class StartActivityClicked : AppCompatActivity() {
             }
         }
 
-
-
-        offlineStart.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+//        offlineStart.setOnClickListener {
+//            startActivity(Intent(this, MainActivity::class.java))
+//            finish()
+//        }
 
         explain_btn.setOnClickListener {
             val dialog = GameRuleDialog(this)

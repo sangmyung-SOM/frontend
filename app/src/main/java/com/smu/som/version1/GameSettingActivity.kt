@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.Context
 import android.content.Intent
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_game_setting.*
 
 // 게임 설정 Activity

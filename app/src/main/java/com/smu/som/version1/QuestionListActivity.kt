@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.version1
 
 import android.content.ContentValues
 import android.content.Context
@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.smu.som.MasterApplication
+import com.smu.som.Question
+import com.smu.som.R
 import kotlinx.android.synthetic.main.activity_question_list.*
 import retrofit2.Call
 import retrofit2.Callback
