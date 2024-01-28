@@ -2,22 +2,19 @@ package com.smu.som.game.dialog
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.smu.som.R
 import com.smu.som.StartActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.reportQnA.dialog.AnswerReportDialog
-import com.smu.som.gameroom.GameRoomApi
-import com.smu.som.gameroom.activity.GameRoomListActivity
+import com.smu.som.gameroom.model.api.GameRoomApi
 import kotlinx.android.synthetic.main.dialog_game_end.btn_enter
 import kotlinx.android.synthetic.main.dialog_game_end.textView
 import retrofit2.Call

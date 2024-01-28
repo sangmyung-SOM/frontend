@@ -1,4 +1,4 @@
-package com.smu.som.gameroom.model
+package com.smu.som.gameroom.model.response
 
 data class GameRoom(
     val roomId: String,

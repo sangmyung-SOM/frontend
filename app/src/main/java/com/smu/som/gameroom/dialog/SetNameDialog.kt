@@ -1,4 +1,4 @@
-package com.smu.som.dialog
+package com.smu.som.gameroom.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.smu.som.R
 import com.smu.som.game.activity.GameTestActivity2
-import com.smu.som.gameroom.model.GameRoom
+import com.smu.som.gameroom.model.response.GameRoom
 
 class SetNameDialog(context: Context, gameSettingArray: ArrayList<GameRoom>) : Dialog(context) {
 

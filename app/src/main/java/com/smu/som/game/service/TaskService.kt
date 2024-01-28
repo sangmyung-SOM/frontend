@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.smu.som.game.GameConstant
-import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.model.api.GameRoomApi
 
 
 // 앱이 종료되었을 때, 게임 방을 삭제하기 위한 서비스

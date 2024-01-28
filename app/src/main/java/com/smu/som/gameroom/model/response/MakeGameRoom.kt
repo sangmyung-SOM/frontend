@@ -1,4 +1,4 @@
-package com.smu.som.gameroom
+package com.smu.som.gameroom.model.response
 
 import com.google.gson.annotations.SerializedName
 

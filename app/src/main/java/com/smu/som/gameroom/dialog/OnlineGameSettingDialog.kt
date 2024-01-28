@@ -1,4 +1,4 @@
-package com.smu.som
+package com.smu.som.gameroom.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -20,10 +20,9 @@ import com.smu.som.GameRoomResponse
 import com.smu.som.R
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.databinding.ActivityOnlineGameSettingBinding
-import com.smu.som.dialog.GetGameRoomIdDialog
 import com.smu.som.game.GameConstant
-import com.smu.som.gameroom.GameRoomApi
-import com.smu.som.gameroom.MakeGameRoom
+import com.smu.som.gameroom.model.api.GameRoomApi
+import com.smu.som.gameroom.model.response.MakeGameRoom
 import kotlinx.android.synthetic.main.activity_online_game_setting.name_1P_OG
 import kotlinx.android.synthetic.main.activity_online_game_setting.noButton
 import retrofit2.Callback

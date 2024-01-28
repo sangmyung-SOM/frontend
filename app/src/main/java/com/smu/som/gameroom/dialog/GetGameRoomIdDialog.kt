@@ -1,4 +1,4 @@
-package com.smu.som.dialog
+package com.smu.som.gameroom.dialog
 
 import android.annotation.SuppressLint
 import android.app.Dialog

@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smu.som.R
 import com.smu.som.databinding.ActivityGameroomListBinding
-import com.smu.som.gameroom.model.GameRoom
+import com.smu.som.gameroom.model.response.GameRoom
 
 
 class GameRoomAdapter(val context: Context)
