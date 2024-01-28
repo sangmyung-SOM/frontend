@@ -46,10 +46,6 @@
             android:name=".StartActivity"
             android:exported="false" />
         <activity
-            android:name=".OnlineGameSettingDialog"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
-        <activity
             android:name=".version1.MypageActivity"
             android:exported="false" />
         <activity

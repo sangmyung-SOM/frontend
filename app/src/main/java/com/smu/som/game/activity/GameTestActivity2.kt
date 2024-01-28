@@ -29,7 +29,6 @@ import com.smu.som.R
 import com.smu.som.chat.model.response.Chat
 import com.smu.som.databinding.ActivityOnlineGame2Binding
 import com.smu.som.game.dialog.AnsweringDialog
-import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.reportQnA.dialog.AnswerReportDialog
 import com.smu.som.game.dialog.GameEndDialog
@@ -43,11 +42,11 @@ import com.smu.som.game.response.GameMalResponse
 import com.smu.som.game.service.GameMalStompService
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
-import com.smu.som.game.service.YutGifService
+import com.smu.som.game.dialog.YutGifDialog
 import com.smu.som.game.wish.dialog.AnsweringPassDialog
 import com.smu.som.game.wish.dialog.AnsweringWishDialog
 import com.smu.som.game.wish.dialog.WishDialog
-import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.model.api.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -151,7 +150,6 @@ class GameTestActivity2 : AppCompatActivity()  {
             binding.btnThrowYut2.isEnabled = false
         }
 
-        // 게임방법 설명
         // 게임방법 설명
         binding.btnRule.setOnClickListener {
             val dialog = GameRuleDialog(this)
@@ -357,7 +355,7 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     num = result?.yut!!.toInt()
 
                                     // 윷 gif 재생
-                                    val yutService = YutGifService(this)
+                                    val yutService = YutGifDialog(this)
                                     yutService.showYutGif(num) 
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
@@ -397,8 +395,12 @@ class GameTestActivity2 : AppCompatActivity()  {
                                     val questionMessage = result.question
                                     oppQuestionDialog?.dismiss()
                                     oppQuestionDialog = GetQuestionDialog(this, questionMessage)
-                                    oppQuestionDialog?.showPopup()
-//                                    questionView.dismiss() // 이 코드 왜 1P에는 없고 2P에만 있나요?
+                                   if (result.penalty > 0) { // 상대방의 패널티가 1일때 딜레이 없이 바로 팝업
+                                       oppQuestionDialog?.waitPopup()
+                                   }
+                                    else {
+                                        oppQuestionDialog?.showPopup()
+                                   }
 
                                 }
 

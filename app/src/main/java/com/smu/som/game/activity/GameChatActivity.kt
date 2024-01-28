@@ -1,4 +1,4 @@
-package com.smu.som.game
+package com.smu.som.game.activity
 
 import android.content.ContentValues
 import android.os.Bundle
@@ -8,13 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.beust.klaxon.Klaxon
 import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
-import com.smu.som.MasterApplication
-import com.smu.som.Question
 import com.smu.som.R
 import com.smu.som.chat.Constant
 import com.smu.som.chat.adapter.ChatAdapter
 import com.smu.som.chat.model.response.Chat
-import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.game.GameConstant
+import com.smu.som.gameroom.model.api.GameRoomApi
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_chat.*
 import okhttp3.OkHttpClient

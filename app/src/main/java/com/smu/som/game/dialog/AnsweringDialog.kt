@@ -98,10 +98,6 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
         val btnChange : Button = findViewById(R.id.changeButton)
 
         btnChange.setOnClickListener {
-            if (penalty == 1) {
-                Toast.makeText(context, "패널티가 있어 질문을 변경할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             showQuestionTxt.movementMethod = ScrollingMovementMethod.getInstance()
             val questionMsg = questionList?.get(1)?.question
@@ -118,7 +114,7 @@ class AnsweringDialog(context: Context, private val questionList: ArrayList<Ques
             questionChange = true // 질문 변경 했음을 표시
             btnChange.isEnabled = false
             btnChange.setOnClickListener(null)
-            Toast.makeText(context, "질문 변경 1회 사용!\n 더이상 변경이 불가능 합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "질문 변경 1회 사용!\n 말 이동이 제한 됩니다.", Toast.LENGTH_SHORT).show()
         }
 
     }

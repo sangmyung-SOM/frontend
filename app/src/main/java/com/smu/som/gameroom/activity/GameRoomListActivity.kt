@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.smu.som.OnlineGameSettingDialog
+import com.smu.som.gameroom.dialog.OnlineGameSettingDialog
 import com.smu.som.R
-import com.smu.som.dialog.SetNameDialog
-import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.dialog.SetNameDialog
+import com.smu.som.gameroom.model.api.GameRoomApi
 import com.smu.som.gameroom.adapter.GameRoomAdapter
-import com.smu.som.gameroom.model.GameRoom
+import com.smu.som.gameroom.model.response.GameRoom
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

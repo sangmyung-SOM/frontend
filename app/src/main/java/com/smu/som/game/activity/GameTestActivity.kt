@@ -26,7 +26,6 @@ import com.gmail.bishoybasily.stomp.lib.Event
 import com.gmail.bishoybasily.stomp.lib.StompClient
 import com.smu.som.R
 import com.smu.som.databinding.ActivityOnlineGameBinding
-import com.smu.som.game.GameChatActivity
 import com.smu.som.game.GameConstant
 import com.smu.som.game.response.Game
 import io.reactivex.disposables.Disposable
@@ -54,11 +53,11 @@ import com.smu.som.game.response.QnAResponse
 import com.smu.som.game.response.ScoreInfo
 import com.smu.som.game.service.MalMoveUtils
 import com.smu.som.game.service.GameStompService
-import com.smu.som.game.service.YutGifService
+import com.smu.som.game.dialog.YutGifDialog
 import com.smu.som.game.wish.dialog.AnsweringPassDialog
 import com.smu.som.game.wish.dialog.AnsweringWishDialog
 import com.smu.som.game.wish.dialog.WishDialog
-import com.smu.som.gameroom.GameRoomApi
+import com.smu.som.gameroom.model.api.GameRoomApi
 import com.smu.som.gameroom.activity.GameRoomListActivity
 import kotlinx.android.synthetic.main.activity_online_game.btn_chat
 import kotlinx.android.synthetic.main.activity_online_game.tv_nickname_p1
@@ -364,7 +363,7 @@ class GameTestActivity : AppCompatActivity() {
                                 else {
                                     num = result?.yut!!.toInt()
 
-                                    val yutService = YutGifService(this)
+                                    val yutService = YutGifDialog(this)
                                     yutService.showYutGif(num)
                                     // 윷이나 모인 경우 한번 더
                                     if (result.messageType == GameConstant.ONE_MORE_THROW && result.playerId == playerId) {
@@ -404,7 +403,12 @@ class GameTestActivity : AppCompatActivity() {
                                     val questionMessage = result.question
                                     oppQuestionDialog?.dismiss()
                                     oppQuestionDialog = GetQuestionDialog(this, questionMessage)
-                                    oppQuestionDialog?.showPopup()
+                                    if (result.penalty > 0) { // 상대방이 질문변경을 누른 경우 다이얼로그가 바로 뜰 수 있도록
+                                        oppQuestionDialog?.waitPopup()
+                                    }
+                                    else {
+                                        oppQuestionDialog?.showPopup()
+                                    }
                                 }
 
                                 // 질문 변경을 누른경우

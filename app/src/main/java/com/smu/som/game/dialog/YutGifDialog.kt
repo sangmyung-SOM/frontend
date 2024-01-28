@@ -1,4 +1,4 @@
-package com.smu.som.game.service
+package com.smu.som.game.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -16,9 +16,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.smu.som.R
-import pl.droidsonroids.gif.GifImageView
 
-class YutGifService(context: Context) : Dialog(context) {
+class YutGifDialog(context: Context) : Dialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

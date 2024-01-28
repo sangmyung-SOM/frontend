@@ -1,10 +1,9 @@
-package com.smu.som.gameroom
+package com.smu.som.gameroom.model.api
 
 import com.smu.som.GameRoomResponse
 import com.smu.som.chat.model.network.RetrofitCreator
 import com.smu.som.chat.model.response.Chat
-import com.smu.som.chat.model.response.ChatRoom
-import com.smu.som.gameroom.model.GameRoom
+import com.smu.som.gameroom.model.response.GameRoom
 import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.DELETE
