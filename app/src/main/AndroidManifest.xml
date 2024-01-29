@@ -88,10 +88,7 @@
             android:name=".chat.activity.ChatActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".game.OnlineGameActivity"
-            android:exported="true" />
-        <activity
-            android:name=".game.GameChatActivity"
+            android:name=".game.activity.GameChatActivity"
             android:exported="true"
             android:theme="@style/Transparent" />
         <activity
