@@ -147,7 +147,8 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/view_profile_pick_2P"/>
 
             <ImageView
                 android:id="@+id/profileImg_cat_p1"

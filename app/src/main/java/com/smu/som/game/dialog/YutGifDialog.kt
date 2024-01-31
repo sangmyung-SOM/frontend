@@ -38,6 +38,7 @@ class YutGifDialog(context: Context) : Dialog(context) {
 
     fun showYutGif(yut : Int) {
         show()
+        super.setCanceledOnTouchOutside(false)
         when(yut) {
             1 ->  gifResourceId = R.drawable.yut_do
             2 ->  gifResourceId = R.drawable.yut_gae
