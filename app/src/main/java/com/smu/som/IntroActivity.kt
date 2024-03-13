@@ -28,14 +28,14 @@ class IntroActivity : AppCompatActivity() {
                     val intent = Intent(this, LoginActivity::class.java)
                     startActivity(intent)
                     finish()
-                }, 1000)
+                }, 3600)
             }
             else if (tokenInfo != null) {   // 토큰 정보 보기 성공 (로그인 - 시작 화면으로)
                 handler.postDelayed({
                     val intent = Intent(this, StartActivity::class.java)
                     startActivity(intent)
                     finish()
-                }, 1000)
+                }, 3600)
             }
         }
     }
